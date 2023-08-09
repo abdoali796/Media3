@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Mymidia3</string>
+    <string name="exo_controls_shuffle_on_description">shuffle on</string>
+    <string name="exo_controls_shuffle_off_description">shuffle off</string>
+</resources>

@@ -91,7 +91,7 @@ fun PlayUi(
                         .fillMaxSize()
                         .blur(14.dp) ,
                     placeholder = painterResource(
-                        id = com.bumptech.glide.integration.compose.R.drawable.abc_btn_radio_to_on_mtrl_000
+                        id = com.abdoali.playservice.R.drawable.plass_foreground
                     ) ,
                     error = painterResource(
                         id = com.abdoali.playservice.R.drawable.plass_foreground

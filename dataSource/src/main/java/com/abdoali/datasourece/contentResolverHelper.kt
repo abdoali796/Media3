@@ -1,4 +1,4 @@
-package com.abdoali.mymidia3.data
+package com.abdoali.datasourece
 
 import android.content.ContentUris
 import android.content.Context
@@ -7,15 +7,15 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.WorkerThread
-import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
-import androidx.media3.common.Metadata
+import com.abdoali.datasourece.api.ApiService
+//import androidx.media3.common.MediaItem
+//import androidx.media3.common.MediaMetadata
 
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ContentResolverHelper @Inject constructor(@ApplicationContext val context: Context) {
+class ContentResolverHelper @Inject constructor(@ApplicationContext val context: Context ) {
 
     private var mcursor: Cursor? = null
 
@@ -43,24 +43,24 @@ class ContentResolverHelper @Inject constructor(@ApplicationContext val context:
     )
     val sortOrder = "${MediaStore.Audio.Media.DISPLAY_NAME} ASC"
 
-//    @WorkerThread
-    fun getAudioData(): List<com.abdoali.mymidia3.data.Song> {
+    @WorkerThread
+    fun getAudioData(): List<Song> {
         return getCursor()
     }
 
-fun getMateData():List<MediaItem>{
-    return getCursor().map {song: Song ->
-    val metadata =MediaMetadata.Builder()
-        .setArtist(song.artists)
-        .setDisplayTitle(song.title)
-        .setArtworkUri(song.uri)
-        .build()
-MediaItem.Builder()
-    .setMediaMetadata(metadata)
-    .setUri(song.uri)
-    .build()
-    }
-}
+//fun getMateData():List<MediaItem>{
+//    return getCursor().map {song: Song ->
+//    val metadata =MediaMetadata.Builder()
+//        .setArtist(song.artists)
+//        .setDisplayTitle(song.title)
+//        .setArtworkUri(song.uri)
+//        .build()
+//MediaItem.Builder()
+//    .setMediaMetadata(metadata)
+//    .setUri(song.uri)
+//    .build()
+//    }
+
     private fun getCursor(): MutableList<Song> {
         val audioList = mutableListOf<Song>()
 
@@ -92,13 +92,15 @@ MediaItem.Builder()
                 val data = cursor.getString(durationColumn)
                 val contentUri: Uri =
                     ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI , id)
-                audioList += com.abdoali.mymidia3.data.Song(uri = contentUri ,
+                audioList += Song(
+                    uri = contentUri ,
                     displayName = name ,
                     id = id ,
                     artists = artists ,
                     duration = duration ,
-                    title =  title,
-                    date = data)
+                    title = title ,
+                    date = data
+                )
 //                audioList +=Song(
 //                    uri = contentUri ,
 //                    displayName = name ,

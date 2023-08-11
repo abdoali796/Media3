@@ -8,6 +8,8 @@ import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
+import com.abdoali.datasourece.ApiQuran
+import com.abdoali.datasourece.ContentResolverHelper
 import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.service.notifcation.NotificationManager
 import dagger.Module
@@ -50,10 +52,15 @@ object PlayerModule {
     @Provides
     @Singleton
     fun provideServiceHandler(
-        player: ExoPlayer
+        player: ExoPlayer,
+        contentResolverHelper: ContentResolverHelper,
+        apiQuran: ApiQuran
     ): MediaServiceHandler =
       MediaServiceHandler(
-            player = player
+            player = player,
+
+          contentResolverHelper,
+          apiQuran
         )
 
 

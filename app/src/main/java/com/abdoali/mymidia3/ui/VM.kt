@@ -1,12 +1,9 @@
 package com.abdoali.mymidia3.ui
 
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
 import com.abdoali.mymidia3.Timer
-import com.abdoali.mymidia3.data.ContentResolverHelper
 import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.MediaStateAbdo
 import com.abdoali.playservice.PlayerEvent
@@ -21,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class VM @Inject constructor(
 
-    private val contentResolverHelper: ContentResolverHelper ,
+
     private val mediaServiceHandler: MediaServiceHandler ,
     private val timer: Timer ,
 //    savedStateHandle: SavedStateHandle
@@ -29,12 +26,11 @@ class VM @Inject constructor(
     ViewModel() {
     private var resetTimer = timer.isAlarmOn
     var name = timer.elapsedTime
-
-    private var _title= MutableStateFlow("")
-    val title:StateFlow<String>
+    private var _title = MutableStateFlow("")
+    val title: StateFlow<String>
         get() = _title
-    private var _artist=MutableStateFlow("")
-    val artist:StateFlow<String>
+    private var _artist = MutableStateFlow("")
+    val artist: StateFlow<String>
         get() = _artist
 
     private var _duration = MutableStateFlow(0L)
@@ -64,18 +60,14 @@ class VM @Inject constructor(
     private var _url = MutableStateFlow<Uri?>(null)
     val uri: StateFlow<Uri?>
         get() = _url
-    val song = contentResolverHelper.getAudioData()
+    val song = mediaServiceHandler.listLocl
+    val api = mediaServiceHandler.test
 
     init {
         viewModelScope.launch {
 
+            mediaServiceHandler.setMediaItemListonline()
 
-            mediaServiceHandler.addMediaItemList(contentResolverHelper.getMateData())
-            if (song.size < 2) run {
-                val item =
-                    MediaItem.fromUri("https://cdn.islamic.network/quran/audio-surah/128/ar.alafasy/114.mp3")
-                mediaServiceHandler.addMediaItem(item)
-            }
             mediaServiceHandler.mediaStateAbdo.collect { state ->
                 when (state) {
                     MediaStateAbdo.Initial -> {
@@ -169,7 +161,7 @@ class VM @Inject constructor(
                 mediaServiceHandler.updataUI(true)
             }
 
-            Log.i("flow" , resetTimer.value.toString())
+
         }
     }
 

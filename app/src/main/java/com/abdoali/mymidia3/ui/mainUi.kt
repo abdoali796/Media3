@@ -1,39 +1,27 @@
 package com.abdoali.mymidia3.ui
 
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
-import android.util.Log
-import android.util.Size
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
-import com.abdoali.mymidia3.data.Song
+import com.abdoali.datasourece.Song
 import com.abdoali.mymidia3.ui.theme.Mymidia3Theme
-import com.abdoali.mymidia3.uiCompount.Bar
-import com.abdoali.mymidia3.uiCompount.Control
 import com.abdoali.mymidia3.uiCompount.MinControlImp
 import com.abdoali.mymidia3.uiCompount.PlayUi
-import com.abdoali.playservice.R
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
@@ -50,11 +38,12 @@ fun MainUi() {
     val progressString by vm.progressString.collectAsState()
     val uri by vm.uri.collectAsState()
     val song = vm.song
+    val test by vm.api.collectAsState()
 
 
 
     MainUiImp(
-        timer.toString() ,
+       vm.formatDuration( timer),
         duration = vm.formatDuration(duration) ,
         progress = progress ,
         isPlaying = isPlaying ,
@@ -65,6 +54,7 @@ fun MainUi() {
         song = song ,
         shuffle = shuffle ,
         ac2 = {} ,
+
         onUIEvent = vm::onUIEvent ,
 
         )
@@ -85,7 +75,7 @@ fun MainUiImp(
     onUIEvent: (UIEvent) -> Unit ,
     ac2: () -> Unit ,
     shuffle: Boolean ,
-    song: List<Song> ,
+    song: List<com.abdoali.datasourece.Song> ,
 
     modifier: Modifier = Modifier
 ) {
@@ -96,8 +86,6 @@ fun MainUiImp(
     val sheetScaffoldState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
-
-
         Scaffold (
             bottomBar = {
                 MinControlImp(
@@ -111,7 +99,7 @@ fun MainUiImp(
 
 
         LazyColumn(content = {
-
+item { Text(text = timer)  }
             items(song.size) {
                 Column(
                     Modifier

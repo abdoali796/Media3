@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
 //        val song = contentResolverHelper.getAudioData()
 //        val player = ExoPlayer.Builder(this).build()
 
-//        song.forEach { song1: com.abdoali.mymidia3.data.Song ->
+//        song.forEach { song1: com.abdoali.datasourece.Song ->
 //            val item = MediaItem.fromUri(song1.uri)
 //            player.addMediaItem(item)
 //        }

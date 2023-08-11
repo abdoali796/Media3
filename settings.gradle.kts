@@ -16,3 +16,4 @@ dependencyResolutionManagement {
 rootProject.name = "Mymidia3"
 include(":app")
 include(":playservice")
+include(":dataSource")

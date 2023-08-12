@@ -83,6 +83,7 @@ class ContentResolverHelper @Inject constructor(@ApplicationContext val context:
             val artistColumns = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
             val titleColumns = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE)
             val dateColumns = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATA)
+            var index = 0
             while (cursor.moveToNext()) {
                 val id = cursor.getLong(idColumn)
                 val name = cursor.getString(nameColumn)
@@ -99,8 +100,10 @@ class ContentResolverHelper @Inject constructor(@ApplicationContext val context:
                     artists = artists ,
                     duration = duration ,
                     title = title ,
-                    date = data
+                    date = data,
+                    index = index
                 )
+                index++
 //                audioList +=Song(
 //                    uri = contentUri ,
 //                    displayName = name ,

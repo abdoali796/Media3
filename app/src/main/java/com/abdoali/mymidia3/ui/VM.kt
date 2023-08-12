@@ -22,8 +22,7 @@ class VM @Inject constructor(
     private val mediaServiceHandler: MediaServiceHandler ,
     private val timer: Timer ,
 //    savedStateHandle: SavedStateHandle
-) :
-    ViewModel() {
+) : ViewModel() {
     private var resetTimer = timer.isAlarmOn
     var name = timer.elapsedTime
     private var _title = MutableStateFlow("")
@@ -61,12 +60,12 @@ class VM @Inject constructor(
     val uri: StateFlow<Uri?>
         get() = _url
     val song = mediaServiceHandler.listLocl
-    val api = mediaServiceHandler.test
+    val api = mediaServiceHandler.quranList
 
     init {
         viewModelScope.launch {
 
-            mediaServiceHandler.setMediaItemListonline()
+            mediaServiceHandler.setMediaItemListLocal()
 
             mediaServiceHandler.mediaStateAbdo.collect { state ->
                 when (state) {
@@ -123,6 +122,15 @@ class VM @Inject constructor(
         UpdataUi()
     }
 
+    fun onDataEvent(dataStata: DataEvent) = viewModelScope.launch {
+        when (dataStata) {
+            DataEvent.AllApi -> mediaServiceHandler.setMediaItemAllOnline()
+            DataEvent.Local -> mediaServiceHandler.setMediaItemListLocal()
+            DataEvent.FovApi -> mediaServiceHandler.setMediaItemFovOnline()
+            DataEvent.NewApi -> mediaServiceHandler.setMediaItemNewOnline()
+        }
+    }
+
     fun onUIEvent(uiEvent: UIEvent) = viewModelScope.launch {
         when (uiEvent) {
             UIEvent.PlayPause -> mediaServiceHandler.onPlayerEvent(PlayerEvent.PlayPause)
@@ -158,6 +166,7 @@ class VM @Inject constructor(
 //        timer.setAlarm(! resetTimer.value)
         viewModelScope.launch {
             while (true) {
+//                Log.i("UpdataUi","UpdataUi")
                 mediaServiceHandler.updataUI(true)
             }
 
@@ -175,22 +184,25 @@ class VM @Inject constructor(
     fun formatDuration(duration: Long): String {
         return if (duration < 3600000) {
             val minutes: Long = TimeUnit.MINUTES.convert(duration , TimeUnit.MILLISECONDS)
-            val seconds: Long = (TimeUnit.SECONDS.convert(duration , TimeUnit.MILLISECONDS)
-                    - minutes * TimeUnit.SECONDS.convert(1 , TimeUnit.MINUTES))
+            val seconds: Long = (TimeUnit.SECONDS.convert(
+                duration , TimeUnit.MILLISECONDS
+            ) - minutes * TimeUnit.SECONDS.convert(1 , TimeUnit.MINUTES))
             String.format("%02d:%02d" , minutes , seconds)
         } else {
             val hour: Long = TimeUnit.HOURS.convert(duration , TimeUnit.MILLISECONDS)
-            val minutes: Long = TimeUnit.MINUTES.convert(duration , TimeUnit.MILLISECONDS) -
-                    hour * TimeUnit.MINUTES.convert(60 , TimeUnit.MINUTES)
-            val seconds: Long = (TimeUnit.SECONDS.convert(duration , TimeUnit.MILLISECONDS)
-                    - minutes * TimeUnit.SECONDS.convert(
-                1 ,
-                TimeUnit.MINUTES
+            val minutes: Long = TimeUnit.MINUTES.convert(
+                duration , TimeUnit.MILLISECONDS
+            ) - hour * TimeUnit.MINUTES.convert(60 , TimeUnit.MINUTES)
+            val seconds: Long = (TimeUnit.SECONDS.convert(
+                duration , TimeUnit.MILLISECONDS
+            ) - minutes * TimeUnit.SECONDS.convert(
+                1 , TimeUnit.MINUTES
             )) - hour * TimeUnit.SECONDS.convert(1 , TimeUnit.HOURS)
             String.format("%02d:%02d:%02d" , hour , minutes , seconds)
         }
 
     }
+
 
     override fun onCleared() {
         super.onCleared()
@@ -207,6 +219,13 @@ sealed class UIEvent {
     data class UpdateProgress(val newProgress: Float) : UIEvent()
     data class Shuffle(val shuffle: Boolean) : UIEvent()
     data class Timer(val time: Int) : UIEvent()
+}
+
+sealed class DataEvent {
+    object Local : DataEvent()
+    object NewApi : DataEvent()
+    object AllApi : DataEvent()
+    object FovApi : DataEvent()
 }
 
 sealed class UIState {

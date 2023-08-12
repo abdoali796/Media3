@@ -14,17 +14,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.abdoali.mymidia3.ui.MainUi
 import com.abdoali.mymidia3.ui.theme.Mymidia3Theme
+import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.service.ServicePlayer
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+private var isServiceRunning = false
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private var isServiceRunning = false
 
+
+    override fun onStart() {
+        super.onStart()
+
+    }
     @RequiresApi(Build.VERSION_CODES.O)
     @OptIn(ExperimentalPermissionsApi::class)
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -73,9 +79,12 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+            if (!isServiceRunning){
+                startService()
+            }
         }
 
-        startService()
+
     }
 @RequiresApi(Build.VERSION_CODES.O)
 private fun   startService() {

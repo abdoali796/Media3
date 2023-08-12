@@ -1,16 +1,14 @@
 package com.abdoali.playservice
 
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
 import com.abdoali.datasourece.ApiQuran
 import com.abdoali.datasourece.ContentResolverHelper
+import com.abdoali.datasourece.Quran
 import com.abdoali.datasourece.Song
-import com.abdoali.datasourece.api.Reciter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +31,7 @@ class MediaServiceHandler @Inject constructor(
         get() = _mediaStateAbdo
 
     val listLocl = contentResolverHelper.getAudioData()
+    val quranList = MutableStateFlow<List<Quran>>(emptyList())
     val test = MutableStateFlow("")
 
     init {
@@ -43,7 +42,7 @@ class MediaServiceHandler @Inject constructor(
 
     suspend fun updataUI(boolean: Boolean) = job.run {
 
-        test.emit(apiQuran.getMp3quran().reciters[0].name)
+
         _mediaStateAbdo.emit(
             MediaStateAbdo.Ready(
                 isPlaying = player.isPlaying ,
@@ -65,13 +64,28 @@ class MediaServiceHandler @Inject constructor(
         player.prepare()
     }
 
-    suspend fun setMediaItemListonline() {
-        player.setMediaItems(prepareMetaDataRom())
+    suspend fun setMediaItemAllOnline() {
+        quranList.emit(apiQuran.getAllMp3quran())
+        player.setMediaItems(prepareAllOnline())
         player.prepare()
     }
 
+    suspend fun setMediaItemNewOnline() {
+        quranList.emit(apiQuran.getNewMp3quran())
+        player.setMediaItems(prepareNewOnline())
+        player.prepare()
+    }
 
-    fun setMediaItemList() {
+    suspend fun setMediaItemFovOnline() {
+        quranList.emit(apiQuran.getFovMp3quran())
+        player.setMediaItems(prepareFovOnline())
+        player.prepare()
+    }
+
+    suspend fun setMediaItemListLocal() {
+        quranList.emit(listLocl.map { song: Song ->
+            Quran(song.index , song.artists , song.title , song.uri)
+        })
         player.setMediaItems(prepareMetaDataLocal())
 
         player.prepare()
@@ -112,9 +126,7 @@ class MediaServiceHandler @Inject constructor(
             delay(500)
 
             _mediaState.value = MediaState.Progress(
-                player.currentPosition ,
-                player.mediaMetadata ,
-                player.shuffleModeEnabled
+                player.currentPosition , player.mediaMetadata , player.shuffleModeEnabled
             )
         }
     }
@@ -138,52 +150,43 @@ class MediaServiceHandler @Inject constructor(
 
     private fun prepareMetaDataLocal(): List<MediaItem> {
         return contentResolverHelper.getAudioData().map { song: Song ->
-            val metadata = MediaMetadata.Builder()
-                .setArtist(song.artists)
-                .setDisplayTitle(song.title)
-                .setArtworkUri(song.uri)
-                .build()
-            MediaItem.Builder()
-                .setMediaMetadata(metadata)
-                .setUri(song.uri)
-                .build()
+            val metadata =
+                MediaMetadata.Builder().setArtist(song.artists).setDisplayTitle(song.title)
+                    .setArtworkUri(song.uri).build()
+            MediaItem.Builder().setMediaMetadata(metadata).setUri(song.uri).build()
         }
 
     }
 
-    private suspend fun prepareMetaDataRom(): List<MediaItem> {
-        val list = apiQuran.getMp3quran()
-        val metadataList = mutableListOf<MediaItem>()
-        val islam = list.reciters.find { reciter: Reciter ->
-            reciter.id == 182
-
+    private suspend fun prepareAllOnline(): List<MediaItem> {
+        return apiQuran.getAllMp3quran().map { quran: Quran ->
+            MediaItem.Builder().setUri(quran.uri).build()
         }
-        islam?.moshaf?.get(0)?.surah_list?.split(",")?.forEach { id ->
-            val url = islam.moshaf[0].server +"0"+ id + ".mp3"
 
-            val mediaMetadata = MediaMetadata.Builder().setArtworkUri(url.toUri()).build()
-            val mediaItem = MediaItem.Builder().setUri(url).setMediaMetadata(
-                mediaMetadata
-            ).build()
-Log.i("url",url)
-            metadataList +=mediaItem
+    }
+
+    private suspend fun prepareNewOnline(): List<MediaItem> {
+        return apiQuran.getNewMp3quran().map { quran: Quran ->
+            MediaItem.Builder().setUri(quran.uri).build()
         }
-        return metadataList
+
+    }
+
+    private suspend fun prepareFovOnline(): List<MediaItem> {
+        return apiQuran.getFovMp3quran().map { quran: Quran ->
+            MediaItem.Builder().setUri(quran.uri).build()
+        }
     }
 }
 
 sealed class MediaState {
     object Initial : MediaState()
     data class Ready(
-        val duration: Long ,
-        val metadata: MediaMetadata ,
-        val shuffleModeEnabled: Boolean
+        val duration: Long , val metadata: MediaMetadata , val shuffleModeEnabled: Boolean
     ) : MediaState()
 
     data class Progress(
-        val progress: Long ,
-        val metadata: MediaMetadata ,
-        val shuffleModeEnabled: Boolean
+        val progress: Long , val metadata: MediaMetadata , val shuffleModeEnabled: Boolean
     ) : MediaState()
 
     data class Buffering(val progress: Long) : MediaState()

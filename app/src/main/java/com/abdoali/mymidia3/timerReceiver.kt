@@ -21,6 +21,7 @@ class AlarmReceiver : AppWidgetProvider() {
         Log.i("handler.onPlayerEvent(PlayerEvent.Stop)", "kkkk")
         runBlocking {
             handler.onPlayerEvent(PlayerEvent.Kill)
+
         }
     }
 

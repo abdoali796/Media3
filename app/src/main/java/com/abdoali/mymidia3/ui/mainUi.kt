@@ -3,10 +3,14 @@ package com.abdoali.mymidia3.ui
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -18,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.abdoali.datasourece.Song
+import com.abdoali.datasourece.Quran
 import com.abdoali.mymidia3.ui.theme.Mymidia3Theme
 import com.abdoali.mymidia3.uiCompount.MinControlImp
 import com.abdoali.mymidia3.uiCompount.PlayUi
@@ -38,12 +42,11 @@ fun MainUi() {
     val progressString by vm.progressString.collectAsState()
     val uri by vm.uri.collectAsState()
     val song = vm.song
-    val test by vm.api.collectAsState()
+    val quranList by vm.api.collectAsState()
 
 
 
-    MainUiImp(
-       vm.formatDuration( timer),
+    MainUiImp(vm.formatDuration(timer) ,
         duration = vm.formatDuration(duration) ,
         progress = progress ,
         isPlaying = isPlaying ,
@@ -53,11 +56,11 @@ fun MainUi() {
         artists = artists ,
         song = song ,
         shuffle = shuffle ,
+        quranList = quranList ,
         ac2 = {} ,
 
         onUIEvent = vm::onUIEvent ,
-
-        )
+        onDataEvent = vm::onDataEvent)
 }
 
 @OptIn(ExperimentalMaterial3Api::class , ExperimentalMaterial3Api::class)
@@ -73,10 +76,11 @@ fun MainUiImp(
     progressString: String ,
     uri: Uri? ,
     onUIEvent: (UIEvent) -> Unit ,
+    onDataEvent: (DataEvent) -> Unit ,
     ac2: () -> Unit ,
     shuffle: Boolean ,
     song: List<com.abdoali.datasourece.Song> ,
-
+    quranList: List<Quran> ,
     modifier: Modifier = Modifier
 ) {
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
@@ -86,57 +90,70 @@ fun MainUiImp(
     val sheetScaffoldState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
-        Scaffold (
-            bottomBar = {
-                MinControlImp(
-                    isPlayerEvent = isPlaying ,
-                    name = title ,
-                    onUIEvent = onUIEvent ,
-                    modifier = Modifier.clickable { openBottomSheet = true })
+    Scaffold(bottomBar = {
+        MinControlImp(isPlayerEvent = isPlaying ,
+            name = title ,
+            onUIEvent = onUIEvent ,
+            modifier = Modifier.clickable { openBottomSheet = true })
+    }) { padding ->
+
+
+        LazyColumn(
+            modifier = modifier.animateContentSize()
+        ) {
+            item {
+                Row {
+                    Button(onClick = { onDataEvent(DataEvent.NewApi) }) {
+                        Text(text = "NewApi")
+                    }
+                    Button(onClick = { onDataEvent(DataEvent.Local) }) {
+                        Text(text = "Local")
+                    }
+                    Button(onClick = { onDataEvent(DataEvent.AllApi) }) {
+                        Text(text = "AllApi")
+                    }
+                    Button(onClick = { onDataEvent(DataEvent.FovApi) }) {
+                        Text(text = "FovApi")
+                    }
+                }
             }
-        ){padding->
-
-
-
-        LazyColumn(content = {
-item { Text(text = timer)  }
-            items(song.size) {
+            item { Text(text = timer) }
+            item { Text(text = quranList.size.toString()) }
+            items(items = quranList , key = { i -> i.index }) { quran ->
                 Column(
                     Modifier
                         .padding(paddingValues = padding)
                         .clickable {
-                            onUIEvent(UIEvent.SeekToIndex(it))
-                        }
-                ) {
-                    Text(text = "=========================================")
-                    Text(text = song[it].title)
-                    Text(text = song[it].artists)
-                    Text(text = song[it].uri.toString())
+                            onUIEvent(UIEvent.SeekToIndex(quran.index))
+                        }) {
+
+                    Text(text = quran.artists)
+                    Text(text = quran.surah)
+                    Text(text = quran.index.toString())
+                    Text(text = quran.uri.toString())
+                    Text(text = "=======  ============")
                 }
 
             }
-        })
-
+        }
 
 
     }
     if (openBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = { openBottomSheet = false } ,
-            sheetState = sheetScaffoldState
-            ,
-            content={
-              PlayUi(
-                  title=title,
-                  artists=artists,
-                  isPlaying = isPlaying ,
-                  process = progress ,
-                  processString =  progressString,
-                  durationString =  duration,
-                  shuffle =  shuffle,
-                  uri =  uri,
-                  onUIEvent =onUIEvent
-              )
+        ModalBottomSheet(onDismissRequest = { openBottomSheet = false } ,
+            sheetState = sheetScaffoldState ,
+            content = {
+                PlayUi(
+                    title = title ,
+                    artists = artists ,
+                    isPlaying = isPlaying ,
+                    process = progress ,
+                    processString = progressString ,
+                    durationString = duration ,
+                    shuffle = shuffle ,
+                    uri = uri ,
+                    onUIEvent = onUIEvent
+                )
             })
     }
 

@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abdoali.mymidia3.Timer
+import com.abdoali.mymidia3.data.DataEvent
+import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.MediaStateAbdo
 import com.abdoali.playservice.PlayerEvent
@@ -207,28 +209,4 @@ class VM @Inject constructor(
     override fun onCleared() {
         super.onCleared()
     }
-}
-
-sealed class UIEvent {
-    object PlayPause : UIEvent()
-    object Backward : UIEvent()
-    object Forward : UIEvent()
-    object PlayNext : UIEvent()
-    object PlayPre : UIEvent()
-    data class SeekToIndex(val index: Int) : UIEvent()
-    data class UpdateProgress(val newProgress: Float) : UIEvent()
-    data class Shuffle(val shuffle: Boolean) : UIEvent()
-    data class Timer(val time: Int) : UIEvent()
-}
-
-sealed class DataEvent {
-    object Local : DataEvent()
-    object NewApi : DataEvent()
-    object AllApi : DataEvent()
-    object FovApi : DataEvent()
-}
-
-sealed class UIState {
-    object Initial : UIState()
-    object Ready : UIState()
 }

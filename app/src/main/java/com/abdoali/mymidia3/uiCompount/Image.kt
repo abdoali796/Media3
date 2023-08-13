@@ -28,7 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-//import com.bumptech.glide.integration.compose.R
+import com.bumptech.glide.integration.compose.R
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
@@ -72,7 +72,7 @@ fun ImageAudoi(
                 .rotate(process * 360)
                 .size(200.dp) ,
             placeholder = painterResource(
-                id = com.abdoali.playservice.R.drawable.baseline_play_arrow_24
+                id = R.drawable.abc_btn_radio_to_on_mtrl_000
             ) ,
             error = painterResource(
                 id = com.abdoali.playservice.R.drawable.plass_foreground

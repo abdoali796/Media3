@@ -14,7 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.abdoali.mymidia3.ui.UIEvent
+import com.abdoali.mymidia3.data.UIEvent
 
 @Composable
 fun Bar(
@@ -51,12 +51,12 @@ fun BarImp(
         Slider(value = if (useNewProgressValue.value) newProgressValue.value else process ,
             onValueChange = {
                 useNewProgressValue.value = true
-                newProgressValue.value=it
+                newProgressValue.value = it
                 onUIEvent(UIEvent.UpdateProgress(newProgressValue.value))
 
-            },
+            } ,
             onValueChangeFinished = {
-                useNewProgressValue.value=false
+                useNewProgressValue.value = false
             }
         )
 

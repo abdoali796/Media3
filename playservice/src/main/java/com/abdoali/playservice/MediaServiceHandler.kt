@@ -31,7 +31,12 @@ class MediaServiceHandler @Inject constructor(
         get() = _mediaStateAbdo
 
     val listLocl = contentResolverHelper.getAudioData()
-    val quranList = MutableStateFlow<List<Quran>>(emptyList())
+
+ private   val _quranList = MutableStateFlow<List<Quran>>(emptyList())
+    val quranList:StateFlow<List<Quran>>
+        get() = _quranList
+
+
     val test = MutableStateFlow("")
 
     init {
@@ -65,25 +70,25 @@ class MediaServiceHandler @Inject constructor(
     }
 
     suspend fun setMediaItemAllOnline() {
-        quranList.emit(apiQuran.getAllMp3quran())
+        _quranList.emit(apiQuran.getAllMp3quran())
         player.setMediaItems(prepareAllOnline())
         player.prepare()
     }
 
     suspend fun setMediaItemNewOnline() {
-        quranList.emit(apiQuran.getNewMp3quran())
+        _quranList.emit(apiQuran.getNewMp3quran())
         player.setMediaItems(prepareNewOnline())
         player.prepare()
     }
 
     suspend fun setMediaItemFovOnline() {
-        quranList.emit(apiQuran.getFovMp3quran())
+        _quranList.emit(apiQuran.getFovMp3quran())
         player.setMediaItems(prepareFovOnline())
         player.prepare()
     }
 
     suspend fun setMediaItemListLocal() {
-        quranList.emit(listLocl.map { song: Song ->
+        _quranList.emit(listLocl.map { song: Song ->
             Quran(song.index , song.artists , song.title , song.uri)
         })
         player.setMediaItems(prepareMetaDataLocal())

@@ -19,22 +19,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
-import com.abdoali.mymidia3.ui.UIEvent
+import com.abdoali.mymidia3.data.UIEvent
 
 @Composable
 fun Control(
     isPlay: Boolean ,
     shuffle: Boolean ,
-    onUiEvent: (UIEvent) -> Unit,
-    modifier :Modifier =Modifier
+    onUiEvent: (UIEvent) -> Unit ,
+    modifier: Modifier = Modifier
 ) {
 
     ControlImp(
         play = isPlay ,
         shuffle = shuffle ,
-        onUiEvent,
+        onUiEvent ,
         modifier = modifier
     )
 }
@@ -87,5 +86,5 @@ private fun ControlImp(
 @Preview(showBackground = true)
 @Composable
 private fun ControlPre() {
-    ControlImp(play= true , shuffle = true , onUiEvent = { UIEvent.PlayPre })
+    ControlImp(play = true , shuffle = true , onUiEvent = { UIEvent.PlayPre })
 }

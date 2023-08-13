@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.abdoali.mymidia3.ui.UIEvent
+import com.abdoali.mymidia3.data.UIEvent
 
 
 @Composable
@@ -18,15 +18,15 @@ fun BottomPlayerUI(
     modifier: Modifier = Modifier ,
     durationString: String ,
     playResourceProvider: () -> Int ,
-    progressProvider: () -> Pair<Float, String> ,
+    progressProvider: () -> Pair<Float , String> ,
     onUiEvent: (UIEvent) -> Unit
 ) {
-    val (progress, progressString) = progressProvider()
+    val (progress , progressString) = progressProvider()
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(Color.LightGray),
+            .background(Color.LightGray) ,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -38,13 +38,13 @@ fun BottomPlayerUI(
         )
 
         PlayerBar(
-            progress = progress,
-            durationString = durationString,
-            progressString = progressString,
+            progress = progress ,
+            durationString = durationString ,
+            progressString = progressString ,
             onUiEvent = onUiEvent
         )
         PlayerControls(
-            playResourceProvider = playResourceProvider,
+            playResourceProvider = playResourceProvider ,
             onUiEvent = onUiEvent
         )
     }

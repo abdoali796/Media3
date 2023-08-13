@@ -15,21 +15,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.abdoali.mymidia3.ui.UIEvent
+import com.abdoali.mymidia3.data.UIEvent
 
 
 @Composable
 internal fun PlayerControls(
-    playResourceProvider: () -> Int,
+    playResourceProvider: () -> Int ,
     onUiEvent: (UIEvent) -> Unit
 ) {
     Row(
-        horizontalArrangement = Arrangement.spacedBy(35.dp),
+        horizontalArrangement = Arrangement.spacedBy(35.dp) ,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_media_rew) ,
-            contentDescription = "Backward Button",
+            contentDescription = "Backward Button" ,
             modifier = Modifier
                 .clip(CircleShape)
                 .clickable(onClick = { onUiEvent(UIEvent.Backward) })
@@ -38,7 +38,7 @@ internal fun PlayerControls(
         )
         Image(
             painter = painterResource(id = playResourceProvider()) ,
-            contentDescription = "Play/Pause Button",
+            contentDescription = "Play/Pause Button" ,
             modifier = Modifier
                 .clip(CircleShape)
                 .clickable(onClick = { onUiEvent(UIEvent.PlayPause) })
@@ -47,7 +47,7 @@ internal fun PlayerControls(
         )
         Icon(
             painter = painterResource(R.drawable.ic_media_ff) ,
-            contentDescription = "Forward Button",
+            contentDescription = "Forward Button" ,
             modifier = Modifier
                 .clip(CircleShape)
                 .clickable(onClick = { onUiEvent(UIEvent.Forward) })

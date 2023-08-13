@@ -12,7 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.abdoali.mymidia3.ui.UIEvent
+import com.abdoali.mymidia3.data.UIEvent
+
 
 @Composable
 internal fun PlayerBar(

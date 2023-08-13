@@ -12,7 +12,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.abdoali.mymidia3.ui.UIEvent
+import com.abdoali.mymidia3.data.UIEvent
 
 
 @Composable
@@ -20,11 +20,11 @@ fun SimpleMediaPlayerUI(
 
     durationString: String ,
     playResourceProvider: () -> Int ,
-    progressProvider: () -> Pair<Float, String> ,
-    onUiEvent: (UIEvent) -> Unit,
+    progressProvider: () -> Pair<Float , String> ,
+    onUiEvent: (UIEvent) -> Unit ,
     modifier: Modifier = Modifier
 ) {
-    val (progress, progressString) = progressProvider()
+    val (progress , progressString) = progressProvider()
 
     Box(
         modifier = modifier
@@ -36,13 +36,13 @@ fun SimpleMediaPlayerUI(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             PlayerBar(
-                progress = progress,
-                durationString = durationString,
-                progressString = progressString,
+                progress = progress ,
+                durationString = durationString ,
+                progressString = progressString ,
                 onUiEvent = onUiEvent
             )
             PlayerControls(
-                playResourceProvider = playResourceProvider,
+                playResourceProvider = playResourceProvider ,
                 onUiEvent = onUiEvent
             )
         }
@@ -53,5 +53,5 @@ fun SimpleMediaPlayerUI(
 @Preview
 @Composable
 fun PlayerUIpr() {
-    SimpleMediaPlayerUI("00:00", { 88 } , { 8f to "" } ,{}    )
+    SimpleMediaPlayerUI("00:00" , { 88 } , { 8f to "" } , {})
 }

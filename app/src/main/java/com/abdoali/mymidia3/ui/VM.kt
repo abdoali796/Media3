@@ -3,6 +3,7 @@ package com.abdoali.mymidia3.ui
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abdoali.datasourece.Quran
 import com.abdoali.mymidia3.Timer
 import com.abdoali.mymidia3.data.DataEvent
 import com.abdoali.mymidia3.data.UIEvent
@@ -11,7 +12,11 @@ import com.abdoali.playservice.MediaStateAbdo
 import com.abdoali.playservice.PlayerEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -61,8 +66,12 @@ class VM @Inject constructor(
     private var _url = MutableStateFlow<Uri?>(null)
     val uri: StateFlow<Uri?>
         get() = _url
-    val song = mediaServiceHandler.listLocl
-    val api = mediaServiceHandler.quranList
+    private val _searchText = MutableStateFlow("")
+    val searchText = _searchText.asStateFlow()
+
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching = _isSearching.asStateFlow()
+
 
     init {
         viewModelScope.launch {
@@ -88,38 +97,8 @@ class VM @Inject constructor(
                     }
                 }
             }
-            //            mediaServiceHandler.mediaState.collect { state ->
-//                when (state) {
-//                    is MediaState.Ready -> {
-//                        _shuffle.emit(state.shuffleModeEnabled)
-//                        _url.emit(state.metadata.artworkUri)
-//                        _duration.emit(state.duration.toString())
-//                        _progressString.emit(state.metadata.title.toString())
-//                    }
-//
-//                    is MediaState.Playing -> {
-//                        _isPlaying.emit(state.isPlaying)
-//
-//
-//                    }
-//
-//                    is MediaState.Progress -> {
-//                        _shuffle.emit(state.shuffleModeEnabled)
-//                        _progressString.emit(state.metadata.title.toString())
-//                        _progress.emit(state.progress.toFloat())
-//                        _url.emit(state.metadata.artworkUri)
-//                    }
-//
-//                    else -> null
-//                }
-////                timer.elapsedTime.collect {
-////                }
-//            }
+
         }
-
-
-//     val item= MediaItem.fromUri("https://storage.googleapis.com/uamp/The_Kyoto_Connection_-_Wake_Up/04_-_The_Music_In_You.mp3")
-//       mediaServiceHandler.addMediaItem(item)
 
         UpdataUi()
     }
@@ -162,13 +141,49 @@ class VM @Inject constructor(
         }
     }
 
+    fun onSearchTextChange(text: String) {
+        _searchText.value = text
 
+    }
+
+    fun onSearch(boolean: Boolean) {
+        _isSearching.value = boolean
+    }
+
+    private val _list = mediaServiceHandler.quranList
+    val itemsFilter = searchText.combine(_list) { text , item ->
+        if (text.isBlank()){
+item
+        }else{
+    item.filter {
+        it.query(text)
+    }
+        }
+
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5999999)
+            ,_list.value
+    )
+
+    val itemsFilterSearch = searchText.combine(_list) { text , item ->
+        if (text.isBlank()){
+            listOf(item[0],item[1],item[3])
+        }else{
+            item.filter {
+                it.query(text)
+            }
+        }
+
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(10000)
+        ,_list.value
+    )
     private fun UpdataUi() {
-//        timer.setTimeSelected(20)
-//        timer.setAlarm(! resetTimer.value)
         viewModelScope.launch {
             while (true) {
-//                Log.i("UpdataUi","UpdataUi")
+
                 mediaServiceHandler.updataUI(true)
             }
 
@@ -203,6 +218,16 @@ class VM @Inject constructor(
             String.format("%02d:%02d:%02d" , hour , minutes , seconds)
         }
 
+    }
+
+
+    fun Quran.query(query: String): Boolean {
+        val matching = listOf(
+            artists , surah
+        )
+        return matching.any {
+            it.contains(query , ignoreCase = true)
+        }
     }
 
 

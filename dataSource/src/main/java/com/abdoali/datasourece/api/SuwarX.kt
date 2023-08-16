@@ -1,9 +1,13 @@
 package com.abdoali.datasourece.api
 
 
-fun SuwarString(int: Int): String {
+fun SurahString(int: Int): String {
 
 
+
+    return Surah.sura[int]
+}
+object Surah{
     val sura = listOf(
         "" ,
 
@@ -350,5 +354,4 @@ fun SuwarString(int: Int): String {
 
 
         )
-    return sura[int]
 }

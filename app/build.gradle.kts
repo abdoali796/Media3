@@ -94,6 +94,8 @@ implementation("androidx.compose.material:material-icons-extended:1.4.3")
     implementation ("com.github.bumptech.glide:compose:1.0.0-alpha.1")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation ("androidx.navigation:navigation-compose:2.7.0")
+//    debugImplementation ("com.squareup.leakcanary:leakcanary-android:2.12")
 }
 kapt {
     correctErrorTypes = true

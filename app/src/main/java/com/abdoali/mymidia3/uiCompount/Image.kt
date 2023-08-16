@@ -9,7 +9,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,6 +34,7 @@ import com.bumptech.glide.integration.compose.R
 fun ImageAudoi(
     uri: Uri? ,
     process: Float ,
+    isLocal:Boolean,
     artist: String = "غير محدد" , title: String = "غير محدد" , modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -45,6 +45,7 @@ fun ImageAudoi(
 //    val animationFloat= AnimationState(process * 306)
     LaunchedEffect(key1 = uri) {
         try {
+
             bitmap = uri?.let {
                 context.applicationContext.contentResolver.loadThumbnail(
                     it ,
@@ -56,6 +57,7 @@ fun ImageAudoi(
             }
         } catch (e: Exception) {
             Log.i("bitmap" , e.toString())
+
         }
 
     }
@@ -64,7 +66,7 @@ fun ImageAudoi(
     ) {
 
         AsyncImage(
-            model = bitmap ,
+            model =bitmap ,
             contentDescription = null ,
             modifier = modifier
 
@@ -81,6 +83,6 @@ fun ImageAudoi(
         )
     }
     Text(text = title , style = MaterialTheme.typography.headlineMedium , color = Color.Black)
-    Text(text = artist, style = MaterialTheme.typography.titleLarge,color = Color.Black)
+    Text(text = artist , style = MaterialTheme.typography.titleLarge , color = Color.Black)
 
 }

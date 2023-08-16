@@ -101,9 +101,9 @@ class ContentResolverHelper @Inject constructor(@ApplicationContext val context:
                     duration = duration ,
                     title = title ,
                     date = data,
-                    index = index
+
                 )
-                index++
+
 //                audioList +=Song(
 //                    uri = contentUri ,
 //                    displayName = name ,

@@ -3,6 +3,7 @@ package com.abdoali.datasourece.di
 import android.content.Context
 import com.abdoali.datasourece.ApiQuran
 import com.abdoali.datasourece.ContentResolverHelper
+import com.abdoali.datasourece.DataSources
 import com.abdoali.datasourece.api.ApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -36,7 +37,15 @@ fun apiQuranProvide(
     apiService: ApiService
 )= ApiQuran(apiService)
 
-
+@Provides
+@Singleton
+fun dataSourcesProvide(
+  apiService: ApiQuran,
+  contentResolverHelper: ContentResolverHelper
+)=DataSources(
+    contentResolverHelper,
+    apiService
+)
 
 
     @Provides

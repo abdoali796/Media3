@@ -1,10 +1,9 @@
 package com.abdoali.datasourece
 
 import android.net.Uri
-import android.util.Log
 import androidx.core.net.toUri
 import com.abdoali.datasourece.api.Mp3quran
-import com.abdoali.datasourece.api.SuwarString
+import com.abdoali.datasourece.api.SurahString
 
 suspend fun Mp3quran.asQuranList(): List<Quran> {
     val reciters = this.reciters
@@ -20,7 +19,7 @@ suspend fun Mp3quran.asQuranList(): List<Quran> {
                 if (surahList[s].length == 1) "00${surahList[s]}" else if (surahList[s].length == 2) "0${surahList[s]}" else surahList[s]
             val uri = "$server$number.mp3".toUri()
 //            Log.i("asQuranListIndex",number+uri)
-            songList += Quran(index , artists , SuwarString( surahList[s].toInt()) , uri)
+            songList += Quran( artists , SurahString( surahList[s].toInt()) , uri)
             index ++
 
 
@@ -30,7 +29,7 @@ suspend fun Mp3quran.asQuranList(): List<Quran> {
 }
 
 data class Quran(
-    val index: Int ,
+
     val artists: String ,
     val surah: String ,
     val uri: Uri

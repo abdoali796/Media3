@@ -1,9 +1,14 @@
 package com.abdoali.mymidia3.ui
 
 import android.net.Uri
+import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abdoali.datasourece.Quran
+import com.abdoali.datasourece.QuranItem
+import com.abdoali.datasourece.api.Surah
+import com.abdoali.datasourece.helper.isLocal
 import com.abdoali.mymidia3.Timer
 import com.abdoali.mymidia3.data.DataEvent
 import com.abdoali.mymidia3.data.UIEvent
@@ -11,12 +16,17 @@ import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.MediaStateAbdo
 import com.abdoali.playservice.PlayerEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -28,7 +38,7 @@ class VM @Inject constructor(
 
     private val mediaServiceHandler: MediaServiceHandler ,
     private val timer: Timer ,
-//    savedStateHandle: SavedStateHandle
+  private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var resetTimer = timer.isAlarmOn
     var name = timer.elapsedTime
@@ -72,11 +82,16 @@ class VM @Inject constructor(
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
+val sura= Surah.sura
+
+private val _artistList= MutableStateFlow<List<String>>(listOf())
+val artistsList:StateFlow<List<String>>
+    get() =  mediaServiceHandler.artist
 
     init {
         viewModelScope.launch {
 
-            mediaServiceHandler.setMediaItemListLocal()
+            mediaServiceHandler.addMediaItem()
 
             mediaServiceHandler.mediaStateAbdo.collect { state ->
                 when (state) {
@@ -105,10 +120,10 @@ class VM @Inject constructor(
 
     fun onDataEvent(dataStata: DataEvent) = viewModelScope.launch {
         when (dataStata) {
-            DataEvent.AllApi -> mediaServiceHandler.setMediaItemAllOnline()
-            DataEvent.Local -> mediaServiceHandler.setMediaItemListLocal()
-            DataEvent.FovApi -> mediaServiceHandler.setMediaItemFovOnline()
-            DataEvent.NewApi -> mediaServiceHandler.setMediaItemNewOnline()
+//            DataEvent.AllApi -> mediaServiceHandler.setMediaItemAllOnline()
+//            DataEvent.Local -> mediaServiceHandler.setMediaItemListLocal()
+//            DataEvent.FovApi -> mediaServiceHandler.setMediaItemFovOnline()
+            else->{}
         }
     }
 
@@ -151,24 +166,11 @@ class VM @Inject constructor(
     }
 
     private val _list = mediaServiceHandler.quranList
-    val itemsFilter = searchText.combine(_list) { text , item ->
-        if (text.isBlank()){
-item
-        }else{
-    item.filter {
-        it.query(text)
-    }
-        }
-
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5999999)
-            ,_list.value
-    )
+    val itemsFilter = _list
 
     val itemsFilterSearch = searchText.combine(_list) { text , item ->
         if (text.isBlank()){
-            listOf(item[0],item[1],item[3])
+            item
         }else{
             item.filter {
                 it.query(text)
@@ -182,6 +184,7 @@ item
     )
     private fun UpdataUi() {
         viewModelScope.launch {
+//            _artistList.emit(mediaServiceHandler.artist)
             while (true) {
 
                 mediaServiceHandler.updataUI(true)
@@ -221,14 +224,16 @@ item
     }
 
 
-    fun Quran.query(query: String): Boolean {
+    private fun QuranItem.query(query: String): Boolean {
         val matching = listOf(
-            artists , surah
+            artist , surah
         )
         return matching.any {
             it.contains(query , ignoreCase = true)
         }
     }
+ val local =_list.value.isLocal()
+
 
 
     override fun onCleared() {

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,24 +34,37 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.abdoali.mymidia3.data.UIEvent
+import com.abdoali.mymidia3.ui.VM
 
 
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun PlayUi(
-    title: String ,
-    artists: String ,
-    isPlaying: Boolean ,
-    process: Float ,
-    processString: String ,
-    durationString: String ,
-    shuffle: Boolean ,
-    uri: Uri? ,
-    onUIEvent: (UIEvent) -> Unit ,
+//    title: String ,
+//    artists: String ,
+//    isPlaying: Boolean ,
+//    process: Float ,
+//    processString: String ,
+//    durationString: String ,
+//    shuffle: Boolean ,
+//    uri: Uri? ,
+//    isLocal: Boolean,
+//    onUIEvent: (UIEvent) -> Unit ,
+
     modifier: Modifier = Modifier
 ) {
+    val vm:VM= hiltViewModel()
+    val title by vm.title.collectAsState()
+    val artists by vm.artist.collectAsState()
+    val  process by vm.progress.collectAsState()
+val isPlaying by vm.isPlaying.collectAsState()
+val processString by vm.progressString.collectAsState()
+val      shuffle: Boolean by vm.shuffle.collectAsState()
+    val uri by vm.uri.collectAsState()
+    val duration by vm.duration.collectAsState()
     val context = LocalContext.current
 
 
@@ -109,7 +123,7 @@ fun PlayUi(
             ) {
 
 
-                ImageAudoi(uri = uri , process , title = title , artist = artists)
+                ImageAudoi(uri = uri , process , title = title , artist = artists ,isLocal=true)
 
 
 
@@ -120,13 +134,13 @@ fun PlayUi(
                     Bar(
                         process = process ,
                         processString = processString ,
-                        durationString = durationString ,
-                        onUIEvent = onUIEvent
+                        durationString = vm.formatDuration(duration) ,
+                        onUIEvent = vm::onUIEvent
                     )
                     Control(
                         isPlay = isPlaying ,
                         shuffle = shuffle ,
-                        onUiEvent = onUIEvent ,
+                        onUiEvent = vm::onUIEvent ,
                         modifier = Modifier.padding(bottom = 20.dp , top = 20.dp)
                     )
                 }

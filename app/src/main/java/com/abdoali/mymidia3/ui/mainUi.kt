@@ -29,6 +29,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.abdoali.datasourece.helper.isLocal
 import com.abdoali.mymidia3.data.DataEvent
 import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.ui.theme.Mymidia3Theme
@@ -41,22 +45,24 @@ import com.abdoali.mymidia3.uiCompount.PlayUi
 @Composable
 fun MainUi() {
     val vm: VM = hiltViewModel()
-    val context = LocalContext.current
+ //   val context = LocalContext.current
     val timer by vm.name.collectAsState()
     val title by vm.title.collectAsState()
-    val artists by vm.artist.collectAsState()
-    val duration by vm.duration.collectAsState()
-    val progress by vm.progress.collectAsState()
+//    val artists by vm.artist.collectAsState()
+//    val duration by vm.duration.collectAsState()
+//    val progress by vm.progress.collectAsState()
     val isPlaying by vm.isPlaying.collectAsState()
-    val shuffle by vm.shuffle.collectAsState()
-    val progressString by vm.progressString.collectAsState()
-    val uri by vm.uri.collectAsState()
+//    val shuffle by vm.shuffle.collectAsState()
+//    val progressString by vm.progressString.collectAsState()
+//    val uri by vm.uri.collectAsState()
     val isSearching by vm.isSearching.collectAsState()
     val searchText by vm.searchText.collectAsState()
     val quranList by vm.itemsFilter.collectAsState()
     val quranListSearch by vm.itemsFilterSearch.collectAsState()
-
-
+//    val local = quranList.isLocal()
+    val soura = vm.sura
+    val artistsList=vm.artistsList.collectAsState().value
+    val navController = rememberNavController()
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     var selectedItem by remember { mutableIntStateOf(0) }
     val labelList = listOf("Local" , "New Reads " , "All Reads" , "Best Reads")
@@ -93,7 +99,7 @@ fun MainUi() {
                                         vm.onUIEvent(UIEvent.SeekToIndex(quran.index))
                                     }) {
 
-                                Text(text = quran.artists)
+                                Text(text = quran.artist)
                                 Text(text = quran.surah)
                                 Text(text = quran.index.toString())
                                 Text(text = quran.uri.toString())
@@ -127,6 +133,13 @@ fun MainUi() {
                             selected = selectedItem == index ,
                             onClick = {
                                 vm.onDataEvent(actionList[index])
+                                when (index){
+                                    1->navController.navigate("1"){launchSingleTop =true}
+                                    2->navController.navigate("2"){launchSingleTop =true}
+                                    3->navController.navigate("3"){launchSingleTop =true}
+                                    else ->navController.navigate("0"){launchSingleTop =true}
+                                }
+
                                 selectedItem = index
                             } ,
                             icon = {
@@ -157,6 +170,29 @@ fun MainUi() {
         }) { padding ->
 
 
+        NavHost(
+            navController = navController ,
+            startDestination = "0" ,
+            modifier = Modifier.padding(padding)
+        ) {
+            list(quranList,vm::onUIEvent)
+            composable("0") {
+                ListX(quran = quranList.filter { it.isLocal }, uiEvent = vm::onUIEvent)
+            }
+
+            composable("1") {
+                screen2(artistsList,navController)
+            }
+
+            composable("2") {
+                ListX(quran = quranList.filter { !it.isLocal }, uiEvent = vm::onUIEvent)
+
+            }
+            composable("3") {
+                screen2(soura,navController)
+            }
+        }
+
         LazyColumn(
             modifier = Modifier
                 .animateContentSize()
@@ -167,19 +203,18 @@ fun MainUi() {
             }
             item { Text(text = vm.formatDuration(timer)) }
             item { Text(text = quranList.size.toString()) }
-            items(items = quranList , key = { i -> i.index }) { quran ->
-                Column(
-                    Modifier
-
-                        .clickable {
-                            vm.onUIEvent(UIEvent.SeekToIndex(quran.index))
-                        }) {
-
-                    Item(title = quran.surah , artists = quran.artists)
-                }
-
-            }
-        }
+//            items(items = quranList , key = { i -> i.index }) { quran ->
+//                Column(
+//                    Modifier
+//
+//                        .clickable {
+//                            vm.onUIEvent(UIEvent.SeekToIndex(quran.index))
+//                        }) {
+//
+//                    Item( quran.surah ,  quran.artist)
+//                }
+//
+//        }
 
 
     }
@@ -188,20 +223,12 @@ fun MainUi() {
             sheetState = sheetScaffoldState ,
             content = {
                 PlayUi(
-                    title = title ,
-                    artists = artists ,
-                    isPlaying = isPlaying ,
-                    process = progress ,
-                    processString = progressString ,
-                    durationString = vm.formatDuration(duration) ,
-                    shuffle = shuffle ,
-                    uri = uri ,
-                    onUIEvent = vm::onUIEvent
+
                 )
             })
     }
 
-}
+}}
 
 @Preview(showBackground = true)
 @Composable

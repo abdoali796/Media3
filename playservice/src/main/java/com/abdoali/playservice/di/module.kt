@@ -1,15 +1,12 @@
 package com.abdoali.playservice.di
 
 import android.content.Context
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
-import com.abdoali.datasourece.ApiQuran
-import com.abdoali.datasourece.ContentResolverHelper
+import com.abdoali.datasourece.DataSources
 import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.service.notifcation.NotificationManager
 import dagger.Module
@@ -52,27 +49,24 @@ object PlayerModule {
     @Provides
     @Singleton
     fun provideServiceHandler(
-        player: ExoPlayer,
-        contentResolverHelper: ContentResolverHelper,
-        apiQuran: ApiQuran
+        player: ExoPlayer ,
+        data: DataSources
     ): MediaServiceHandler =
-      MediaServiceHandler(
-            player = player,
+        MediaServiceHandler(
+            player = player ,
+            data
 
-          contentResolverHelper,
-          apiQuran
         )
-
 
 
     @Provides
     @Singleton
     fun provideNotificationManager(
-        @ApplicationContext context: Context,
+        @ApplicationContext context: Context ,
         player: ExoPlayer
     ): NotificationManager =
         NotificationManager(
-            context = context,
+            context = context ,
             player = player
         )
 }

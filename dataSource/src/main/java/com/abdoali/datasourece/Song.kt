@@ -12,7 +12,7 @@ data class Song(
     val duration: Int ,
     val title: String ,
     val date: String,
-val index:Int
+
 
 
 ){

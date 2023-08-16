@@ -12,19 +12,19 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Item(
-    title: String ,
-    artists: String ,
+    main: String ,
+    sacandery: String? ,
     modifier: Modifier = Modifier
 ) {
 
-    ItemImp(title = title , artists = artists)
+    ItemImp(title = main , artists = sacandery ,modifier=modifier)
 }
 
 @Composable
 private fun ItemImp(
 
     title: String ,
-    artists: String ,
+    artists: String? ,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -33,7 +33,7 @@ private fun ItemImp(
             .fillMaxWidth()
     ) {
         Text(text = title , style = MaterialTheme.typography.titleLarge)
-        Text(text = artists , style = MaterialTheme.typography.titleSmall)
+        artists?.let { Text(text = it , style = MaterialTheme.typography.titleSmall) }
     }
 }
 

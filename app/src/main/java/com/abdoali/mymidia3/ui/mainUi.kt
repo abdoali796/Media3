@@ -26,17 +26,14 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.abdoali.datasourece.helper.isLocal
 import com.abdoali.mymidia3.data.DataEvent
 import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.ui.theme.Mymidia3Theme
-import com.abdoali.mymidia3.uiCompount.Item
 import com.abdoali.mymidia3.uiCompount.MinControlImp
 import com.abdoali.mymidia3.uiCompount.PlayUi
 
@@ -134,10 +131,9 @@ fun MainUi() {
                             onClick = {
                                 vm.onDataEvent(actionList[index])
                                 when (index){
-                                    1->navController.navigate("1"){launchSingleTop =true}
-                                    2->navController.navigate("2"){launchSingleTop =true}
-                                    3->navController.navigate("3"){launchSingleTop =true}
-                                    else ->navController.navigate("0"){launchSingleTop =true}
+                                    1->navController.navToLocale()
+                                    2->navController.navToOnline()
+                                    else ->navController.navToLocale()
                                 }
 
                                 selectedItem = index
@@ -172,16 +168,17 @@ fun MainUi() {
 
         NavHost(
             navController = navController ,
-            startDestination = "0" ,
+            startDestination = "1" ,
             modifier = Modifier.padding(padding)
         ) {
             list(quranList,vm::onUIEvent)
-            composable("0") {
-                ListX(quran = quranList.filter { it.isLocal }, uiEvent = vm::onUIEvent)
-            }
+            locale(quranList ,vm::onUIEvent)
+            online(
+                quranList,artistsList,soura,navController,vm::onUIEvent
+            )
 
             composable("1") {
-                screen2(artistsList,navController)
+                screenTitle(artistsList,navController)
             }
 
             composable("2") {
@@ -189,7 +186,7 @@ fun MainUi() {
 
             }
             composable("3") {
-                screen2(soura,navController)
+                screenTitle(soura,navController)
             }
         }
 

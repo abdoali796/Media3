@@ -9,5 +9,7 @@ data class QuranItem(
     val artist:String,
     val surah: String ,
     val uri: Uri,
+    val id:Long=0
+    ,
     val isLocal: Boolean,
 )

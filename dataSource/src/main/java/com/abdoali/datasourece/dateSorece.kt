@@ -30,6 +30,7 @@ class DataSources @Inject constructor(
              artist =  local[i].artists ,
              surah =  local[i].title ,
              uri =  local[i].uri ,
+              id=local[i].id,
              isLocal =  true
           )
           index++

@@ -57,14 +57,14 @@ fun List(
 fun ListMp(
     quranItem: List<QuranItem> ,
     uiEvent: (UIEvent) -> Unit ,
-    modifier: Modifier
+    modifier: Modifier =Modifier
 ) {
 
     Column(
 
         modifier = modifier
             .fillMaxSize()
-            .border(BorderStroke(2.dp , Color.Black))
+//            .border(BorderStroke(2.dp , Color.Black))
     ) {
         LazyColumn() {
             items(items = quranItem , key = { i -> i.index }) {

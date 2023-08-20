@@ -15,9 +15,9 @@ import androidx.navigation.NavController
 import com.abdoali.mymidia3.uiCompount.Item
 
 @Composable
-fun screen2(list: List<String>,
-    navController: NavController,
-            modifier: Modifier = Modifier
+fun screenTitle(list: List<String> ,
+                navController: NavController ,
+                modifier: Modifier = Modifier
 ) {
     Column(
 

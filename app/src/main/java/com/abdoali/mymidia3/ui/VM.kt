@@ -151,6 +151,7 @@ val artistsList:StateFlow<List<String>>
                 timer.setTimeSelected(uiEvent.time)
                 timer.setAlarm(! resetTimer.value)
             }
+            is UIEvent.SetPlayList ->mediaServiceHandler.onPlayerEvent(PlayerEvent.SetPlayList(uiEvent.list))
 
             else -> null
         }

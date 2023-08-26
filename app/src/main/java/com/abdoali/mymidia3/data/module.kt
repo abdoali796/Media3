@@ -12,6 +12,7 @@ sealed class UIEvent {
     data class UpdateProgress(val newProgress: Float) : UIEvent()
     data class Shuffle(val shuffle: Boolean) : UIEvent()
     data class Timer(val time: Int) : UIEvent()
+    data class SetPlayList(val list: List<Int>):UIEvent()
 }
 
 sealed class DataEvent {

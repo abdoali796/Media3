@@ -52,7 +52,7 @@ dependencies {
     implementation ("com.google.dagger:hilt-android:2.44")
     kapt ("com.google.dagger:hilt-compiler:2.45")
 // kapt("com.google.dagger:hilt-android-compiler:2.44")
-//    implementation ("com.github.bumptech.glide:compose:1.0.0-alpha.1")
+    implementation ("com.github.bumptech.glide:compose:1.0.0-alpha.1")
     implementation("androidx.media3:media3-exoplayer:1.1.0")
     implementation("androidx.media3:media3-ui:1.1.0")
     implementation("androidx.media3:media3-session:1.1.0")

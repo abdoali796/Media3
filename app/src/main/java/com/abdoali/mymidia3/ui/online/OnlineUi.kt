@@ -1,6 +1,6 @@
-package com.abdoali.mymidia3.ui
+package com.abdoali.mymidia3.ui.online
 
-import android.webkit.DateSorter
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -40,24 +40,30 @@ fun OnLineUI(
     onUIEvent: (UIEvent) -> Unit ,
     modifier: Modifier = Modifier
 ) {
-    val random = remember {
-        list.shuffled().subList(0 , 6)
+    AnimatedVisibility(list.isEmpty()) {
+        Text(text = "wita to get data")
     }
-    val sort= remember {
-        list.itSort().shuffled().subList(0,9)
-    }
-    OnLineUIImp(
-        surah = surah ,
-        random = random ,
-        artists = artists ,
-        sort=sort,
-        actionNavToListSurah = { navController.navigate("3") } ,
-        actionNavToListArtists = { navController.navigate("1") } ,
-        actionNavToSurahOrArttist = navController::navToList ,
-        actionUi = onUIEvent
-    )
-}
+    AnimatedVisibility(visible = list.size > 10) {
 
+
+        val random = remember {
+            list.shuffled().subList(0 , 6)
+        }
+        val sort = remember {
+            list.itSort().shuffled().subList(0 , 9)
+        }
+        OnLineUIImp(
+            surah = surah ,
+            random = random ,
+            artists = artists ,
+            sort = sort ,
+            actionNavToListSurah = { navController.navToSourList() } ,
+            actionNavToListArtists = { navController.navToArtistList() } ,
+            actionNavToSurahOrArttist = navController::navToList ,
+            actionUi = onUIEvent
+        )
+    }
+}
 @Composable
 fun OnLineUIImp(
     surah: List<String> ,
@@ -282,7 +288,7 @@ fun OnLineUIPre() {
 }
 
 fun NavController.navToOnline() {
-    navigate(ONLINE)
+navigate(ONLINE)
 }
 
 fun NavGraphBuilder.online(
@@ -293,9 +299,9 @@ fun NavGraphBuilder.online(
     onUIEvent: (UIEvent) -> Unit
 ) {
     composable(ONLINE) {
-        OnLineUI(list , surah , artists , navController , onUIEvent)
+        OnLineUI(list=list ,surah= surah ,artists= artists ,navController= navController , onUIEvent =  onUIEvent)
     }
 }
 
-private const val ONLINE = "ONLINE_ONLINE"
+ const val ONLINE = "ONLINE_ONLINE"
 

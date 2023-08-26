@@ -1,12 +1,17 @@
 package com.abdoali.mymidia3.uiCompount
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -27,18 +32,33 @@ private fun ItemImp(
     artists: String? ,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier
-            .padding(vertical = 12.dp , horizontal = 8.dp)
+    Card (
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 3.dp
+        )
+        , modifier = modifier
             .fillMaxWidth()
-    ) {
-        Text(text = title , style = MaterialTheme.typography.titleLarge)
-        artists?.let { Text(text = it , style = MaterialTheme.typography.titleSmall) }
+            .padding(vertical = 8.dp , horizontal = 12.dp)
+    ){
+
+
+        Column(
+            modifier
+//            .padding(vertical = 3.dp)
+//            .border( 1.dp ,MaterialTheme.colorScheme.primary ,MaterialTheme.shapes.large)
+//            .shadow(3.dp , )
+            .padding( 8.dp)
+
+                .fillMaxWidth()
+        ) {
+            Text(text = title , style = MaterialTheme.typography.titleLarge)
+            artists?.let { Text(text = it , style = MaterialTheme.typography.titleSmall) }
+        }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 private fun ItemPew() {
+
     ItemImp("abdo" , "all")
 }

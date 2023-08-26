@@ -1,6 +1,6 @@
 package com.abdoali.mymidia3.ui
 
-import android.os.LocaleList
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.navigation.NavController
@@ -8,8 +8,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.abdoali.datasourece.QuranItem
 import com.abdoali.datasourece.helper.isLocal
-import com.abdoali.mymidia3.data.DataEvent
 import com.abdoali.mymidia3.data.UIEvent
+import com.abdoali.mymidia3.ui.online.ListMp
 
 @Composable
 fun LocaleList(
@@ -19,6 +19,7 @@ fun LocaleList(
     val quranItemList = remember{
         quranItem.isLocal()
     }
+
     ListMp(quranItem = quranItemList , uiEvent =onUIEvent  )
 }
 //////////////////////////Navigation//////////////////////
@@ -30,6 +31,12 @@ fun NavGraphBuilder.locale(list:List<QuranItem>,onUIEvent: (UIEvent) -> Unit){
 }
 
 fun NavController.navToLocale(){
-    navigate(LOCALE)
+    navigate(LOCALE){
+        popUpTo(LOCALE){
+            inclusive =false
+            saveState=true
+        }
+launchSingleTop=true
+    }
 }
-private const val LOCALE="LOCALELOCALELOCALE"
+ const val LOCALE="LOCALELOCALELOCALE"

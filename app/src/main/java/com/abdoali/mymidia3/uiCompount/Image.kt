@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.bumptech.glide.integration.compose.R
 
-@RequiresApi(Build.VERSION_CODES.Q)
+
 @Composable
 fun ImageAudoi(
     uri: Uri? ,
@@ -39,21 +39,28 @@ fun ImageAudoi(
 ) {
     val context = LocalContext.current
     var bitmap by remember {
-        mutableStateOf<Bitmap?>(null)
+        mutableStateOf<Any?>(null)
     }
 
 //    val animationFloat= AnimationState(process * 306)
     LaunchedEffect(key1 = uri) {
         try {
+            bitmap = if (uri==null){
+                "https://mp3quran.net/img/logo.png"
+            }else{
+                uri?.let {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                        context.applicationContext.contentResolver.loadThumbnail(
+                            it ,
+                            Size(100 , 100) ,
+                            null
+                        )
+                    } else {
+                        TODO("VERSION.SDK_INT < Q")
+                    }
 
-            bitmap = uri?.let {
-                context.applicationContext.contentResolver.loadThumbnail(
-                    it ,
-                    Size(100 , 100) ,
-                    null
-                )
 
-
+                }
             }
         } catch (e: Exception) {
             Log.i("bitmap" , e.toString())

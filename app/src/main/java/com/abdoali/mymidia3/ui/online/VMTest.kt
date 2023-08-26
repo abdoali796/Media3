@@ -1,4 +1,4 @@
-package com.abdoali.mymidia3.ui
+package com.abdoali.mymidia3.ui.online
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

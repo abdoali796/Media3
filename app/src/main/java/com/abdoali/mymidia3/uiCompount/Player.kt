@@ -40,7 +40,7 @@ import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.ui.VM
 
 
-@RequiresApi(Build.VERSION_CODES.Q)
+
 @Composable
 fun PlayUi(
 //    title: String ,
@@ -69,18 +69,21 @@ val      shuffle: Boolean by vm.shuffle.collectAsState()
 
 
     var bitmap by remember {
-        mutableStateOf<Bitmap?>(null)
+        mutableStateOf<Any?>(null)
     }
 
     LaunchedEffect(key1 = uri) {
         try {
-            bitmap = uri?.let {
-                context.applicationContext.contentResolver.loadThumbnail(
-                    it , Size(100 , 100) , null
-                )
+            Log.i("uribitmap","uri$uri")
 
-
-            }
+            bitmap=uri
+//            bitmap = uri?.let {
+//                context.applicationContext.contentResolver.loadThumbnail(
+//                    it , Size(100 , 100) , null
+//                )
+//
+//
+//            }
         } catch (e: Exception) {
             Log.i("bitmap" , e.toString())
         }
@@ -96,24 +99,24 @@ val      shuffle: Boolean by vm.shuffle.collectAsState()
 
     ) {
         Box {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
+//            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
 
-                AsyncImage(
-                    model = bitmap ,
-                    contentDescription = null ,
-                    modifier = modifier
-                        .fillMaxSize()
-                        .blur(14.dp) ,
-                    placeholder = painterResource(
-                        id = com.abdoali.playservice.R.drawable.plass_foreground
-                    ) ,
-                    error = painterResource(
-                        id = com.abdoali.playservice.R.drawable.plass_foreground
-                    )
-                )
-            } else {
-                bitmap?.let { LegacyBlurImage(it) }
-            }
+//                AsyncImage(
+//                    model = bitmap ,
+//                    contentDescription = null ,
+//                    modifier = modifier
+//                        .fillMaxSize()
+//                        .blur(14.dp) ,
+//                    placeholder = painterResource(
+//                        id = com.abdoali.playservice.R.drawable.plass_foreground
+//                    ) ,
+//                    error = painterResource(
+//                        id = com.abdoali.playservice.R.drawable.plass_foreground
+//                    )
+//                )
+//            } else {
+//                bitmap?.let { LegacyBlurImage(it) }
+//            }
 
 
             Column(

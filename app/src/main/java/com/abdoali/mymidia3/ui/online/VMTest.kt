@@ -7,7 +7,8 @@ import javax.inject.Inject
 class VMTest @Inject constructor(
   private val savedStateHandle: SavedStateHandle
 ):ViewModel() {
-    fun getKey(key:String):String?{
-        return savedStateHandle[key]
+    fun getKey(key:String):List<String>?{
+        val key:String? =  savedStateHandle[key]
+        return key?.split(",")
     }
 }

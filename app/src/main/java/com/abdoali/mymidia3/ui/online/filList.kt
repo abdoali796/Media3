@@ -1,19 +1,60 @@
 package com.abdoali.mymidia3.ui.online
 
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.abdoali.datasourece.QuranItem
-import com.abdoali.mymidia3.data.UIEvent
-import com.abdoali.mymidia3.ui.online.ListMp
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+
+//import com.abdoali.mymidia3.ui.online.ListMp
 
 @Composable
-fun ListX(
-    quran: List<QuranItem> ,
-    uiEvent: (UIEvent) -> Unit ,
+fun ListTitle(
+    title: String ,
+    titleList: List<String> ,
+    actionNav: (String) -> Unit ,
+    actionShowAll: () -> Unit ,
     modifier: Modifier = Modifier
-){
-    ListMp(
-        quran ,
-        uiEvent , modifier
+) {
+    Column(
+        modifier
+            .fillMaxWidth()
+            .border(
+                1.dp ,
+                color = MaterialTheme.colorScheme.onPrimaryContainer ,
+                shape = MaterialTheme.shapes.large
+            )
+            .padding(3.dp)
+    ) {
+        Text(text = title , style = MaterialTheme.typography.headlineLarge)
+        for (i in 0..10) {
+            Text(
+                text = titleList[i] ,
+                modifier.clickable { actionNav(titleList[i]) } ,
+                style = MaterialTheme.typography.titleLarge)
+        }
+        Button(onClick = actionShowAll) {
+            Text(text = "Show  All $title")
+        }
+
+
+    }
+
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun ListPre() {
+    ListTitle(
+        "test" ,
+        listOf("test" , "test" ,"test" ,"test" ,"test" ,"test" ,"test" ,"test" ,"test" ,"test" , "test") ,
+        {} , {}
     )
 }

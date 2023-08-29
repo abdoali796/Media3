@@ -1,16 +1,20 @@
 package com.abdoali.mymidia3.ui
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abdoali.datasourece.Quran
 import com.abdoali.datasourece.QuranItem
+import com.abdoali.datasourece.api.Mp3quran
+import com.abdoali.datasourece.api.Reciter
 import com.abdoali.datasourece.api.Surah
 import com.abdoali.datasourece.helper.isLocal
 import com.abdoali.mymidia3.Timer
 import com.abdoali.mymidia3.data.DataEvent
+import com.abdoali.mymidia3.data.ServiceRun
 import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.MediaStateAbdo
@@ -85,10 +89,15 @@ class VM @Inject constructor(
 val sura= Surah.sura
 
 private val _artistList= MutableStateFlow<List<String>>(listOf())
-val artistsList:StateFlow<List<String>>
+val artistsList:StateFlow<List<Reciter>>
     get() =  mediaServiceHandler.artist
 
+    private val _isServiceStart = MutableStateFlow<ServiceRun>(ServiceRun.Stop)
+    val isServiceStart :StateFlow<ServiceRun>
+        get() = _isServiceStart
+
     init {
+Log.i("view module", "initinitinitinit")
         viewModelScope.launch {
 
             mediaServiceHandler.addMediaItem()
@@ -235,9 +244,14 @@ val artistsList:StateFlow<List<String>>
     }
  val local =_list.value.isLocal()
 
+    fun serviceStart(){
+        _isServiceStart.value=ServiceRun.Run
+                    Log.i("startForegroundService",_isServiceStart.value.toString())
 
+    }
 
     override fun onCleared() {
+        _isServiceStart.value=ServiceRun.Kill
         super.onCleared()
     }
 }

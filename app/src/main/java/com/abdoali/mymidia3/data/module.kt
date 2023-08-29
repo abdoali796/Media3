@@ -1,7 +1,6 @@
 package com.abdoali.mymidia3.data
 
 
-
 sealed class UIEvent {
     object PlayPause : UIEvent()
     object Backward : UIEvent()
@@ -12,7 +11,7 @@ sealed class UIEvent {
     data class UpdateProgress(val newProgress: Float) : UIEvent()
     data class Shuffle(val shuffle: Boolean) : UIEvent()
     data class Timer(val time: Int) : UIEvent()
-    data class SetPlayList(val list: List<Int>):UIEvent()
+    data class SetPlayList(val list: List<Int>) : UIEvent()
 }
 
 sealed class DataEvent {
@@ -25,4 +24,8 @@ sealed class DataEvent {
 sealed class UIState {
     object Initial : UIState()
     object Ready : UIState()
+}
+
+enum class ServiceRun {
+    Stop , Run , Kill
 }

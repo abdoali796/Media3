@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
@@ -89,8 +90,8 @@ class MainActivity : ComponentActivity() {
 @RequiresApi(Build.VERSION_CODES.O)
 private fun   startService() {
     if (!isServiceRunning){
-        val intent = Intent(this , ServicePlayer::class.java)
-startForegroundService(intent)
+//        val intent = Intent(this , ServicePlayer::class.java)
+//startForegroundService(intent)
         isServiceRunning =true
     }
 }
@@ -98,7 +99,9 @@ startForegroundService(intent)
     override fun onDestroy() {
         super.onDestroy()
         val intent = Intent(this , ServicePlayer::class.java)
-        stopService(intent)
+//        stopService(intent)
+        Log.i("startForegroundService","onDestroy")
+
         isServiceRunning =false
     }
 }

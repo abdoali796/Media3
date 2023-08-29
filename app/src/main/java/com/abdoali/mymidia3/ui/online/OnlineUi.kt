@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.abdoali.datasourece.QuranItem
+import com.abdoali.datasourece.api.Reciter
 import com.abdoali.datasourece.helper.itSort
 import com.abdoali.mymidia3.R
 import com.abdoali.mymidia3.data.UIEvent
@@ -35,7 +36,7 @@ import com.abdoali.mymidia3.uiCompount.Item
 fun OnLineUI(
     list: List<QuranItem> ,
     surah: List<String> ,
-    artists: List<String> ,
+    artists: List<Reciter> ,
     navController: NavController ,
     onUIEvent: (UIEvent) -> Unit ,
     modifier: Modifier = Modifier
@@ -55,7 +56,7 @@ fun OnLineUI(
         OnLineUIImp(
             surah = surah ,
             random = random ,
-            artists = artists ,
+            artists = artists.map { it.name } ,
             sort = sort ,
             actionNavToListSurah = { navController.navToSourList() } ,
             actionNavToListArtists = { navController.navToArtistList() } ,
@@ -79,69 +80,30 @@ fun OnLineUIImp(
     LazyColumn() {
         item {
             Column(
-                modifier = modifier
 
-                    .padding(5.dp)
-                    .border(
-                        2.dp ,
-                        MaterialTheme.colorScheme.outline ,
-                        MaterialTheme.shapes.extraSmall
-                    )
-                    .padding(5.dp)
             ) {
-                Text(text = "surah")
-                Item(
-                    main = surah[4] ,
-                    sacandery = null ,
-                    modifier = modifier.clickable { actionNavToSurahOrArttist(surah[0]) })
-                Item(
-                    main = surah[1] ,
-                    sacandery = null ,
-                    modifier = modifier.clickable { actionNavToSurahOrArttist(surah[1]) })
-                Item(
-                    main = surah[2] ,
-                    sacandery = null ,
-                    modifier = modifier.clickable { actionNavToSurahOrArttist(surah[2]) })
-                Item(
-                    main = surah[3] ,
-                    sacandery = null ,
-                    modifier = modifier.clickable { actionNavToSurahOrArttist(surah[3]) })
-                Text(
-                    text = "all surah" ,
-                    color = Color.Blue ,
-                    style = MaterialTheme.typography.titleLarge ,
-                    modifier = modifier.clickable { actionNavToListSurah() })
-            }
-        }
+                ListTitle(
+                    title = "surah"
+                    , titleList = surah
+                    , actionNav = actionNavToSurahOrArttist,
+                    actionShowAll = actionNavToListSurah
+                )
+
+        }}
         item {
             Column {
-                Text(text = "all artist")
-                Item(
-                    main = artists[0] ,
-                    sacandery = null ,
-                    modifier = modifier.clickable { actionNavToSurahOrArttist(artists[0]) })
-                Item(
-                    main = artists[1] ,
-                    sacandery = null ,
-                    modifier = modifier.clickable { actionNavToSurahOrArttist(artists[1]) })
-                Item(
-                    main = artists[2] ,
-                    sacandery = null ,
-                    modifier = modifier.clickable { actionNavToSurahOrArttist(artists[2]) })
-                Item(
-                    main = artists[3] ,
-                    sacandery = null ,
-                    modifier = modifier.clickable { actionNavToSurahOrArttist(artists[3]) })
-                Text(
-                    text = "all artists" ,
-                    color = Color.Blue ,
-                    style = MaterialTheme.typography.titleLarge ,
-                    modifier = modifier.clickable { actionNavToListArtists() })
+                ListTitle(
+                    title = "artist"
+                    , titleList = artists
+                    , actionNav = actionNavToSurahOrArttist,
+                    actionShowAll = actionNavToListArtists
+                )
+
             }
 
         }
         item {
-            Card {
+
                 Text(text = "sort")
                 Item(
                     main = sort[0].artist ,
@@ -168,7 +130,7 @@ fun OnLineUIImp(
                     main = sort[5].artist ,
                     sacandery = sort[5].surah ,
                     modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(sort[5].index)) })
-            }
+
         }
         item {
             Card {
@@ -294,12 +256,16 @@ navigate(ONLINE)
 fun NavGraphBuilder.online(
     list: List<QuranItem> ,
     surah: List<String> ,
-    artists: List<String> ,
+    artists: List<Reciter> ,
     navController: NavController ,
     onUIEvent: (UIEvent) -> Unit
 ) {
     composable(ONLINE) {
-        OnLineUI(list=list ,surah= surah ,artists= artists ,navController= navController , onUIEvent =  onUIEvent)
+        OnLineUI(
+            list =list ,
+            surah = surah ,
+            artists = artists ,
+            navController = navController , onUIEvent =  onUIEvent)
     }
 }
 

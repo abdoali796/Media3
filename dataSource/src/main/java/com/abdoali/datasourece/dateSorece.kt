@@ -1,18 +1,18 @@
 package com.abdoali.datasourece
 
 import android.util.Log
+import com.abdoali.datasourece.api.Mp3quran
+import com.abdoali.datasourece.api.Reciter
 import javax.inject.Inject
 
 class DataSources @Inject constructor(
  private val  contentResolverHelper: ContentResolverHelper,
  private val  apiQuran: ApiQuran
 ){
-    suspend fun getArtist():List<String> {
+    suspend fun getArtist():List<Reciter> {
         Log.i("apiQuran","getArtist")
 
-        return apiQuran.getAllMp3quran().reciters.map {
-            it.name
-        }
+        return apiQuran.getAllMp3quran().reciters
     }
 
     suspend fun gitContent():List<QuranItem>{
@@ -40,6 +40,7 @@ class DataSources @Inject constructor(
                   artist =   online[i - localRang].artists ,
                    surah =  online[i - localRang].surah ,
                    uri =  online[i - localRang].uri ,
+                    moshaf = online[i-localRang].moshaf,
                    isLocal =  false
                 )
             index++

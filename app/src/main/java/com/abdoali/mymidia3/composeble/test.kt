@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TabPosition
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,14 +31,14 @@ fun FancyIndicator(color: Color , modifier: Modifier = Modifier) {
         modifier
             .padding(5.dp)
             .fillMaxSize()
-            .border(BorderStroke(2.dp, color) , RoundedCornerShape(5.dp))
+            .border(BorderStroke(2.dp , color) , RoundedCornerShape(5.dp))
     )
 }
 
 
 @Composable
 fun FancyAnimatedIndicator(tabPositions: List<TabPosition> , selectedTabIndex: Int) {
-    val colors = listOf(Color.Yellow, Color.Red, Color.Green)
+    val colors = MaterialTheme.colorScheme.onSurface
     val transition = updateTransition(selectedTabIndex)
     val indicatorStart by transition.animateDp(
         transitionSpec = {
@@ -69,13 +70,11 @@ fun FancyAnimatedIndicator(tabPositions: List<TabPosition> , selectedTabIndex: I
         tabPositions[it].right
     }
 
-    val indicatorColor by transition.animateColor(label = "") {
-        colors[it % colors.size]
-    }
+
 
     FancyIndicator(
         // Pass the current color to the indicator
-        indicatorColor,
+        colors,
         modifier = Modifier
             // Fill up the entire TabRow, and place the indicator at the start
             .fillMaxSize()

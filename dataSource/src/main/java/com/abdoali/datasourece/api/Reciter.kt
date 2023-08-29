@@ -5,4 +5,8 @@ data class Reciter(
     val letter: String ,
     val moshaf: List<Moshaf> ,
     val name: String
-)
+){
+    fun  listMoshaf(){
+
+    }
+}

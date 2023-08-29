@@ -32,9 +32,7 @@ class Timer @Inject constructor(@ApplicationContext context: Context) {
     private val _timeSelection = MutableStateFlow<Int>(5)
     val timeSelection: MutableStateFlow<Int>
         get() = _timeSelection
-//    private var _timerLength = MutableStateFlow(0)
-//    val  timerLength:StateFlow<Int>
-//        get() = _timerLength
+
     private lateinit var notifyPendingIntent: PendingIntent
 
     private var _alarmOn = MutableStateFlow<Boolean>(false)
@@ -64,9 +62,6 @@ class Timer @Inject constructor(@ApplicationContext context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-//        timerLengthOptions = app.resources.getIntArray(R.array.minutes_array)
-
-        //If alarm is not null, resume the timer back for this alarm
         if (_alarmOn.value !!) {
             createTimer()
         }
@@ -122,13 +117,7 @@ class Timer @Inject constructor(@ApplicationContext context: Context) {
                 }
                 val triggerTime = SystemClock.elapsedRealtime() + selectedInterval
 
-//                // TODO: Step 1.15 call cancel notification
-//                val notificationManager =
-//                    ContextCompat.getSystemService(
-//                        app,
-//                        NotificationManager::class.java
-//                    ) as NotificationManager
-//                notificationManager.cancelNotifications()
+
 
                 AlarmManagerCompat.setExactAndAllowWhileIdle(
                     alarmManager ,

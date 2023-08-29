@@ -9,6 +9,7 @@ import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
 import com.abdoali.datasourece.DataSources
 import com.abdoali.datasourece.QuranItem
+import com.abdoali.datasourece.api.Reciter
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,8 +42,8 @@ class MediaServiceHandler @Inject constructor(
     val quranList: StateFlow<List<QuranItem>>
         get() = _quranList
 
-    private val _artist = MutableStateFlow<List<String>>(emptyList())
-    val artist: StateFlow<List<String>>
+    private val _artist = MutableStateFlow<List<Reciter>>(emptyList())
+    val artist: StateFlow<List<Reciter>>
         get() = _artist
 
 

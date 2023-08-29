@@ -36,12 +36,14 @@ fun MinControlImp(
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 3.dp
-        ) ,
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ) , modifier = modifier
+        )
+//        ,
+//        colors = CardDefaults.cardColors(
+//            containerColor = MaterialTheme.colorScheme.primaryContainer
+//        )
+        , modifier = modifier
             .padding(horizontal = 10.dp)
-            .border(0.5.dp , color = MaterialTheme.colorScheme.onPrimaryContainer)
+            .border(0.5.dp , color = MaterialTheme.colorScheme.onPrimaryContainer , shape = CardDefaults.outlinedShape)
     ) {
 
 

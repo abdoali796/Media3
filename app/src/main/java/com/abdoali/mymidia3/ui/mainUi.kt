@@ -1,17 +1,15 @@
 package com.abdoali.mymidia3.ui
 
+import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.NewReleases
-import androidx.compose.material.icons.filled.Save
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.ModalBottomSheet
@@ -24,25 +22,29 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.abdoali.mymidia3.composeble.FancyAnimatedIndicator
-import com.abdoali.mymidia3.data.DataEvent
-import com.abdoali.mymidia3.ui.online.ONLINE
+import com.abdoali.mymidia3.data.ServiceRun
 import com.abdoali.mymidia3.ui.online.navToOnline
 import com.abdoali.mymidia3.ui.theme.Mymidia3Theme
 import com.abdoali.mymidia3.uiCompount.MinControlImp
 import com.abdoali.mymidia3.uiCompount.NavHostAudie
 import com.abdoali.mymidia3.uiCompount.PlayUi
 import com.abdoali.mymidia3.uiCompount.getIndexDestination
+import com.abdoali.playservice.service.ServicePlayer
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainUi() {
     val vm: VM = hiltViewModel()
-    //   val context = LocalContext.current
+    val context = LocalContext.current
+    val service by vm.isServiceStart.collectAsState()
     val timer by vm.name.collectAsState()
     val title by vm.title.collectAsState()
 //    val artists by vm.artist.collectAsState()
@@ -52,24 +54,24 @@ fun MainUi() {
 //    val shuffle by vm.shuffle.collectAsState()
 //    val progressString by vm.progressString.collectAsState()
 //    val uri by vm.uri.collectAsState()
-    val isSearching by vm.isSearching.collectAsState()
-    val searchText by vm.searchText.collectAsState()
+//    val isSearching by vm.isSearching.collectAsState()
+//    val searchText by vm.searchText.collectAsState()
     val quranList by vm.itemsFilter.collectAsState()
-    val quranListSearch by vm.itemsFilterSearch.collectAsState()
+//    val quranListSearch by vm.itemsFilterSearch.collectAsState()
 //    val local = quranList.isLocal()
     val soura = vm.sura
     val artistsList = vm.artistsList.collectAsState().value
     val navController = rememberNavController()
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
-    var selectedItem by remember { mutableIntStateOf(0) }
-    val labelList = listOf(LOCALE , ONLINE)
-    val iconList = listOf(
-        Icons.Default.Save ,
-        Icons.Default.NewReleases
-    )
-    val actionList =
-        listOf(DataEvent.Local , DataEvent.NewApi , DataEvent.AllApi , DataEvent.FovApi)
-    val scope = rememberCoroutineScope()
+    var selectedItem by remember { mutableIntStateOf(1) }
+    val labelList = listOf("LOCALE" , "ONLINE")
+//    val iconList = listOf(
+//        Icons.Default.Save ,
+//        Icons.Default.NewReleases
+//    )
+//    val actionList =
+//        listOf(DataEvent.Local , DataEvent.NewApi , DataEvent.AllApi , DataEvent.FovApi)
+//    val scope = rememberCoroutineScope()
     val sheetScaffoldState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
@@ -188,12 +190,16 @@ fun MainUi() {
             }
         }) { padding ->
 
+        AnimatedVisibility(visible = quranList.isEmpty()) {
+            Text(text = "waite scanned")
+        }
+
         NavHostAudie(
-            navController=navController,
-            quranList = quranList,
-            soura=soura,
-            artistsList = artistsList,
-            uiEvent = vm::onUIEvent,
+            navController = navController ,
+            quranList = quranList ,
+            soura = soura ,
+            artistsList = artistsList ,
+            uiEvent = vm::onUIEvent ,
             modifier = Modifier.padding(padding)
 
         )
@@ -201,7 +207,7 @@ fun MainUi() {
 
         LaunchedEffect(key1 = selectedItem) {
             Log.i("selectedItem" , "$selectedItem  ${destination?.route}")
-            if (selectedItem == 0) navController.navToLocale() else if (selectedItem==1) navController.navToOnline()
+            if (selectedItem == 0) navController.navToLocale() else if (selectedItem == 1) navController.navToOnline()
         }
         LazyColumn(
             modifier = Modifier
@@ -237,6 +243,19 @@ fun MainUi() {
                     )
                 })
         }
+
+    }
+    LaunchedEffect(key1 = service) {
+        val intent = Intent(context , ServicePlayer::class.java)
+        if (service==ServiceRun.Stop) {
+            context.startForegroundService(intent)
+//            startForegroundService(context , intent)
+            vm.serviceStart()
+
+        }else if (service==ServiceRun.Kill){
+            context.stopService(intent)
+        }
+        Log.i("startForegroundService",service.toString())
 
     }
 }

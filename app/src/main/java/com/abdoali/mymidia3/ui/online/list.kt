@@ -20,6 +20,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.abdoali.datasourece.QuranItem
 import com.abdoali.mymidia3.data.UIEvent
+import com.abdoali.mymidia3.ui.ListMp
 import com.abdoali.mymidia3.uiCompount.Item
 
 @Composable
@@ -40,50 +41,28 @@ fun List(
 
     Log.i("getKey" , "key$key")
 
-    Log.i("getKey" , "keyList")
-    val x = remember(key1 = key) {
-        if (! key.isNullOrEmpty()) quran.filter { key == it.artist ||key==it.surah } else quran
+    val quranItemList = remember(key1 = key) {
+
+        if (! key.isNullOrEmpty()) {
+
+             if (key.size==1) quran.filter {
+                 key[0] == it.surah || key[0]==it.artist
+             }else{
+                 quran.filter { key[0] == it.artist && key[1] == it.moshaf }
+             }
+
+        } else {
+            quran
+        }
     }
 
     ListMp(
-        x ,
+        quranItemList ,
+        key?.get(0) ,
         uiEvent , modifier
     )
 }
 
-@Composable
-fun ListMp(
-    quranItem: List<QuranItem> ,
-    uiEvent: (UIEvent) -> Unit ,
-    modifier: Modifier =Modifier
-) {
-val list= remember {
-    quranItem.map { 
-        it.index
-    }
-}
-    Column(
-
-        modifier = modifier
-            .fillMaxSize()
-//            .border(BorderStroke(2.dp , Color.Black))
-    ) {
-        LazyColumn() {
-            item { 
-                Button(onClick = { uiEvent(UIEvent.SetPlayList(list)) }) {
-                    Text(text = "تشغل القائمة كاملة")
-                }
-            }
-            items(items = quranItem , key = { i -> i.index }) {
-                Item(
-                    main = it.artist ,
-                    sacandery = it.surah ,
-                    modifier = Modifier.clickable { uiEvent(UIEvent.SeekToIndex(it.index)) })
-            }
-        }
-
-    }
-}
 
 fun NavController.navToList(title: String) {
     navigate("$LIST/$title")

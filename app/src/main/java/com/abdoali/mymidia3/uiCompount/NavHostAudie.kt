@@ -5,9 +5,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.abdoali.datasourece.QuranItem
+import com.abdoali.datasourece.api.Reciter
 import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.ui.LOCALE
 import com.abdoali.mymidia3.ui.locale
+import com.abdoali.mymidia3.ui.online.ONLINE
 import com.abdoali.mymidia3.ui.online.artistList
 import com.abdoali.mymidia3.ui.online.list
 import com.abdoali.mymidia3.ui.online.online
@@ -17,20 +19,24 @@ import com.abdoali.mymidia3.ui.online.sourList
 fun NavHostAudie(
     navController: NavHostController ,
     quranList: List<QuranItem> ,
-    artistsList: List<String> ,
+    artistsList: List<Reciter> ,
     soura: List<String> ,
     uiEvent: (UIEvent) -> Unit ,
     modifier: Modifier = Modifier ,
 ) {
     NavHost(
         navController = navController ,
-        startDestination = LOCALE ,
+        startDestination = ONLINE ,
         modifier = modifier
     ) {
         list(quranList , uiEvent)
         locale(quranList , uiEvent)
         online(
-            quranList , artistsList , soura , navController , uiEvent
+            list = quranList ,
+            surah = soura ,
+            artists = artistsList ,
+            navController = navController ,
+            onUIEvent = uiEvent
         )
         sourList(soura , navController)
         artistList(artistsList , navController)

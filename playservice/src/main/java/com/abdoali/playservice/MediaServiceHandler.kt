@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.PlaybackParameters
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
 import androidx.media3.exoplayer.ExoPlayer
 import com.abdoali.datasourece.DataSources
 import com.abdoali.datasourece.QuranItem
 import com.abdoali.datasourece.api.Reciter
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +21,7 @@ import javax.inject.Inject
 
 class MediaServiceHandler @Inject constructor(
     private val player: ExoPlayer ,
-//    private val contentResolverHelper: ContentResolverHelper ,
-//    private val apiQuran: ApiQuran
+
     private val dataSources: DataSources
 ) : Player.Listener {
 
@@ -46,33 +47,27 @@ class MediaServiceHandler @Inject constructor(
     val artist: StateFlow<List<Reciter>>
         get() = _artist
 
+    private val _shuffleMode = MutableStateFlow(false)
+    val shuffleMode: StateFlow<Boolean>
+        get() = _shuffleMode
+
+    private val _isPlay = MutableStateFlow(false)
+    val isPlay: StateFlow<Boolean>
+        get() = _isPlay
 
     val test = MutableStateFlow("")
+//    private var _progress = MutableStateFlow(0L)
+//    val progress: StateFlow<Long>
+//        get() = _progress
 
     init {
         player.addListener(this)
         job = Job()
-
     }
 
-    suspend fun updataUI(boolean: Boolean) = job.run {
+    fun updateProgress()= player.currentPosition
 
 
-        _mediaStateAbdo.emit(
-            MediaStateAbdo.Ready(
-                isPlaying = player.isPlaying ,
-                progress = player.currentPosition ,
-                metadata = player.mediaMetadata ,
-
-                shuffleModeEnabled = player.shuffleModeEnabled ,
-                duration = player.duration
-            )
-        )
-
-        delay(500)
-
-
-    }
 
     suspend fun addMediaItem() {
 
@@ -80,26 +75,6 @@ class MediaServiceHandler @Inject constructor(
         player.prepare()
     }
 
-
-//    suspend fun setMediaItemNewOnline() {
-////        _quranList.emit(apiQuran.getNewMp3quran())
-//        player.setMediaItems(prepareNewOnline())
-//        player.prepare()
-//    }
-
-//    suspend fun setMediaItemFovOnline() {
-//
-//        player.setMediaItems(prepareFovOnline())
-//        player.prepare()
-//        _quranList.emit(apiQuran.getFovMp3quran().shuffled())
-//    }
-
-//    suspend fun setMediaItemListLocal() {
-//
-//        player.setMediaItems(prepareMetaDataLocal())
-//
-//        player.prepare()
-//    }
 
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     suspend fun onPlayerEvent(playerEvent: PlayerEvent) {
@@ -115,7 +90,7 @@ class MediaServiceHandler @Inject constructor(
                 } else {
                     player.play()
                     _mediaState.value = MediaState.Playing(isPlaying = true)
-                    startProgressUpdate()
+
                 }
             }
 
@@ -123,16 +98,16 @@ class MediaServiceHandler @Inject constructor(
                 if (isPlayList.value && index < _list.value.size - 1) {
                     player.seekTo(_list.value[index] , 0L)
                     index ++
-                }else {
+                } else {
                     player.seekToNextMediaItem()
                 }
             }
 
             PlayerEvent.PlayPre -> {
-                if (isPlayList.value && index < _list.value.size - 1 && index!=0) {
+                if (isPlayList.value && index < _list.value.size - 1 && index != 0) {
                     player.seekTo(_list.value[index] , 0L)
                     index --
-                }else {
+                } else {
                     player.seekToPreviousMediaItem()
                 }
             }
@@ -144,7 +119,7 @@ class MediaServiceHandler @Inject constructor(
             is PlayerEvent.SeekToIndex -> {
                 player.seekTo(playerEvent.index , 0)
                 player.play()
-                if (!_list.value.contains(playerEvent.index)) isPlayList.value=false
+                if (! _list.value.contains(playerEvent.index)) isPlayList.value = false
 
             }
 
@@ -156,21 +131,17 @@ class MediaServiceHandler @Inject constructor(
 
     private fun preparePlayList(intList: List<Int>) {
         index = 0
-        isPlayList.value=true
-        _list.value=intList
+        isPlayList.value = true
+        _list.value = intList
 
 
     }
 
+    override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
+        super.onPlaybackParametersChanged(playbackParameters)
+        Log.i("playbackParameters" , "playbackParameters.pitch")
 
-    private suspend fun startProgressUpdate() = job.run {
-        while (true) {
-            delay(500)
 
-            _mediaState.value = MediaState.Progress(
-                player.currentPosition , player.mediaMetadata , player.shuffleModeEnabled
-            )
-        }
     }
 
     private fun stopProgressUpdate() {
@@ -180,39 +151,62 @@ class MediaServiceHandler @Inject constructor(
     }
 
     override fun onTracksChanged(tracks: Tracks) {
+
 //        Log.i("onPlaybackStateAbdoali","onTracksChanged$tracks")
         super.onTracksChanged(tracks)
 
     }
 
+    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+        super.onShuffleModeEnabledChanged(shuffleModeEnabled)
+        _shuffleMode.value = shuffleModeEnabled
+    }
+
     override fun onEvents(player: Player , events: Player.Events) {
-        //Log.i("onPlaybackStateAbdoali","onEvents$events")
+
         super.onEvents(player , events)
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem? , reason: Int) {
-        Log.i("onPlaybackStateAbdoali" , "onMediaItemTransition$mediaItem $reason")
+
+
         if (reason == 1 && index < _list.value.size - 1) {
             player.seekTo(_list.value[index] , 0L)
             index ++
-            Log.i("onPlaybackStateAbdoali" , "Transition index$index item${_list.value[index]}")
+
         } else {
             super.onMediaItemTransition(mediaItem , reason)
         }
     }
 
+
     @SuppressLint("SwitchIntDef")
     override fun onPlaybackStateChanged(playbackState: Int) {
         Log.i("onPlaybackStateAbdoali" , "playbackState$playbackState")
         when (playbackState) {
-            ExoPlayer.STATE_BUFFERING -> _mediaState.value =
-                MediaState.Buffering(player.currentPosition)
+            ExoPlayer.STATE_BUFFERING -> _mediaStateAbdo.tryEmit(
+                MediaStateAbdo.Initial
+            )
 
-            ExoPlayer.STATE_READY -> _mediaState.value =
-                MediaState.Ready(player.duration , player.mediaMetadata , player.shuffleModeEnabled)
+            ExoPlayer.STATE_READY -> _mediaStateAbdo.tryEmit(
+                MediaStateAbdo.Ready(
+                    metadata = player.mediaMetadata ,
+                    duration = player.duration
+                )
+            )
 
             ExoPlayer.STATE_ENDED -> player.seekTo(0 , 0L)
         }
+    }
+
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        super.onIsPlayingChanged(isPlaying)
+        _isPlay.value = isPlaying
+    }
+
+    override fun onIsLoadingChanged(isLoading: Boolean) {
+        super.onIsLoadingChanged(isLoading)
+        Log.i("onIsLoadingChanged" , isLoading.toString())
     }
 
     private suspend fun prepareMetaDataLocal(): List<MediaItem> {
@@ -232,30 +226,6 @@ class MediaServiceHandler @Inject constructor(
 
     }
 
-//    private suspend fun prepareAllOnline(): List<MediaItem> {
-//        val data=apiQuran.getAllMp3quran()
-//        _quranList.emit(data)
-//        return data.map { quran: Quran ->
-//            MediaItem.Builder().setUri(quran.uri).build()
-//        }
-//
-//    }
-
-//    private suspend fun prepareNewOnline(): List<MediaItem> {
-////        return apiQuran.getNewMp3quran().map { quran: Quran ->
-////            MediaItem.Builder().setUri(quran.uri).build()
-////        }
-//return emptyList()
-//    }
-
-//    private suspend fun prepareFovOnline(): List<MediaItem> {
-//        val data=apiQuran.getFovMp3quran()
-//        _quranList.emit(data)
-//        return data.map { quran: Quran ->
-//            MediaItem.Builder().setUri(quran.uri).build()
-//        }
-//    }
-//}
 }
 
 sealed class MediaState {
@@ -276,10 +246,9 @@ sealed class MediaState {
 sealed class MediaStateAbdo {
     object Initial : MediaStateAbdo()
     data class Ready(
-        val isPlaying: Boolean ,
-        val progress: Long ,
+
         val metadata: MediaMetadata ,
-        val shuffleModeEnabled: Boolean ,
+
         val duration: Long
 
     ) : MediaStateAbdo()
@@ -297,5 +266,5 @@ sealed class PlayerEvent {
     data class Shuffle(val shuffle: Boolean) : PlayerEvent()
     data class UpdateProgress(val newProgress: Float) : PlayerEvent()
 
-    data class SetPlayList(val list:List<Int>):PlayerEvent()
+    data class SetPlayList(val list: List<Int>) : PlayerEvent()
 }

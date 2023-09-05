@@ -56,5 +56,7 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer:1.1.0")
     implementation("androidx.media3:media3-ui:1.1.0")
     implementation("androidx.media3:media3-session:1.1.0")
+//    implementation("androidx.media3:media3-extractor:1.1.0")
+
     implementation("androidx.legacy:legacy-support-v4:1.0.0") // Needed MediaSessionCompat.Token
 }

@@ -10,14 +10,20 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Timer
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,11 +35,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.abdoali.mymidia3.composeble.FancyAnimatedIndicator
 import com.abdoali.mymidia3.data.ServiceRun
+import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.ui.online.navToOnline
 import com.abdoali.mymidia3.ui.theme.Mymidia3Theme
 import com.abdoali.mymidia3.uiCompount.MinControlImp
 import com.abdoali.mymidia3.uiCompount.NavHostAudie
 import com.abdoali.mymidia3.uiCompount.PlayUi
+import com.abdoali.mymidia3.uiCompount.Timer
 import com.abdoali.mymidia3.uiCompount.getIndexDestination
 import com.abdoali.playservice.service.ServicePlayer
 
@@ -57,8 +65,7 @@ fun MainUi() {
 //    val isSearching by vm.isSearching.collectAsState()
 //    val searchText by vm.searchText.collectAsState()
     val quranList by vm.itemsFilter.collectAsState()
-//    val quranListSearch by vm.itemsFilterSearch.collectAsState()
-//    val local = quranList.isLocal()
+    val isTimerOn by vm.isTimerOn.collectAsState()
     val soura = vm.sura
     val artistsList = vm.artistsList.collectAsState().value
     val navController = rememberNavController()
@@ -83,26 +90,55 @@ fun MainUi() {
             selectedTabIndex = getIndexDestination(destination?.route)
         )
     }
+    var showDig by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
-            TabRow(
-                selectedTabIndex = 0 ,
-                indicator = indicator
-            ) {
-                labelList.forEachIndexed { index , title ->
-                    Tab(
-                        text = { Text(title) } ,
-                        selected = false ,
-                        onClick = {
-                            selectedItem = index
+            Column {
 
-                        } ,
+                TopAppBar(title = { Text(text = "abdo ali") } , actions = {
+                    AnimatedVisibility(visible = isTimerOn) {
+
+                        Text(text = vm.formatDuration(timer))
+                    }
+                    IconButton(onClick = {
+
+                        showDig = true
+                    }) {
+                        if (showDig) {
+                            Timer(showTimer = { showDig = it } , onUIEvent = vm::onUIEvent)
+                        }
+                        if (isTimerOn) {
+                            Icon(Icons.Outlined.Timer , contentDescription = null , modifier = Modifier.clickable {
+                                vm.onUIEvent(UIEvent.Timer(0))
+                            })
+                        } else {
+                            if (showDig) {
+                                com.abdoali.mymidia3.uiCompount.Timer(showTimer = { showDig = it } ,
+                                    onUIEvent = vm::onUIEvent)}
+                                Icon(Icons.Rounded.Timer , contentDescription = null)
+
+                            }
+                        }
+                    }
                     )
+                    TabRow(
+                        selectedTabIndex = 0 ,
+                        indicator = indicator
+                    ) {
+                        labelList.forEachIndexed { index , title ->
+                            Tab(
+                                text = { Text(title) } ,
+                                selected = false ,
+                                onClick = {
+                                    selectedItem = index
+
+                                } ,
+                            )
+                        }
+
+                    }
                 }
-
-            }
-
 //            DockedSearchBar(
 //                query = searchText ,
 //                onQueryChange = vm::onSearchTextChange ,
@@ -133,17 +169,17 @@ fun MainUi() {
 //                }
 //            )
 
-        } ,
+            } ,
 
-        floatingActionButtonPosition = FabPosition.Center ,
-        floatingActionButton = {
-            Column {
+            floatingActionButtonPosition = FabPosition.Center ,
+            floatingActionButton = {
+                Column {
 
 
-                MinControlImp(isPlayerEvent = isPlaying ,
-                    name = title ,
-                    onUIEvent = vm::onUIEvent ,
-                    modifier = Modifier.clickable { openBottomSheet = true })
+                    MinControlImp(isPlayerEvent = isPlaying ,
+                        name = title ,
+                        onUIEvent = vm::onUIEvent ,
+                        modifier = Modifier.clickable { openBottomSheet = true })
 
 
 //                NavigationBar {
@@ -187,38 +223,38 @@ fun MainUi() {
 //                        Text(text = "FovApi")
 //                    }
 //                }
+                }
+            }) { padding ->
+
+            AnimatedVisibility(visible = quranList.isEmpty()) {
+                Text(text = "waite scanned")
             }
-        }) { padding ->
 
-        AnimatedVisibility(visible = quranList.isEmpty()) {
-            Text(text = "waite scanned")
-        }
+            NavHostAudie(
+                navController = navController ,
+                quranList = quranList ,
+                soura = soura ,
+                artistsList = artistsList ,
+                uiEvent = vm::onUIEvent ,
+                modifier = Modifier.padding(padding)
 
-        NavHostAudie(
-            navController = navController ,
-            quranList = quranList ,
-            soura = soura ,
-            artistsList = artistsList ,
-            uiEvent = vm::onUIEvent ,
-            modifier = Modifier.padding(padding)
-
-        )
+            )
 
 
-        LaunchedEffect(key1 = selectedItem) {
-            Log.i("selectedItem" , "$selectedItem  ${destination?.route}")
-            if (selectedItem == 0) navController.navToLocale() else if (selectedItem == 1) navController.navToOnline()
-        }
-        LazyColumn(
-            modifier = Modifier
-                .animateContentSize()
-                .padding(paddingValues = padding)
-        ) {
-            item {
-
+            LaunchedEffect(key1 = selectedItem) {
+                Log.i("selectedItem" , "$selectedItem  ${destination?.route}")
+                if (selectedItem == 0) navController.navToLocale() else if (selectedItem == 1) navController.navToOnline()
             }
-            item { Text(text = vm.formatDuration(timer)) }
-            item { Text(text = quranList.size.toString()) }
+            LazyColumn(
+                modifier = Modifier
+                    .animateContentSize()
+                    .padding(paddingValues = padding)
+            ) {
+                item {
+
+                }
+
+                item { Text(text = quranList.size.toString()) }
 //            items(items = quranList , key = { i -> i.index }) { quran ->
 //                Column(
 //                    Modifier
@@ -233,37 +269,37 @@ fun MainUi() {
 //        }
 
 
-        }
-        if (openBottomSheet) {
-            ModalBottomSheet(onDismissRequest = { openBottomSheet = false } ,
-                sheetState = sheetScaffoldState ,
-                content = {
-                    PlayUi(
+            }
+            if (openBottomSheet) {
+                ModalBottomSheet(onDismissRequest = { openBottomSheet = false } ,
+                    sheetState = sheetScaffoldState ,
+                    content = {
+                        PlayUi(
 
-                    )
-                })
-        }
+                        )
+                    })
+            }
 
-    }
-    LaunchedEffect(key1 = service) {
-        val intent = Intent(context , ServicePlayer::class.java)
-        if (service==ServiceRun.Stop) {
-            context.startForegroundService(intent)
+        }
+            LaunchedEffect(key1 = service) {
+                val intent = Intent(context , ServicePlayer::class.java)
+                if (service == ServiceRun.Stop) {
+                    context.startForegroundService(intent)
 //            startForegroundService(context , intent)
-            vm.serviceStart()
+                    vm.serviceStart()
 
-        }else if (service==ServiceRun.Kill){
-            context.stopService(intent)
+                } else if (service == ServiceRun.Kill) {
+                    context.stopService(intent)
+                }
+                Log.i("startForegroundService" , service.toString())
+
+            }
         }
-        Log.i("startForegroundService",service.toString())
 
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    Mymidia3Theme {
+        @Preview(showBackground = true)
+        @Composable
+        fun GreetingPreview() {
+            Mymidia3Theme {
 //        MainUiImp("Android" , {} , {} , {} , {})
-    }
-}
+            }
+        }

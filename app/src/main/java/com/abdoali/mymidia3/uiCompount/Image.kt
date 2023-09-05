@@ -6,10 +6,12 @@ import android.os.Build
 import android.util.Log
 import android.util.Size
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +26,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -33,7 +36,7 @@ import com.bumptech.glide.integration.compose.R
 @Composable
 fun ImageAudoi(
     uri: Uri? ,
-    process: Float ,
+    buffer: Boolean ,
     isLocal:Boolean,
     artist: String = "غير محدد" , title: String = "غير محدد" , modifier: Modifier = Modifier
 ) {
@@ -46,7 +49,7 @@ fun ImageAudoi(
     LaunchedEffect(key1 = uri) {
         try {
             bitmap = if (uri==null){
-                "https://mp3quran.net/img/logo.png"
+                 com.abdoali.mymidia3.R.drawable.quran
             }else{
                 uri?.let {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -71,14 +74,20 @@ fun ImageAudoi(
     Column(
         verticalArrangement = Arrangement.Center
     ) {
+if(buffer) {
+    CircularProgressIndicator(
+        modifier.size(200.dp)
+    )
+}
+        AnimatedVisibility(visible =! buffer) {
 
         AsyncImage(
             model =bitmap ,
             contentDescription = null ,
             modifier = modifier
 
-                .clip(CircleShape)
-                .rotate(process * 360)
+                .clip(MaterialTheme.shapes.medium)
+
                 .size(200.dp) ,
             placeholder = painterResource(
                 id = R.drawable.abc_btn_radio_to_on_mtrl_000
@@ -87,9 +96,9 @@ fun ImageAudoi(
                 id = com.abdoali.playservice.R.drawable.plass_foreground
             ) , contentScale = ContentScale.FillBounds
 
-        )
+        )}
     }
-    Text(text = title , style = MaterialTheme.typography.headlineMedium , color = Color.Black)
-    Text(text = artist , style = MaterialTheme.typography.titleLarge , color = Color.Black)
+    Text(text = title , style = MaterialTheme.typography.headlineSmall )
+    Text(text = artist , style = MaterialTheme.typography.titleSmall )
 
 }

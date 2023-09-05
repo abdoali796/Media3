@@ -2,13 +2,10 @@ package com.abdoali.mymidia3.ui
 
 import android.net.Uri
 import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.abdoali.datasourece.Quran
 import com.abdoali.datasourece.QuranItem
-import com.abdoali.datasourece.api.Mp3quran
 import com.abdoali.datasourece.api.Reciter
 import com.abdoali.datasourece.api.Surah
 import com.abdoali.datasourece.helper.isLocal
@@ -20,17 +17,13 @@ import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.MediaStateAbdo
 import com.abdoali.playservice.PlayerEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -42,7 +35,7 @@ class VM @Inject constructor(
 
     private val mediaServiceHandler: MediaServiceHandler ,
     private val timer: Timer ,
-  private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var resetTimer = timer.isAlarmOn
     var name = timer.elapsedTime
@@ -58,9 +51,13 @@ class VM @Inject constructor(
         get() = _duration
 
 
-    private var _shuffle = MutableStateFlow(false)
+    //    private var _shuffle = MutableStateFlow(false)
     val shuffle: StateFlow<Boolean>
-        get() = _shuffle
+        get() = mediaServiceHandler.shuffleMode
+
+    private var _BUFFERING = MutableStateFlow(false)
+    val BUFFERING: StateFlow<Boolean>
+        get() = _BUFFERING
 
     //    var progress1 by savedStateHandle.saveable { mutableStateOf(0f) }
     private var _progress = MutableStateFlow(0f)
@@ -72,10 +69,9 @@ class VM @Inject constructor(
     val progressString: StateFlow<String>
         get() = _progressString
 
-    //    var isPlaying by savedStateHandle.saveable { mutableStateOf(false) }
-    private var _isPlaying = MutableStateFlow(false)
+val isTimerOn =timer.isAlarmOn
     val isPlaying: StateFlow<Boolean>
-        get() = _isPlaying
+        get() = mediaServiceHandler.isPlay
 
     private var _url = MutableStateFlow<Uri?>(null)
     val uri: StateFlow<Uri?>
@@ -86,18 +82,18 @@ class VM @Inject constructor(
     private val _isSearching = MutableStateFlow(false)
     val isSearching = _isSearching.asStateFlow()
 
-val sura= Surah.sura
+    val sura = Surah.sura
 
-private val _artistList= MutableStateFlow<List<String>>(listOf())
-val artistsList:StateFlow<List<Reciter>>
-    get() =  mediaServiceHandler.artist
+    private val _artistList = MutableStateFlow<List<String>>(listOf())
+    val artistsList: StateFlow<List<Reciter>>
+        get() = mediaServiceHandler.artist
 
     private val _isServiceStart = MutableStateFlow<ServiceRun>(ServiceRun.Stop)
-    val isServiceStart :StateFlow<ServiceRun>
+    val isServiceStart: StateFlow<ServiceRun>
         get() = _isServiceStart
 
     init {
-Log.i("view module", "initinitinitinit")
+        Log.i("view module" , "initinitinitinit")
         viewModelScope.launch {
 
             mediaServiceHandler.addMediaItem()
@@ -105,18 +101,19 @@ Log.i("view module", "initinitinitinit")
             mediaServiceHandler.mediaStateAbdo.collect { state ->
                 when (state) {
                     MediaStateAbdo.Initial -> {
-
+                        _BUFFERING.emit(true)
                     }
 
                     is MediaStateAbdo.Ready -> {
+                        _BUFFERING.emit(false)
                         _title.emit(state.metadata.title.toString())
                         _artist.emit(state.metadata.artist.toString())
-                        _shuffle.emit(state.shuffleModeEnabled)
+//                        _shuffle.emit(state.shuffleModeEnabled)
                         _url.emit(state.metadata.artworkUri)
                         _duration.emit(state.duration)
 //           _progress.emit(state.progress.toFloat())
-                        calculateProgressValues(state.progress)
-                        _isPlaying.emit(state.isPlaying)
+//                        calculateProgressValues(state.progress)
+//                        _isPlaying.emit(state.isPlaying)
 
                     }
                 }
@@ -125,6 +122,7 @@ Log.i("view module", "initinitinitinit")
         }
 
         UpdataUi()
+
     }
 
     fun onDataEvent(dataStata: DataEvent) = viewModelScope.launch {
@@ -132,7 +130,7 @@ Log.i("view module", "initinitinitinit")
 //            DataEvent.AllApi -> mediaServiceHandler.setMediaItemAllOnline()
 //            DataEvent.Local -> mediaServiceHandler.setMediaItemListLocal()
 //            DataEvent.FovApi -> mediaServiceHandler.setMediaItemFovOnline()
-            else->{}
+            else -> {}
         }
     }
 
@@ -160,7 +158,12 @@ Log.i("view module", "initinitinitinit")
                 timer.setTimeSelected(uiEvent.time)
                 timer.setAlarm(! resetTimer.value)
             }
-            is UIEvent.SetPlayList ->mediaServiceHandler.onPlayerEvent(PlayerEvent.SetPlayList(uiEvent.list))
+
+            is UIEvent.SetPlayList -> mediaServiceHandler.onPlayerEvent(
+                PlayerEvent.SetPlayList(
+                    uiEvent.list
+                )
+            )
 
             else -> null
         }
@@ -179,26 +182,30 @@ Log.i("view module", "initinitinitinit")
     val itemsFilter = _list
 
     val itemsFilterSearch = searchText.combine(_list) { text , item ->
-        if (text.isBlank()){
+        if (text.isBlank()) {
             item
-        }else{
+        } else {
             item.filter {
                 it.query(text)
             }
         }
 
     }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(10000)
-        ,_list.value
+        viewModelScope , SharingStarted.WhileSubscribed(10000) , _list.value
     )
+
     private fun UpdataUi() {
         viewModelScope.launch {
-//            _artistList.emit(mediaServiceHandler.artist)
+            Log.i("UpdateProgress" , ",UpdataUi")
+
+
             while (true) {
 
-                mediaServiceHandler.updataUI(true)
+                calculateProgressValues(mediaServiceHandler.updateProgress())
+                delay(400L)
             }
+
+
 
 
         }
@@ -208,8 +215,8 @@ Log.i("view module", "initinitinitinit")
         _progress.emit(if (currentProgress > 0) (currentProgress.toFloat() / duration.value) else 0f)
 //        progressString = formatDuration(currentProgress)
         _progressString.emit(formatDuration(currentProgress))
-
     }
+
 
     fun formatDuration(duration: Long): String {
         return if (duration < 3600000) {
@@ -242,16 +249,17 @@ Log.i("view module", "initinitinitinit")
             it.contains(query , ignoreCase = true)
         }
     }
- val local =_list.value.isLocal()
 
-    fun serviceStart(){
-        _isServiceStart.value=ServiceRun.Run
-                    Log.i("startForegroundService",_isServiceStart.value.toString())
+    val local = _list.value.isLocal()
+
+    fun serviceStart() {
+        _isServiceStart.value = ServiceRun.Run
+        Log.i("startForegroundService" , _isServiceStart.value.toString())
 
     }
 
     override fun onCleared() {
-        _isServiceStart.value=ServiceRun.Kill
+        _isServiceStart.value = ServiceRun.Kill
         super.onCleared()
     }
 }

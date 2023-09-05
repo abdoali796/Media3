@@ -91,8 +91,8 @@ fun ListMp(
 //            }
                 items(items = quranItem , key = { i -> i.index }) {
                     Item(
-                        main = it.artist ,
-                        sacandery = it.surah ,
+                        main = it.surah ,
+                        sacandery = it.artist ,
                         moshaf = it.moshaf,
                         modifier = Modifier.clickable { uiEvent(UIEvent.SeekToIndex(it.index)) })
                 }

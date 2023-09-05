@@ -1,5 +1,6 @@
 package com.abdoali.mymidia3.uiCompount
 
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -58,7 +59,7 @@ private fun ControlImp(
             )
         }
         IconButton(onClick = { onUiEvent(UIEvent.PlayPre) }) {
-            Image(Icons.Outlined.SkipPrevious , contentDescription = null)
+            Icon(Icons.Outlined.SkipPrevious , contentDescription = null)
         }
         IconButton(onClick = { onUiEvent(UIEvent.Backward) }) {
             Icon(Icons.Outlined.ArrowBackIos , contentDescription = null)
@@ -75,7 +76,7 @@ private fun ControlImp(
             Icon(Icons.Outlined.ArrowForwardIos , contentDescription = null)
         }
         IconButton(onClick = { onUiEvent(UIEvent.PlayNext) }) {
-            Image(Icons.Outlined.SkipNext , contentDescription = null)
+            Icon(Icons.Outlined.SkipNext , contentDescription = null)
         }
         IconButton(onClick = { onUiEvent(UIEvent.Timer(20)) }) {
             Icon(Icons.Outlined.Timer , contentDescription = null)
@@ -83,7 +84,7 @@ private fun ControlImp(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 private fun ControlPre() {
     ControlImp(play = true , shuffle = true , onUiEvent = { UIEvent.PlayPre })

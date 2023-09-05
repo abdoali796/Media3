@@ -51,18 +51,22 @@ fun OnLineUI(
             list.shuffled().subList(0 , 6)
         }
         val sort = remember {
-            list.itSort().shuffled().subList(0 , 9)
+
+         val sortList=   list.itSort().shuffled()
+                if (sortList.size>  8) sortList.subList(0,7) else null
         }
-        OnLineUIImp(
-            surah = surah ,
-            random = random ,
-            artists = artists.map { it.name } ,
-            sort = sort ,
-            actionNavToListSurah = { navController.navToSourList() } ,
-            actionNavToListArtists = { navController.navToArtistList() } ,
-            actionNavToSurahOrArttist = navController::navToList ,
-            actionUi = onUIEvent
-        )
+        if (sort != null) {
+            OnLineUIImp(
+                surah = surah ,
+                random = random ,
+                artists = artists.map { it.name } ,
+                sort = sort ,
+                actionNavToListSurah = { navController.navToSourList() } ,
+                actionNavToListArtists = { navController.navToArtistList() } ,
+                actionNavToSurahOrArttist = navController::navToList ,
+                actionUi = onUIEvent
+            )
+        }
     }
 }
 @Composable

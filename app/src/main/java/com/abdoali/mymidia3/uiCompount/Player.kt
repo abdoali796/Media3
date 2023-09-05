@@ -9,13 +9,19 @@ import android.renderscript.ScriptIntrinsicBlur
 import android.util.Log
 import android.util.Size
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +47,7 @@ import com.abdoali.mymidia3.ui.VM
 
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayUi(
 //    title: String ,
@@ -67,28 +74,29 @@ val      shuffle: Boolean by vm.shuffle.collectAsState()
     val duration by vm.duration.collectAsState()
     val context = LocalContext.current
 
-
+val buffer by vm.BUFFERING.collectAsState()
     var bitmap by remember {
         mutableStateOf<Any?>(null)
     }
 
-    LaunchedEffect(key1 = uri) {
-        try {
-            Log.i("uribitmap","uri$uri")
-
-            bitmap=uri
-//            bitmap = uri?.let {
-//                context.applicationContext.contentResolver.loadThumbnail(
-//                    it , Size(100 , 100) , null
-//                )
+//    LaunchedEffect(key1 = uri) {
+//        try {
+//            Log.i("uribitmap","uri$uri")
 //
+//            bitmap=uri
+////            bitmap = uri?.let {
+////                context.applicationContext.contentResolver.loadThumbnail(
+////                    it , Size(100 , 100) , null
+////                )
+////
+////
+////            }
+//        } catch (e: Exception) {
+//            Log.i("bitmap" , e.toString())
+//        }
 //
-//            }
-        } catch (e: Exception) {
-            Log.i("bitmap" , e.toString())
-        }
+//    }
 
-    }
     Column(
         verticalArrangement = Arrangement.Center ,
         horizontalAlignment = Alignment.CenterHorizontally ,
@@ -126,7 +134,14 @@ val      shuffle: Boolean by vm.shuffle.collectAsState()
             ) {
 
 
-                ImageAudoi(uri = uri , process , title = title , artist = artists ,isLocal=true)
+
+                    ImageAudoi(
+                        uri = uri ,
+                        buffer ,
+                        title = title ,
+                        artist = artists ,
+                        isLocal = true
+                    )
 
 
 
@@ -146,58 +161,59 @@ val      shuffle: Boolean by vm.shuffle.collectAsState()
                         onUiEvent = vm::onUIEvent ,
                         modifier = Modifier.padding(bottom = 20.dp , top = 20.dp)
                     )
+                    Spacer(modifier = modifier.height(20.dp))
                 }
 
             }
         }
-    }
-}
-
-@Composable
-fun BlurImage(
-    bitmap: Bitmap ,
-    modifier: Modifier = Modifier ,
-) {
-    if (! isSystemInDarkTheme()) {
-        Image(
-            bitmap = bitmap.asImageBitmap() ,
-            contentDescription = null ,
-            contentScale = ContentScale.FillBounds ,
-            modifier = modifier.fillMaxSize()
-        )
-    } else {
-        Image(
-            bitmap = bitmap.asImageBitmap() ,
-            contentDescription = null ,
-            contentScale = ContentScale.FillBounds ,
-            modifier = modifier.fillMaxSize() ,
-            colorFilter = ColorFilter.tint(
-                MaterialTheme.colorScheme.background ,
-                BlendMode.Darken
-            )
-        )
-    }
-}
-
-@Suppress("DEPRECATION")
-@Composable
-private fun LegacyBlurImage(
-    bitmapBlur: Bitmap , blurRadio: Float = 25f , modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
+    }}
 
 
-    LaunchedEffect(key1 = bitmapBlur) {
-        val renderScript = RenderScript.create(context)
-
-        val bitmapAlloc = Allocation.createFromBitmap(renderScript , bitmapBlur)
-        ScriptIntrinsicBlur.create(renderScript , bitmapAlloc.element).apply {
-            setRadius(blurRadio)
-            setInput(bitmapAlloc)
-            forEach(bitmapAlloc)
-        }
-        bitmapAlloc.copyTo(bitmapBlur)
-        renderScript.destroy()
-    }
-    BlurImage(bitmapBlur , modifier)
-}
+//@Composable
+//fun BlurImage(
+//    bitmap: Bitmap ,
+//    modifier: Modifier = Modifier ,
+//) {
+//    if (! isSystemInDarkTheme()) {
+//        Image(
+//            bitmap = bitmap.asImageBitmap() ,
+//            contentDescription = null ,
+//            contentScale = ContentScale.FillBounds ,
+//            modifier = modifier.fillMaxSize()
+//        )
+//    } else {
+//        Image(
+//            bitmap = bitmap.asImageBitmap() ,
+//            contentDescription = null ,
+//            contentScale = ContentScale.FillBounds ,
+//            modifier = modifier.fillMaxSize() ,
+//            colorFilter = ColorFilter.tint(
+//                MaterialTheme.colorScheme.background ,
+//                BlendMode.Darken
+//            )
+//        )
+//    }
+//}
+//
+//@Suppress("DEPRECATION")
+//@Composable
+//private fun LegacyBlurImage(
+//    bitmapBlur: Bitmap , blurRadio: Float = 25f , modifier: Modifier = Modifier
+//) {
+//    val context = LocalContext.current
+//
+//
+//    LaunchedEffect(key1 = bitmapBlur) {
+//        val renderScript = RenderScript.create(context)
+//
+//        val bitmapAlloc = Allocation.createFromBitmap(renderScript , bitmapBlur)
+//        ScriptIntrinsicBlur.create(renderScript , bitmapAlloc.element).apply {
+//            setRadius(blurRadio)
+//            setInput(bitmapAlloc)
+//            forEach(bitmapAlloc)
+//        }
+//        bitmapAlloc.copyTo(bitmapBlur)
+//        renderScript.destroy()
+//    }
+//    BlurImage(bitmapBlur , modifier)
+//}

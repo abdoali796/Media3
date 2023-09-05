@@ -1,7 +1,7 @@
 package com.abdoali.datasourece.api
 
 
-fun SurahString(int: Int): String {
+fun surahString(int: Int): String {
 
 
 

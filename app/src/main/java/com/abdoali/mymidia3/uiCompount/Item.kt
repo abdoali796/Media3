@@ -51,8 +51,9 @@ private fun ItemImp(
                 .fillMaxWidth()
         ) {
             Text(text = title , style = MaterialTheme.typography.titleLarge)
-            moshaf?.let { Text(text = it , style = MaterialTheme.typography.headlineMedium) }
             artists?.let { Text(text = it , style = MaterialTheme.typography.titleSmall) }
+            moshaf?.let { Text(text = it , style = MaterialTheme.typography.titleSmall) }
+
         }
     }
 }

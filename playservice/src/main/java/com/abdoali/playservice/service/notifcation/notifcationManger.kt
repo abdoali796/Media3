@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
@@ -39,7 +40,9 @@ class NotificationManager @Inject constructor(
         mediaSession: MediaSession
     ) {
         buildNotification(mediaSession)
-        startForegroundNotification(mediaSessionService)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundNotification(mediaSessionService)
+        }
     }
 
     @UnstableApi
@@ -52,30 +55,50 @@ class NotificationManager @Inject constructor(
                 )
             )
             .setSmallIconResourceId(R.drawable.baseline_play_arrow_24)
+
             .build()
             .also {
                 it.setMediaSessionToken(mediaSession.sessionCompatToken)
-                it.setUseFastForwardActionInCompactView(true)
+                it.setUseFastForwardActionInCompactView(false)
                 it.setUseRewindActionInCompactView(true)
-                it.setUseNextActionInCompactView(false)
+                it.setUseFastForwardAction(false)
+                it.setUseNextActionInCompactView(true)
+                it.setUsePreviousAction(true)
+                    it.setUseStopAction(true)
+                        it.setUseChronometer(true)
+                it.setUseRewindAction(false)
                 it.setPriority(NotificationCompat.PRIORITY_LOW)
                 it.setPlayer(player)
+
+                it.setUsePreviousActionInCompactView(true)
             }
+
     }
 
+
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun startForegroundNotification(mediaSessionService: MediaSessionService) {
         val notification = Notification.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setCategory(Notification.CATEGORY_SERVICE)
+            .setActions(
+            )
             .build()
+
         mediaSessionService.startForeground(NOTIFICATION_ID, notification)
     }
 
     private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID,
-            NOTIFICATION_CHANNEL_NAME,
-            NotificationManager.IMPORTANCE_LOW
-        )
-        notificationManager.createNotificationChannel(channel)
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          val   channel=
+            NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_LOW
+            )
+            notificationManager.createNotificationChannel(channel)
+        } else {
+            null
+        }
+
     }
 }

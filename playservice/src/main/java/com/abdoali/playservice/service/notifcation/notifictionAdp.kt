@@ -23,7 +23,6 @@ import com.bumptech.glide.request.transition.Transition
 
     override fun createCurrentContentIntent(player: Player): PendingIntent? =
         pendingIntent
-
     override fun getCurrentContentText(player: Player): CharSequence =
         player.mediaMetadata.displayTitle ?: ""
 
@@ -32,8 +31,7 @@ import com.bumptech.glide.request.transition.Transition
 //        callback: PlayerNotificationManager.BitmapCallback
 //    ): Bitmap? {
 //        return null
-//    }
-
+//
     override fun getCurrentLargeIcon(
         player: Player ,
         callback: PlayerNotificationManager.BitmapCallback

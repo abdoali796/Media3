@@ -48,11 +48,11 @@ fun BarImp(
             Text(text = processString)
             Text(text = durationString)
         }
-        Slider(value = if (useNewProgressValue.value) newProgressValue.value else process ,
+        Slider(value = if (useNewProgressValue.value) newProgressValue.floatValue else process ,
             onValueChange = {
                 useNewProgressValue.value = true
-                newProgressValue.value = it
-                onUIEvent(UIEvent.UpdateProgress(newProgressValue.value))
+                newProgressValue.floatValue = it
+                onUIEvent(UIEvent.UpdateProgress(newProgressValue.floatValue))
 
             } ,
             onValueChangeFinished = {

@@ -1,5 +1,26 @@
 <resources>
     <string name="app_name">Mymidia3</string>
-    <string name="exo_controls_shuffle_on_description">shuffle on</string>
-    <string name="exo_controls_shuffle_off_description">shuffle off</string>
+    <string name="exo_controls_shuffle_on_description" translatable="false">shuffle on</string>
+    <string name="exo_controls_shuffle_off_description" translatable="false">shuffle off</string>
+    <string name="eng">eng</string>
+    <string name="arab">arab</string>
+    <string name="setting">"Setting "</string>
+    <string name="brown">brown</string>
+    <string name="blue">blue</string>
+    <string name="red">red</string>
+    <string name="search_text">search sourh or artist</string>
+    <string name="no_thing_to_show">no thing to show</string>
+    <string name="locale">Locale</string>
+    <string name="online">ONLINE</string>
+    <string name="wait_a_minute">Wait a minute</string>
+    <string name="choose_the_time">Choose the time</string>
+    <string name="min">"%1$s min "</string>
+    <string name="_60_min">60 min</string>
+    <string name="_90_min">90 min</string>
+    <string name="_120_min">120 min</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="show_all">Show  All %1$s</string>
+    <string name="surah">surah</string>
+    <string name="artist">artist</string>
 </resources>

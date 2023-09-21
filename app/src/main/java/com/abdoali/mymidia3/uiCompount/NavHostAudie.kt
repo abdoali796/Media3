@@ -23,14 +23,15 @@ fun NavHostAudie(
     soura: List<String> ,
     uiEvent: (UIEvent) -> Unit ,
     modifier: Modifier = Modifier ,
+    local: List<QuranItem> ,
 ) {
     NavHost(
         navController = navController ,
-        startDestination = ONLINE ,
+        startDestination = LOCALE ,
         modifier = modifier
     ) {
-        list(quranList , uiEvent)
-        locale(quranList , uiEvent)
+        list( uiEvent)
+        locale(local , uiEvent)
         online(
             list = quranList ,
             surah = soura ,

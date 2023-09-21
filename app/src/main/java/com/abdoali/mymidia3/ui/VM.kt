@@ -2,28 +2,21 @@ package com.abdoali.mymidia3.ui
 
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.abdoali.datasourece.QuranItem
 import com.abdoali.datasourece.api.Reciter
-import com.abdoali.datasourece.api.Surah
-import com.abdoali.datasourece.helper.isLocal
+import com.abdoali.datasourece.api.surah
 import com.abdoali.mymidia3.Timer
 import com.abdoali.mymidia3.data.DataEvent
-import com.abdoali.mymidia3.data.ServiceRun
 import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.MediaStateAbdo
 import com.abdoali.playservice.PlayerEvent
+import com.abdoali.playservice.service.ServiceControl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -35,7 +28,7 @@ class VM @Inject constructor(
 
     private val mediaServiceHandler: MediaServiceHandler ,
     private val timer: Timer ,
-    private val savedStateHandle: SavedStateHandle
+    private val serviceControl: ServiceControl
 ) : ViewModel() {
     private var resetTimer = timer.isAlarmOn
     var name = timer.elapsedTime
@@ -69,34 +62,36 @@ class VM @Inject constructor(
     val progressString: StateFlow<String>
         get() = _progressString
 
-val isTimerOn =timer.isAlarmOn
+    val isTimerOn = timer.isAlarmOn
     val isPlaying: StateFlow<Boolean>
         get() = mediaServiceHandler.isPlay
 
     private var _url = MutableStateFlow<Uri?>(null)
     val uri: StateFlow<Uri?>
         get() = _url
-    private val _searchText = MutableStateFlow("")
-    val searchText = _searchText.asStateFlow()
 
-    private val _isSearching = MutableStateFlow(false)
-    val isSearching = _isSearching.asStateFlow()
-
-    val sura = Surah.sura
+    val sura = surah()
 
     private val _artistList = MutableStateFlow<List<String>>(listOf())
     val artistsList: StateFlow<List<Reciter>>
         get() = mediaServiceHandler.artist
 
-    private val _isServiceStart = MutableStateFlow<ServiceRun>(ServiceRun.Stop)
-    val isServiceStart: StateFlow<ServiceRun>
-        get() = _isServiceStart
+    val list = mediaServiceHandler.quranList
+val localList=mediaServiceHandler.localList
+    //    private val _isServiceStart = MutableStateFlow<ServiceRun>(ServiceRun.Stop)
+//    val isServiceStart: StateFlow<ServiceRun>
+//        get() = _isServiceStart
+    private var isServiceStart = false
 
     init {
         Log.i("view module" , "initinitinitinit")
-        viewModelScope.launch {
+        viewModelScope.launch (){
 
-            mediaServiceHandler.addMediaItem()
+
+    mediaServiceHandler.addMediaItemLocal()
+    mediaServiceHandler.addMediaItem()
+
+
 
             mediaServiceHandler.mediaStateAbdo.collect { state ->
                 when (state) {
@@ -104,6 +99,7 @@ val isTimerOn =timer.isAlarmOn
                         _BUFFERING.emit(true)
                     }
 
+                    MediaStateAbdo.Idle -> _BUFFERING.emit(false)
                     is MediaStateAbdo.Ready -> {
                         _BUFFERING.emit(false)
                         _title.emit(state.metadata.title.toString())
@@ -116,13 +112,22 @@ val isTimerOn =timer.isAlarmOn
 //                        _isPlaying.emit(state.isPlaying)
 
                     }
+
+                    else -> {}
                 }
             }
 
         }
-
+        startSarvie()
         UpdataUi()
 
+    }
+
+    private fun startSarvie() {
+        if (! isServiceStart) {
+            serviceControl.startService()
+            isServiceStart = true
+        }
     }
 
     fun onDataEvent(dataStata: DataEvent) = viewModelScope.launch {
@@ -169,30 +174,6 @@ val isTimerOn =timer.isAlarmOn
         }
     }
 
-    fun onSearchTextChange(text: String) {
-        _searchText.value = text
-
-    }
-
-    fun onSearch(boolean: Boolean) {
-        _isSearching.value = boolean
-    }
-
-    private val _list = mediaServiceHandler.quranList
-    val itemsFilter = _list
-
-    val itemsFilterSearch = searchText.combine(_list) { text , item ->
-        if (text.isBlank()) {
-            item
-        } else {
-            item.filter {
-                it.query(text)
-            }
-        }
-
-    }.stateIn(
-        viewModelScope , SharingStarted.WhileSubscribed(10000) , _list.value
-    )
 
     private fun UpdataUi() {
         viewModelScope.launch {
@@ -204,8 +185,6 @@ val isTimerOn =timer.isAlarmOn
                 calculateProgressValues(mediaServiceHandler.updateProgress())
                 delay(400L)
             }
-
-
 
 
         }
@@ -241,25 +220,12 @@ val isTimerOn =timer.isAlarmOn
     }
 
 
-    private fun QuranItem.query(query: String): Boolean {
-        val matching = listOf(
-            artist , surah
-        )
-        return matching.any {
-            it.contains(query , ignoreCase = true)
-        }
-    }
+//    val local = _list.value.isLocal()
 
-    val local = _list.value.isLocal()
-
-    fun serviceStart() {
-        _isServiceStart.value = ServiceRun.Run
-        Log.i("startForegroundService" , _isServiceStart.value.toString())
-
-    }
 
     override fun onCleared() {
-        _isServiceStart.value = ServiceRun.Kill
+        serviceControl.stopService()
+        isServiceStart = false
         super.onCleared()
     }
 }

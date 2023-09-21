@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -19,31 +21,41 @@ import com.abdoali.mymidia3.uiCompount.Item
 
 @Composable
 fun screenTitle(
-    list: List<String>? ,
-    string: String ,
+//    list: List<String>? ,
+    keys: String ,
     navController: NavController ,
     modifier: Modifier = Modifier ,
-    reciter: List<Reciter> = emptyList() ,
+//    reciter: List<Reciter> = emptyList() ,
 ) {
+    val vm: VMTest = hiltViewModel()
+    val sour = remember{
+        vm.sura
+    }
+
     Column(
 
         modifier = modifier
             .fillMaxSize()
             .border(BorderStroke(2.dp , Color.Black))
     ) {
+
+
         LazyColumn() {
-            item { Item(main = string , sacandery = null) }
-            if (!list.isNullOrEmpty()) {
-                items(items = list) {
+
+            if (keys == SOUR_LIST) {
+                items(items = sour) {
                     Item(
                         main = it ,
                         sacandery = null ,
                         modifier.clickable { navController.navToList(it) })
                 }
             } else {
-                items(reciter){reciter->
+                items(vm.artistsList.value) { reciter ->
                     reciter.moshaf.forEach {
-                        Item(main = reciter.name , sacandery =it.name , modifier.clickable { navController.navToList(reciter.name+","+it.name) } )
+                        Item(
+                            main = reciter.name ,
+                            sacandery = it.name ,
+                            modifier.clickable { navController.navToList(reciter.name + "," + it.name) })
                     }
                 }
             }
@@ -62,13 +74,13 @@ fun NavController.navToArtistList() {
 
 fun NavGraphBuilder.sourList(list: List<String> , navController: NavController) {
     composable(SOUR_LIST) {
-        screenTitle(list , "Sour" , navController)
+        screenTitle(SOUR_LIST , navController)
     }
 }
 
 fun NavGraphBuilder.artistList(list: List<Reciter> , navController: NavController) {
     composable(ARTIST_LIST) {
-        screenTitle(null , "Artist" , navController , reciter = list)
+        screenTitle(ARTIST_LIST , navController)
     }
 }
 

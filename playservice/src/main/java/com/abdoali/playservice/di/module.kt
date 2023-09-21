@@ -8,6 +8,7 @@ import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
 import com.abdoali.datasourece.DataSources
 import com.abdoali.playservice.MediaServiceHandler
+import com.abdoali.playservice.service.ServiceControl
 import com.abdoali.playservice.service.notifcation.NotificationManager
 import dagger.Module
 import dagger.Provides
@@ -20,6 +21,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object PlayerModule {
+
+    @Provides
+    @Singleton
+    fun serviceControlPro(@ApplicationContext context: Context) = ServiceControl(context)
+
     @Provides
     @Singleton
     fun audioAttr(): AudioAttributes =
@@ -50,11 +56,13 @@ object PlayerModule {
     @Singleton
     fun provideServiceHandler(
         player: ExoPlayer ,
-        data: DataSources
+        data: DataSources,
+
     ): MediaServiceHandler =
         MediaServiceHandler(
             player = player ,
-            data
+         dataSources =    data,
+
 
         )
 

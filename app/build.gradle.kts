@@ -17,10 +17,12 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+
     }
 
 
@@ -70,8 +72,8 @@ dependencies {
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation ("androidx.compose.material3:material3:1.1.1")
-    implementation ("androidx.compose.material3:material3-window-size-class:1.1.1")
+    implementation("androidx.compose.material3:material3:1.1.1")
+    implementation("androidx.compose.material3:material3-window-size-class:1.1.1")
     implementation(project(mapOf("path" to ":playservice")))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
@@ -82,7 +84,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     val media3_version = "1.1.0"
-implementation("androidx.compose.material:material-icons-extended:1.4.3")
+    implementation("androidx.compose.material:material-icons-extended:1.5.1")
 
     implementation("androidx.media3:media3-common:$media3_version")
     implementation("com.google.accompanist:accompanist-permissions:0.31.5-beta")
@@ -91,11 +93,16 @@ implementation("androidx.compose.material:material-icons-extended:1.4.3")
 //    kapt ("com.google.dagger:hilt-compiler:2.45")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
     implementation("io.coil-kt:coil-compose:2.3.0")
-    implementation ("com.github.bumptech.glide:compose:1.0.0-alpha.1")
+    implementation("com.github.bumptech.glide:compose:1.0.0-alpha.1")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation ("androidx.navigation:navigation-compose:2.7.0")
+    implementation("androidx.navigation:navigation-compose:2.7.2")
 //    debugImplementation ("com.squareup.leakcanary:leakcanary-android:2.12")
+
+
+    implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
+// For loading and tinting drawables on older versions of the platform
+    implementation( "androidx.appcompat:appcompat-resources:1.6.1" )
 }
 kapt {
     correctErrorTypes = true

@@ -24,8 +24,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.abdoali.mymidia3.R
 import com.abdoali.mymidia3.data.UIEvent
 import kotlinx.coroutines.delay
 
@@ -42,14 +44,15 @@ fun Timer(
         mutableStateOf(false)
     }
     AlertDialog(onDismissRequest = { showTimer(false) }) {
-        Card(onClick = { showTimer(false) }) {
+        Card(onClick = {}) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally ,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text(text = "اختر الوقت",style = MaterialTheme.typography.headlineLarge)
-                Text(text = "$time min " , style = MaterialTheme.typography.titleLarge)
+                Text(text = stringResource(R.string.choose_the_time) ,style = MaterialTheme.typography.headlineLarge)
+                Text(text = stringResource(R.string.min , time) , style = MaterialTheme.typography.titleLarge)
                 Row {
 
                     Icon(Icons.Default.ArrowUpward ,
@@ -86,21 +89,21 @@ fun Timer(
                             })
                 }
                 Row {
-                    SuggestionChip(onClick = { time = 60 } , label = { Text("60 min") })
-                    SuggestionChip(onClick = { time = 90 } , label = { Text("90 min") })
-                    SuggestionChip(onClick = { time = 120 } , label = { Text("120 min") })
+                    SuggestionChip(onClick = { time = 60 } , label = { Text(stringResource(R.string._60_min)) })
+                    SuggestionChip(onClick = { time = 90 } , label = { Text(stringResource(R.string._90_min)) })
+                    SuggestionChip(onClick = { time = 120 } , label = { Text(stringResource(R.string._120_min)) })
                 }
                 Row {
                     Button(onClick = {
                         onUIEvent(UIEvent.Timer(time))
                         showTimer(false)
                     }) {
-                        Text(text = "Save")
+                        Text(text = stringResource(R.string.save))
                     }
                     Spacer(modifier = Modifier.width(20.dp))
                     Button(onClick = { showTimer(false) } ,
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)) {
-                        Text(text = "cancel")
+                        Text(text = stringResource(R.string.cancel))
                     }
                 }
             }

@@ -1,7 +1,10 @@
 package com.abdoali.playservice
 
 import android.annotation.SuppressLint
+import android.os.Build
+import android.os.Looper
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.PlaybackParameters
@@ -11,12 +14,13 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.abdoali.datasourece.DataSources
 import com.abdoali.datasourece.QuranItem
 import com.abdoali.datasourece.api.Reciter
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MediaServiceHandler @Inject constructor(
@@ -43,6 +47,12 @@ class MediaServiceHandler @Inject constructor(
     val quranList: StateFlow<List<QuranItem>>
         get() = _quranList
 
+
+    private val _localList = MutableStateFlow<List<QuranItem>>(emptyList())
+    val localList: StateFlow<List<QuranItem>>
+        get() = _localList
+
+
     private val _artist = MutableStateFlow<List<Reciter>>(emptyList())
     val artist: StateFlow<List<Reciter>>
         get() = _artist
@@ -65,16 +75,22 @@ class MediaServiceHandler @Inject constructor(
         job = Job()
     }
 
-    fun updateProgress()= player.currentPosition
-
+    fun updateProgress() = player.currentPosition
 
 
     suspend fun addMediaItem() {
 
+            player.addMediaItems(prepareMetaData())
+
+            player.prepare()
+
+
+    }
+    suspend fun addMediaItemLocal() {
+
         player.addMediaItems(prepareMetaDataLocal())
         player.prepare()
     }
-
 
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     suspend fun onPlayerEvent(playerEvent: PlayerEvent) {
@@ -84,9 +100,14 @@ class MediaServiceHandler @Inject constructor(
             PlayerEvent.Backward -> player.seekBack()
             PlayerEvent.Forward -> player.seekForward()
             PlayerEvent.PlayPause -> {
+                if (_mediaStateAbdo.value == MediaStateAbdo.Idle) {
+                    player.prepare()
+                    Log.i("onPlaybackStateAbdoali" , "player.prepare()")
+                }
                 if (player.isPlaying) {
                     player.pause()
-                    stopProgressUpdate()
+
+//                    stopProgressUpdate()
                 } else {
                     player.play()
                     _mediaState.value = MediaState.Playing(isPlaying = true)
@@ -184,6 +205,10 @@ class MediaServiceHandler @Inject constructor(
     override fun onPlaybackStateChanged(playbackState: Int) {
         Log.i("onPlaybackStateAbdoali" , "playbackState$playbackState")
         when (playbackState) {
+            ExoPlayer.STATE_IDLE -> {
+                _mediaStateAbdo.tryEmit(MediaStateAbdo.Idle)
+            }
+
             ExoPlayer.STATE_BUFFERING -> _mediaStateAbdo.tryEmit(
                 MediaStateAbdo.Initial
             )
@@ -199,9 +224,16 @@ class MediaServiceHandler @Inject constructor(
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         super.onIsPlayingChanged(isPlaying)
         _isPlay.value = isPlaying
+//
+//        if ( mediaStateAbdo.value== MediaStateAbdo.Ready(
+//            player.mediaMetadata ,player.duration
+//        )) {
+//       if (isPlaying) serviceControl.startService() else serviceControl.stopService()
+//        }
     }
 
     override fun onIsLoadingChanged(isLoading: Boolean) {
@@ -210,10 +242,28 @@ class MediaServiceHandler @Inject constructor(
     }
 
     private suspend fun prepareMetaDataLocal(): List<MediaItem> {
-        val date = dataSources.gitContent()
-        _artist.emit(dataSources.getArtist())
-        _quranList.emit(date)
+        val date = dataSources.gitLocal()
+_list
+        _localList.emit(date)
         return date.map { item: QuranItem ->
+
+            val metadata =
+                MediaMetadata.Builder().setArtist(item.artist).setDisplayTitle(item.surah)
+                    .setArtworkUri(item.uri).build()
+            MediaItem.Builder().setMediaMetadata(metadata).setUri(item.uri).build()
+
+        }
+
+    }
+    private suspend fun prepareMetaData(): List<MediaItem> {
+
+
+        return withContext(Dispatchers.IO){
+            val date =  dataSources.gitContent()
+            _artist.emit(dataSources.getArtist())
+            _quranList.emit(date)
+Log.i("withContext",date.size.toString())
+            date.map { item: QuranItem ->
             if (item.isLocal) {
                 val metadata =
                     MediaMetadata.Builder().setArtist(item.artist).setDisplayTitle(item.surah)
@@ -221,10 +271,28 @@ class MediaServiceHandler @Inject constructor(
                 MediaItem.Builder().setMediaMetadata(metadata).setUri(item.uri).build()
             } else {
                 MediaItem.fromUri(item.uri)
-            }
+            }}
         }
 
     }
+
+//    private suspend fun prepareMetaData(): List<MediaItem> {
+//        delay(1000L)
+//        val date = dataSources.gitContent()
+//        _artist.emit(dataSources.getArtist())
+//        _quranList.emit(date)
+//        return date.map { item: QuranItem ->
+//            if (item.isLocal) {
+//                val metadata =
+//                    MediaMetadata.Builder().setArtist(item.artist).setDisplayTitle(item.surah)
+//                        .setArtworkUri(item.uri).build()
+//                MediaItem.Builder().setMediaMetadata(metadata).setUri(item.uri).build()
+//            } else {
+//                MediaItem.fromUri(item.uri)
+//            }
+//        }
+//
+//    }
 
 }
 
@@ -244,6 +312,7 @@ sealed class MediaState {
 }
 
 sealed class MediaStateAbdo {
+    object Idle : MediaStateAbdo()
     object Initial : MediaStateAbdo()
     data class Ready(
 

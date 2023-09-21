@@ -1,17 +1,5 @@
 package com.abdoali.mymidia3.uiCompount
 
-import android.graphics.Bitmap
-import android.net.Uri
-import android.os.Build
-import android.renderscript.Allocation
-import android.renderscript.RenderScript
-import android.renderscript.ScriptIntrinsicBlur
-import android.util.Log
-import android.util.Size
-import androidx.annotation.RequiresApi
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,12 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,19 +16,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
-import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.ui.VM
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,18 +38,18 @@ fun PlayUi(
 
     modifier: Modifier = Modifier
 ) {
-    val vm:VM= hiltViewModel()
+    val vm: VM = hiltViewModel()
     val title by vm.title.collectAsState()
     val artists by vm.artist.collectAsState()
-    val  process by vm.progress.collectAsState()
-val isPlaying by vm.isPlaying.collectAsState()
-val processString by vm.progressString.collectAsState()
-val      shuffle: Boolean by vm.shuffle.collectAsState()
+    val process by vm.progress.collectAsState()
+    val isPlaying by vm.isPlaying.collectAsState()
+    val processString by vm.progressString.collectAsState()
+    val shuffle: Boolean by vm.shuffle.collectAsState()
     val uri by vm.uri.collectAsState()
     val duration by vm.duration.collectAsState()
     val context = LocalContext.current
 
-val buffer by vm.BUFFERING.collectAsState()
+    val buffer by vm.BUFFERING.collectAsState()
     var bitmap by remember {
         mutableStateOf<Any?>(null)
     }
@@ -134,14 +109,13 @@ val buffer by vm.BUFFERING.collectAsState()
             ) {
 
 
-
-                    ImageAudoi(
-                        uri = uri ,
-                        buffer ,
-                        title = title ,
-                        artist = artists ,
-                        isLocal = true
-                    )
+                ImageAudoi(
+                    uri = uri ,
+                    buffer ,
+                    title = title ,
+                    artist = artists ,
+                    isLocal = true
+                )
 
 
 
@@ -166,7 +140,8 @@ val buffer by vm.BUFFERING.collectAsState()
 
             }
         }
-    }}
+    }
+}
 
 
 //@Composable

@@ -10,8 +10,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.abdoali.mymidia3.R
 
 //import com.abdoali.mymidia3.ui.online.ListMp
 
@@ -34,14 +36,14 @@ fun ListTitle(
             .padding(3.dp)
     ) {
         Text(text = title , style = MaterialTheme.typography.headlineLarge)
-        for (i in 0..10) {
+        for (i in 0..5) {
             Text(
                 text = titleList[i] ,
                 modifier.clickable { actionNav(titleList[i]) } ,
                 style = MaterialTheme.typography.titleLarge)
         }
         Button(onClick = actionShowAll) {
-            Text(text = "Show  All $title")
+            Text(text = stringResource(R.string.show_all , title))
         }
 
 

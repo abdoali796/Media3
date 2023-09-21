@@ -26,6 +26,6 @@ sealed class UIState {
     object Ready : UIState()
 }
 
-enum class ServiceRun {
-    Stop , Run , Kill
-}
+//enum class ServiceRun {
+//    Stop , Run , Kill
+//}

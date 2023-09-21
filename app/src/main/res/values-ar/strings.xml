@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mymidia3</string>
+    <string name="eng">انجليوي</string>
+    <string name="arab">عربي</string>
+    <string name="setting">الاعداد</string>
+    <string name="brown">بني</string>
+    <string name="blue">ازرق</string>
+    <string name="red">احمر</string>
+    <string name="search_text">ابحث بسورة او بقارئ</string>
+    <string name="no_thing_to_show">لا شئ لعرضة</string>
+    <string name="locale">محلي</string>
+    <string name="online">علي الانترنت</string>
+    <string name="wait_a_minute">انتظر قليل</string>
+    <string name="choose_the_time">اختر الوقت</string>
+    <string name="min">%1$s دقيقة</string>
+    <string name="_60_min">60 دقيقة</string>
+    <string name="_90_min">90 دفيقة</string>
+    <string name="_120_min">120 دقيقة</string>
+    <string name="save">حفظ</string>
+    <string name="cancel">الغاء</string>
+    <string name="surah">سورة</string>
+    <string name="artist">قارئ</string>
+    <string name="show_all">عرض كل %1$s</string>
+</resources>

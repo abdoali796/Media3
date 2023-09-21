@@ -5,6 +5,7 @@ import com.abdoali.datasourece.api.ApiService
 import com.abdoali.datasourece.api.Mp3quran
 import com.abdoali.datasourece.api.parserReciterMp3
 import org.json.JSONObject
+import java.util.Locale
 import javax.inject.Inject
 
 fun online() = listOf(
@@ -35,7 +36,8 @@ class ApiQuran @Inject constructor(private val apiQuran: ApiService) {
     suspend fun getAllMp3quran(): Mp3quran {
         return try {
 
-            val jsonObject = JSONObject(apiQuran.getListReciters())
+val language=Locale.getDefault().isO3Language
+            val jsonObject = JSONObject(apiQuran.getListReciters(language))
             parserReciterMp3(jsonObject)
         } catch (e: Exception) {
             Log.i("Exception" , e.message.toString())

@@ -1,19 +1,26 @@
 package com.abdoali.mymidia3.ui
 
-import android.content.Intent
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,64 +31,73 @@ import androidx.compose.material3.TabPosition
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.modifier.modifierLocalConsumer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.abdoali.datasourece.QuranItem
+import com.abdoali.mymidia3.R
 import com.abdoali.mymidia3.composeble.FancyAnimatedIndicator
-import com.abdoali.mymidia3.data.ServiceRun
 import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.ui.online.navToOnline
-import com.abdoali.mymidia3.ui.theme.Mymidia3Theme
+import com.abdoali.mymidia3.ui.search.navToSearch
+import com.abdoali.mymidia3.ui.settings.navToSetting
 import com.abdoali.mymidia3.uiCompount.MinControlImp
 import com.abdoali.mymidia3.uiCompount.NavHostAudie
 import com.abdoali.mymidia3.uiCompount.PlayUi
 import com.abdoali.mymidia3.uiCompount.Timer
 import com.abdoali.mymidia3.uiCompount.getIndexDestination
-import com.abdoali.playservice.service.ServicePlayer
 
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainUi() {
+fun MainUi(
+    mainNavController: NavController
+) {
     val vm: VM = hiltViewModel()
-    val context = LocalContext.current
-    val service by vm.isServiceStart.collectAsState()
+//    val context = LocalContext.
+
     val timer by vm.name.collectAsState()
     val title by vm.title.collectAsState()
-//    val artists by vm.artist.collectAsState()
-//    val duration by vm.duration.collectAsState()
-//    val progress by vm.progress.collectAsState()
+
     val isPlaying by vm.isPlaying.collectAsState()
-//    val shuffle by vm.shuffle.collectAsState()
-//    val progressString by vm.progressString.collectAsState()
-//    val uri by vm.uri.collectAsState()
-//    val isSearching by vm.isSearching.collectAsState()
-//    val searchText by vm.searchText.collectAsState()
-    val quranList by vm.itemsFilter.collectAsState()
+
+    val quranList = emptyList<QuranItem>()
+    val localList by vm.localList.collectAsState()
     val isTimerOn by vm.isTimerOn.collectAsState()
-    val soura = vm.sura
-    val artistsList = vm.artistsList.collectAsState().value
+    val soura =  remember {
+        vm.sura
+    }
+    val artistsList by vm.artistsList.collectAsState()
     val navController = rememberNavController()
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
-    var selectedItem by remember { mutableIntStateOf(1) }
-    val labelList = listOf("LOCALE" , "ONLINE")
-//    val iconList = listOf(
-//        Icons.Default.Save ,
-//        Icons.Default.NewReleases
-//    )
-//    val actionList =
-//        listOf(DataEvent.Local , DataEvent.NewApi , DataEvent.AllApi , DataEvent.FovApi)
-//    val scope = rememberCoroutineScope()
+    var selectedItem by rememberSaveable { mutableIntStateOf(1) }
+    val labelList = listOf(stringResource(R.string.locale) , stringResource(R.string.online))
+
     val sheetScaffoldState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
     )
+    var expand by remember {
+        mutableStateOf(false)
+    }
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     val navback by navController.currentBackStackEntryAsState()
     val destination = navback?.destination
     val indicator = @Composable { tabPositions: List<TabPosition> ->
@@ -93,180 +109,145 @@ fun MainUi() {
     var showDig by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
-        topBar = {
-            Column {
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
-                TopAppBar(title = { Text(text = "abdo ali") } , actions = {
+        topBar = {
+//
+                TopAppBar(title = { Text(text = "abdo ali") } ,
+                    scrollBehavior = scrollBehavior
+                    , actions = {
                     AnimatedVisibility(visible = isTimerOn) {
 
                         Text(text = vm.formatDuration(timer))
                     }
-                    IconButton(onClick = {
+                    Row {
 
-                        showDig = true
-                    }) {
-                        if (showDig) {
-                            Timer(showTimer = { showDig = it } , onUIEvent = vm::onUIEvent)
-                        }
-                        if (isTimerOn) {
-                            Icon(Icons.Outlined.Timer , contentDescription = null , modifier = Modifier.clickable {
-                                vm.onUIEvent(UIEvent.Timer(0))
-                            })
-                        } else {
+
+                        IconButton(onClick = {
+                            showDig = true
+                        }) {
                             if (showDig) {
-                                com.abdoali.mymidia3.uiCompount.Timer(showTimer = { showDig = it } ,
-                                    onUIEvent = vm::onUIEvent)}
+                                Timer(showTimer = { showDig = it } , onUIEvent = vm::onUIEvent)
+                            }
+                            if (isTimerOn) {
+                                Icon(
+                                    Icons.Outlined.Timer ,
+                                    contentDescription = null ,
+                                    modifier = Modifier.clickable {
+                                        vm.onUIEvent(UIEvent.Timer(0))
+                                    })
+                            } else {
+                                if (showDig) {
+                                    Timer(showTimer = {
+                                        showDig = it
+                                    } ,
+                                        onUIEvent = vm::onUIEvent)
+                                }
                                 Icon(Icons.Rounded.Timer , contentDescription = null)
 
                             }
                         }
                     }
-                    )
-                    TabRow(
-                        selectedTabIndex = 0 ,
-                        indicator = indicator
-                    ) {
-                        labelList.forEachIndexed { index , title ->
-                            Tab(
-                                text = { Text(title) } ,
-                                selected = false ,
-                                onClick = {
-                                    selectedItem = index
+                    IconButton(onClick = { mainNavController.navToSearch() }) {
+                        Icon(Icons.Outlined.Search , contentDescription = null)
+                    }
 
-                                } ,
+                    IconButton(onClick = { expand =true }) {
+                        Icon(Icons.Default.MoreVert , null)
+                    }
+                        DropdownMenu(
+                            expanded = expand,
+                            onDismissRequest = { expand = false }
+                                ,modifier= Modifier.wrapContentSize(Alignment.TopEnd)
+                        )    {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.setting)) },
+                                onClick = { mainNavController.navToSetting() },
+                                leadingIcon = {
+                                    Icon(
+                                        Icons.Outlined.Settings,
+                                        contentDescription = null
+                                    )
+                                }
+                            , modifier =  Modifier.wrapContentSize(Alignment.TopEnd)
                             )
                         }
-
-                    }
                 }
-//            DockedSearchBar(
-//                query = searchText ,
-//                onQueryChange = vm::onSearchTextChange ,
-//                active = isSearching ,
-//
-//                onSearch = { vm.onSearch(false) } ,
-//                onActiveChange = vm::onSearch ,
-//                trailingIcon = { Icon(Icons.Filled.Search , contentDescription = null) } ,
-//                content = {
-//                    LazyColumn {
-//                        items(items = quranListSearch , key = { i -> i.index }) { quran ->
-//                            Column(
-//                                Modifier
-//
-//                                    .clickable {
-//                                        vm.onUIEvent(UIEvent.SeekToIndex(quran.index))
-//                                    }) {
-//
-//                                Text(text = quran.artist)
-//                                Text(text = quran.surah)
-//                                Text(text = quran.index.toString())
-//                                Text(text = quran.uri.toString())
-//                                Text(text = "=======  ============")
-//                            }
-//
-//                        }
-//                    }
-//                }
-//            )
+                )
 
-            } ,
-
-            floatingActionButtonPosition = FabPosition.Center ,
-            floatingActionButton = {
-                Column {
+            }
 
 
-                    MinControlImp(isPlayerEvent = isPlaying ,
-                        name = title ,
-                        onUIEvent = vm::onUIEvent ,
-                        modifier = Modifier.clickable { openBottomSheet = true })
+
+        ,
+
+        floatingActionButtonPosition = FabPosition.End ,
+        bottomBar = {
+            Column {
+
+    MinControlImp(isPlayerEvent = isPlaying ,
+        name = title ,
+        onUIEvent = vm::onUIEvent ,
+        modifier = Modifier.clickable { openBottomSheet = true })
 
 
-//                NavigationBar {
-//
-//                    labelList.forEachIndexed { index , item ->
-//                        NavigationBarItem(
-//                            alwaysShowLabel = true ,
-//                            label = { Text(text = item) } ,
-//                            selected = selectedItem == index ,
-//                            onClick = {
-//                                vm.onDataEvent(actionList[index])
-//                                when (index){
-//                                    1->navController.navToLocale()
-//                                    2->navController.navToOnline()
-//                                    else ->navController.navToLocale()
-//                                }
-//
-//                                selectedItem = index
-//                            } ,
-//                            icon = {
-//                                Icon(
-//                                    imageVector = iconList[index] ,
-//                                    contentDescription = labelList[index]
-//                                )
-//                            })
-//
-//                    }
-//                }
-//                NavigationDrawerItem(label = { /*TODO*/ } , selected =  , onClick = { /*TODO*/ })
-//                Row {
-//                    Button(onClick = { vm.onDataEvent(DataEvent.NewApi) }) {
-//                        Text(text = "NewApi")
-//                    }
-//                    Button(onClick = { vm.onDataEvent(DataEvent.Local) }) {
-//                        Text(text =)
-//                    }
-//                    Button(onClick = { vm.onDataEvent(DataEvent.AllApi) }) {
-//                        Text(text = "AllApi")
-//                    }
-//                    Button(onClick = { vm.onDataEvent(DataEvent.FovApi) }) {
-//                        Text(text = "FovApi")
-//                    }
-//                }
+
+
+
+            }
+        }) { padding ->
+        Column(Modifier.padding(padding)) {
+            TabRow(
+                selectedTabIndex = 0 ,
+                indicator = indicator
+            ) {
+                labelList.forEachIndexed { index , title ->
+                    Tab(
+                        text = { Text(title) } ,
+                        selected = false ,
+                        onClick = {
+//                            selectedItem = index
+                            if (index == 0) navController.navToLocale() else if (selectedItem == 1) navController.navToOnline()
+
+
+                        } ,
+                    )
                 }
-            }) { padding ->
 
-            AnimatedVisibility(visible = quranList.isEmpty()) {
-                Text(text = "waite scanned")
+            }
+
+            AnimatedVisibility(visible = artistsList.isEmpty()) {
+                Text(text = stringResource(R.string.wait_a_minute))
             }
 
             NavHostAudie(
                 navController = navController ,
                 quranList = quranList ,
                 soura = soura ,
+               local= localList,
                 artistsList = artistsList ,
                 uiEvent = vm::onUIEvent ,
-                modifier = Modifier.padding(padding)
+
 
             )
 
 
-            LaunchedEffect(key1 = selectedItem) {
-                Log.i("selectedItem" , "$selectedItem  ${destination?.route}")
-                if (selectedItem == 0) navController.navToLocale() else if (selectedItem == 1) navController.navToOnline()
-            }
+
             LazyColumn(
                 modifier = Modifier
                     .animateContentSize()
-                    .padding(paddingValues = padding)
+
             ) {
+                
                 item {
 
                 }
+                item {
+                    Spacer(modifier = Modifier.height((LocalConfiguration.current.screenHeightDp).dp))
+                    Text(text = localList.size.toString())
+                }
 
-                item { Text(text = quranList.size.toString()) }
-//            items(items = quranList , key = { i -> i.index }) { quran ->
-//                Column(
-//                    Modifier
-//
-//                        .clickable {
-//                            vm.onUIEvent(UIEvent.SeekToIndex(quran.index))
-//                        }) {
-//
-//                    Item( quran.surah ,  quran.artist)
-//                }
-//
-//        }
+                item { Text(text = artistsList.size.toString()) }
 
 
             }
@@ -281,25 +262,15 @@ fun MainUi() {
             }
 
         }
-            LaunchedEffect(key1 = service) {
-                val intent = Intent(context , ServicePlayer::class.java)
-                if (service == ServiceRun.Stop) {
-                    context.startForegroundService(intent)
-//            startForegroundService(context , intent)
-                    vm.serviceStart()
 
-                } else if (service == ServiceRun.Kill) {
-                    context.stopService(intent)
-                }
-                Log.i("startForegroundService" , service.toString())
+    }
 
-            }
-        }
+}
 
-        @Preview(showBackground = true)
-        @Composable
-        fun GreetingPreview() {
-            Mymidia3Theme {
-//        MainUiImp("Android" , {} , {} , {} , {})
-            }
-        }
+////////////////////////////////navigation////////////////////
+const val MAIN_UI="MAIN_UI_MAIN_UI"
+fun NavGraphBuilder.mainUi(navController: NavController){
+    composable(MAIN_UI){
+        MainUi(navController)
+    }
+}

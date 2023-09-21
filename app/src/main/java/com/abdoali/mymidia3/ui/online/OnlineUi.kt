@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -27,9 +28,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.abdoali.datasourece.QuranItem
 import com.abdoali.datasourece.api.Reciter
-import com.abdoali.datasourece.helper.itSort
 import com.abdoali.mymidia3.R
 import com.abdoali.mymidia3.data.UIEvent
+import com.abdoali.mymidia3.ui.LOCALE
 import com.abdoali.mymidia3.uiCompount.Item
 
 @Composable
@@ -42,39 +43,33 @@ fun OnLineUI(
     modifier: Modifier = Modifier
 ) {
     AnimatedVisibility(list.isEmpty()) {
-        Text(text = "wita to get data")
+        Text(text = stringResource(R.string.wait_a_minute))
     }
-    AnimatedVisibility(visible = list.size > 10) {
+    AnimatedVisibility(visible = artists.size > 10) {
 
 
-        val random = remember {
-            list.shuffled().subList(0 , 6)
-        }
-        val sort = remember {
 
-         val sortList=   list.itSort().shuffled()
-                if (sortList.size>  8) sortList.subList(0,7) else null
-        }
-        if (sort != null) {
+
             OnLineUIImp(
                 surah = surah ,
-                random = random ,
+
                 artists = artists.map { it.name } ,
-                sort = sort ,
+
                 actionNavToListSurah = { navController.navToSourList() } ,
                 actionNavToListArtists = { navController.navToArtistList() } ,
                 actionNavToSurahOrArttist = navController::navToList ,
                 actionUi = onUIEvent
             )
         }
-    }
+
 }
+
 @Composable
 fun OnLineUIImp(
     surah: List<String> ,
-    random: List<QuranItem> ,
+
     artists: List<String> ,
-    sort :List<QuranItem>,
+
     actionNavToListSurah: () -> Unit ,
     actionNavToListArtists: () -> Unit ,
     actionNavToSurahOrArttist: (String) -> Unit ,
@@ -87,85 +82,24 @@ fun OnLineUIImp(
 
             ) {
                 ListTitle(
-                    title = "surah"
-                    , titleList = surah
-                    , actionNav = actionNavToSurahOrArttist,
+                    title = stringResource(R.string.surah) , titleList = surah , actionNav = actionNavToSurahOrArttist ,
                     actionShowAll = actionNavToListSurah
                 )
 
-        }}
+            }
+        }
         item {
             Column {
                 ListTitle(
-                    title = "artist"
-                    , titleList = artists
-                    , actionNav = actionNavToSurahOrArttist,
+                    title = stringResource(R.string.artist) , titleList = artists , actionNav = actionNavToSurahOrArttist ,
                     actionShowAll = actionNavToListArtists
                 )
 
             }
 
         }
-        item {
 
-                Text(text = "sort")
-                Item(
-                    main = sort[0].artist ,
-                    sacandery = sort[0].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(sort[0].index)) })
-                Item(
-                    main = sort[1].artist ,
-                    sacandery = sort[1].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(sort[1].index)) })
-                Item(
-                    main = sort[2].artist ,
-                    sacandery = sort[2].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(sort[2].index)) })
-                Item(
-                    main = sort[3].artist ,
-                    sacandery = sort[3].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(sort[3].index)) })
-                Item(
-                    main = sort[4].artist ,
-                    sacandery = sort[4].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(sort[4].index)) })
 
-                Item(
-                    main = sort[5].artist ,
-                    sacandery = sort[5].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(sort[5].index)) })
-
-        }
-        item {
-            Card {
-                Text(text = "random")
-                Item(
-                    main = random[0].artist ,
-                    sacandery = random[0].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(random[0].index)) })
-                Item(
-                    main = random[1].artist ,
-                    sacandery = random[1].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(random[1].index)) })
-                Item(
-                    main = random[2].artist ,
-                    sacandery = random[2].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(random[2].index)) })
-                Item(
-                    main = random[3].artist ,
-                    sacandery = random[3].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(random[3].index)) })
-                Item(
-                    main = random[4].artist ,
-                    sacandery = random[4].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(random[4].index)) })
-
-                Item(
-                    main = random[5].artist ,
-                    sacandery = random[5].surah ,
-                    modifier = modifier.clickable { actionUi(UIEvent.SeekToIndex(random[5].index)) })
-            }
-        }
 
     }
 }
@@ -209,8 +143,8 @@ fun ListPreviewPre() {
 
 @Preview(showBackground = true)
 @Composable
-fun OnLineUIPre() {
-    val list=listOf(
+private fun OnLineUIPre() {
+    val list = listOf(
         QuranItem(1 , "www" , "ssssssss" , "dd".toUri() , 0 , false) ,
         QuranItem(1 , "www" , "ssssssss" , "dd".toUri() , 0 , false) ,
         QuranItem(1 , "www" , "ssssssss" , "dd".toUri() , 0 , false) ,
@@ -241,9 +175,8 @@ fun OnLineUIPre() {
         QuranItem(1 , "www" , "ssssssss" , "dd".toUri() , 0 , false) ,
     )
     OnLineUIImp(
-        surah = listOf("one" , "tow" , "three" , "four","00000") ,
-        random =  list,
-        sort = list,
+        surah = listOf("one" , "tow" , "three" , "four" , "00000") ,
+
         artists = listOf("sssssone" , "tosssssssw" , "thressssssse" , "foursss") ,
         actionNavToListSurah = {} ,
         actionNavToSurahOrArttist = {} ,
@@ -254,7 +187,13 @@ fun OnLineUIPre() {
 }
 
 fun NavController.navToOnline() {
-navigate(ONLINE)
+    navigate(ONLINE) {
+        popUpTo(LOCALE) {
+            inclusive = false
+        }
+        launchSingleTop = true
+        restoreState = true
+    }
 }
 
 fun NavGraphBuilder.online(
@@ -266,12 +205,13 @@ fun NavGraphBuilder.online(
 ) {
     composable(ONLINE) {
         OnLineUI(
-            list =list ,
+            list = list ,
             surah = surah ,
             artists = artists ,
-            navController = navController , onUIEvent =  onUIEvent)
+            navController = navController , onUIEvent = onUIEvent
+        )
     }
 }
 
- const val ONLINE = "ONLINE_ONLINE"
+const val ONLINE = "ONLINE_ONLINE"
 

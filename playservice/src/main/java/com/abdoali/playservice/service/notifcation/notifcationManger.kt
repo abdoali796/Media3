@@ -3,18 +3,26 @@ package com.abdoali.playservice.service.notifcation
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_CANCEL_CURRENT
+import android.app.PendingIntent.FLAG_IMMUTABLE
+import android.app.PendingIntent.FLAG_MUTABLE
+import android.app.PendingIntent.FLAG_NO_CREATE
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerNotificationManager
 import com.abdoali.playservice.R
+import com.abdoali.playservice.service.ServicePlayer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -51,7 +59,10 @@ class NotificationManager @Inject constructor(
             .setMediaDescriptionAdapter(
                 NotificationAdapter(
                     context = context,
-                    pendingIntent = mediaSession.sessionActivity
+                    pendingIntent =  TaskStackBuilder.create(context).run {
+                        addNextIntent(Intent(context, Class.forName("com.abdoali.mymidia3.MainActivity")))
+                        getPendingIntent(0, FLAG_NO_CREATE or FLAG_MUTABLE)
+                    }
                 )
             )
             .setSmallIconResourceId(R.drawable.baseline_play_arrow_24)

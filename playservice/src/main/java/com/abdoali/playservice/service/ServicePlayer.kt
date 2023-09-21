@@ -1,6 +1,7 @@
 package com.abdoali.playservice.service
 
 import android.content.Intent
+import android.util.Log
 import androidx.media3.common.Player
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
@@ -41,6 +42,11 @@ mediaSession.run {
     }
 }
     }
-    
+
+//    override fun onTaskRemoved(rootIntent: Intent?) {
+//        if (!mediaSession.player.playWhenReady ) {
+//            Log.i("onTaskRemoved","onTaskRemoved")
+//            stopSelf()
+//        }
 
 }

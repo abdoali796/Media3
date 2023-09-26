@@ -15,10 +15,10 @@ class VMLocalList @Inject constructor(private val repository: Repository) : View
     val list: StateFlow<List<QuranItem>>
         get() = repository.localList
 
-    fun onUIEven(uiEvent: UIEvent)=repository.onUIEvent(uiEvent)
-fun update(){
-    viewModelScope.launch {
-        repository.prepareData()
+    fun onUIEven(uiEvent: UIEvent) = repository.onUIEvent(uiEvent)
+    fun update() {
+        viewModelScope.launch {
+            repository.prepareData()
+        }
     }
-}
 }

@@ -16,35 +16,31 @@ import com.abdoali.mymidia3.ui.online.sourList
 fun NavHostAudie(
     navController: NavHostController ,
 
-
     uiEvent: (UIEvent) -> Unit ,
     modifier: Modifier = Modifier ,
 
-
-) {
+    ) {
     NavHost(
         navController = navController ,
         startDestination = LOCALE ,
         modifier = modifier
     ) {
-        list( uiEvent)
+        list(uiEvent)
         locale(
-
 
         )
         online(
 
             navController = navController
         )
-        sourList( navController)
-        artistList( navController)
-
+        sourList(navController)
+        artistList(navController)
 
     }
 }
 
-fun getIndexDestination(string: String?):Int{
-    if (string==null) return 0
-    if (string== LOCALE) return 0
+fun getIndexDestination(string: String?): Int {
+    if (string == null) return 0
+    if (string == LOCALE) return 0
     return 1
 }

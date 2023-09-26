@@ -45,7 +45,6 @@ fun List(
     )
 }
 
-
 fun NavController.navToList(title: String) {
     navigate("$LIST/$title")
 }
@@ -56,7 +55,7 @@ fun NavGraphBuilder.list(onUIEvent: (UIEvent) -> Unit) {
             navArgument(TITLE_LIST) { NavType.StringType } ,
 
             )) {
-        List(  uiEvent = onUIEvent)
+        List(uiEvent = onUIEvent)
     }
 }
 
@@ -64,7 +63,6 @@ fun getTitle(savedStateHandle: SavedStateHandle): String? {
 
     return savedStateHandle[TITLE_LIST]
 }
-
 
 private const val LIST = "LISTABd"
 private const val TITLE_LIST = "TITLE_LIST"

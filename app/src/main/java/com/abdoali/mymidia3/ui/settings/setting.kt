@@ -1,10 +1,8 @@
 package com.abdoali.mymidia3.ui.settings
 
-
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
@@ -27,7 +25,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.core.os.ConfigurationCompat
 import androidx.core.os.LocaleListCompat
@@ -39,7 +36,6 @@ import com.abdoali.mymidia3.ui.MAIN_UI
 import com.abdoali.mymidia3.ui.theme.color.BLUE_COLOR
 import com.abdoali.mymidia3.ui.theme.color.BROWN_Color
 import com.abdoali.mymidia3.ui.theme.color.RED_COLOR
-import org.intellij.lang.annotations.Language
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -60,14 +56,15 @@ fun Setting(vm: SettingVM) {
 
         topBar = {
             LargeTopAppBar(title = {
-                Text(text = stringResource(R.string.setting) , style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = stringResource(R.string.setting) ,
+                    style = MaterialTheme.typography.titleLarge
+                )
             } , scrollBehavior = scrollBehavior
             )
 
-
         }
     ) { padding ->
-
 
         LazyColumn(
             Modifier
@@ -87,7 +84,6 @@ fun Setting(vm: SettingVM) {
                             MaterialTheme.shapes.large
                         )
                         .fillMaxWidth()
-
 
                 ) {
                     Button(onClick = { vm.changeTheme(Theme.Brown) } ,
@@ -116,7 +112,6 @@ fun Setting(vm: SettingVM) {
             item {
                 Row {
 
-
                     Button(onClick = {
                         // set app locale given the user's selected locale
                         onClickRefreshActivity("ar")
@@ -126,7 +121,7 @@ fun Setting(vm: SettingVM) {
                     }
                     Button(onClick = {
 
-                    onClickRefreshActivity("en")
+                        onClickRefreshActivity("en")
                     }) {
                         Text(text = stringResource(R.string.eng))
                     }
@@ -136,19 +131,20 @@ fun Setting(vm: SettingVM) {
     }
 }
 
-
 @Composable
 @ReadOnlyComposable
 fun getLocale(): java.util.Locale {
     val configuration = LocalConfiguration.current
-    return ConfigurationCompat.getLocales(configuration).get(0) ?: LocaleListCompat.getDefault()[0]!!
+    return ConfigurationCompat.getLocales(configuration).get(0)
+        ?: LocaleListCompat.getDefault()[0] !!
 }
 
-fun Context.findActivity() : Activity? = when(this){
+fun Context.findActivity(): Activity? = when (this) {
     is Activity -> this
     is ContextWrapper -> baseContext.findActivity()
     else -> null
 }
+
 const val SETTING_UI = "SETTING_UI_SETTING_UI"
 fun NavController.navToSetting() {
 

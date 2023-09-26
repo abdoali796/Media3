@@ -38,8 +38,8 @@ fun OnLineUI(
 
     modifier: Modifier = Modifier
 ) {
-    val vmOnline :VMOnline= hiltViewModel()
-    val  list by vmOnline.list.collectAsState()
+    val vmOnline: VMOnline = hiltViewModel()
+    val list by vmOnline.list.collectAsState()
     val artists by vmOnline.artists.collectAsState()
     val surah by vmOnline.soura.collectAsState()
     AnimatedVisibility(list.isEmpty()) {
@@ -47,20 +47,17 @@ fun OnLineUI(
     }
     AnimatedVisibility(visible = artists.size > 10) {
 
+        OnLineUIImp(
+            surah = surah ,
 
+            artists = artists.map { it.name } ,
 
-
-            OnLineUIImp(
-                surah = surah ,
-
-                artists = artists.map { it.name } ,
-
-                actionNavToListSurah = { navController.navToSourList() } ,
-                actionNavToListArtists = { navController.navToArtistList() } ,
-                actionNavToSurahOrArttist = navController::navToList ,
-                actionUi = vmOnline::onUIEvent
-            )
-        }
+            actionNavToListSurah = { navController.navToSourList() } ,
+            actionNavToListArtists = { navController.navToArtistList() } ,
+            actionNavToSurahOrArttist = navController::navToList ,
+            actionUi = vmOnline::onUIEvent
+        )
+    }
 
 }
 
@@ -76,13 +73,13 @@ fun OnLineUIImp(
     actionUi: (UIEvent) -> Unit ,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn() {
+    LazyColumn {
         item {
-            Column(
-
-            ) {
+            Column {
                 ListTitle(
-                    title = stringResource(R.string.surah) , titleList = surah , actionNav = actionNavToSurahOrArttist ,
+                    title = stringResource(R.string.surah) ,
+                    titleList = surah ,
+                    actionNav = actionNavToSurahOrArttist ,
                     actionShowAll = actionNavToListSurah
                 )
 
@@ -91,15 +88,15 @@ fun OnLineUIImp(
         item {
             Column {
                 ListTitle(
-                    title = stringResource(R.string.artist) , titleList = artists , actionNav = actionNavToSurahOrArttist ,
+                    title = stringResource(R.string.artist) ,
+                    titleList = artists ,
+                    actionNav = actionNavToSurahOrArttist ,
                     actionShowAll = actionNavToListArtists
                 )
 
             }
 
         }
-
-
 
     }
 }
@@ -115,7 +112,6 @@ fun ListPreview(
         )
 
     ) {
-
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally ,
@@ -200,7 +196,7 @@ fun NavGraphBuilder.online(
 
     navController: NavController ,
 
-) {
+    ) {
     composable(ONLINE) {
         OnLineUI(
 

@@ -46,7 +46,6 @@ fun ListTitle(
             Text(text = stringResource(R.string.show_all , title))
         }
 
-
     }
 
 }
@@ -56,7 +55,19 @@ fun ListTitle(
 private fun ListPre() {
     ListTitle(
         "test" ,
-        listOf("test" , "test" ,"test" ,"test" ,"test" ,"test" ,"test" ,"test" ,"test" ,"test" , "test") ,
+        listOf(
+            "test" ,
+            "test" ,
+            "test" ,
+            "test" ,
+            "test" ,
+            "test" ,
+            "test" ,
+            "test" ,
+            "test" ,
+            "test" ,
+            "test"
+        ) ,
         {} , {}
     )
 }

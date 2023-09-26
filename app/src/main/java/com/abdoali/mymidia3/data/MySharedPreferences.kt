@@ -10,27 +10,24 @@ object MySharedPreferences {
     private const val COLOR = "COLOR_COLOR"
 
     fun initShared(context: Context) {
-        myShared = context.getSharedPreferences(SHARED_NAME, Context.MODE_PRIVATE)
+        myShared = context.getSharedPreferences(SHARED_NAME , Context.MODE_PRIVATE)
     }
 
     var theme: String?
-        get() = myShared?.getString(COLOR, "")
+        get() = myShared?.getString(COLOR , "")
         set(value) {
-            myShared?.edit()?.putString(COLOR, value)?.apply()
+            myShared?.edit()?.putString(COLOR , value)?.apply()
         }
-
 
 
 }
 
-fun String.asTheme():Theme{
-    return when{
-        this=="${Theme.Red}"->Theme.Red
-        this=="${Theme.Blue}"->Theme.Blue
+fun String.asTheme(): Theme {
+    return when {
+        this == "${Theme.Red}" -> Theme.Red
+        this == "${Theme.Blue}" -> Theme.Blue
 
-
-
-        else->Theme.Brown
+        else -> Theme.Brown
     }
 
 }

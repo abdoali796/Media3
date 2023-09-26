@@ -29,7 +29,7 @@ import com.abdoali.mymidia3.data.UIEvent
 @Composable
 fun Control(
     isPlay: Boolean ,
-    repeatOn: Boolean,
+    repeatOn: Boolean ,
     shuffle: Boolean ,
     onUiEvent: (UIEvent) -> Unit ,
     modifier: Modifier = Modifier
@@ -38,7 +38,7 @@ fun Control(
     ControlImp(
         play = isPlay ,
         shuffle = shuffle ,
-        repeatOn= repeatOn,
+        repeatOn = repeatOn ,
         onUiEvent ,
         modifier = modifier ,
     )
@@ -48,11 +48,11 @@ fun Control(
 private fun ControlImp(
     play: Boolean ,
     shuffle: Boolean ,
-    repeatOn: Boolean,
+    repeatOn: Boolean ,
     onUiEvent: (UIEvent) -> Unit ,
     modifier: Modifier = Modifier ,
 
-) {
+    ) {
     CompositionLocalProvider(
         LocalLayoutDirection provides LayoutDirection.Ltr
     ) {
@@ -88,10 +88,10 @@ private fun ControlImp(
             IconButton(onClick = { onUiEvent(UIEvent.PlayNext) }) {
                 Icon(Icons.Outlined.SkipNext , contentDescription = null)
             }
-            IconButton(onClick = { onUiEvent(UIEvent.Repeat(!repeatOn)) }) {
+            IconButton(onClick = { onUiEvent(UIEvent.Repeat(! repeatOn)) }) {
                 Icon(
                     if (repeatOn) Icons.Outlined.RepeatOn
-                    else Icons.Outlined.Repeat,
+                    else Icons.Outlined.Repeat ,
                     contentDescription = "Repeat"
                 )
             }
@@ -102,5 +102,10 @@ private fun ControlImp(
 @Preview(showBackground = true , uiMode = UI_MODE_NIGHT_YES , locale = "ar")
 @Composable
 private fun ControlPre() {
-    ControlImp(play = true , shuffle = true ,repeatOn = true, onUiEvent = { UIEvent.PlayPre } ,)
+    ControlImp(
+        play = true ,
+        shuffle = true ,
+        repeatOn = true ,
+        onUiEvent = { UIEvent.PlayPre } ,
+    )
 }

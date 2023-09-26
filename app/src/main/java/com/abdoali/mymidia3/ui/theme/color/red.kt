@@ -68,7 +68,6 @@ private val md_theme_dark_surfaceTint = Color(0xFFFFB3AE)
 private val md_theme_dark_outlineVariant = Color(0xFF534342)
 private val md_theme_dark_scrim = Color(0xFF000000)
 
-
 val RedLightColors = lightColorScheme(
     primary = md_theme_light_primary ,
     onPrimary = md_theme_light_onPrimary ,
@@ -100,7 +99,6 @@ val RedLightColors = lightColorScheme(
     outlineVariant = md_theme_light_outlineVariant ,
     scrim = md_theme_light_scrim ,
 )
-
 
 val RedDarkColors = darkColorScheme(
     primary = md_theme_dark_primary ,

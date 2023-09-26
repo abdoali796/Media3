@@ -17,7 +17,6 @@ import com.abdoali.mymidia3.ui.theme.color.RedLightColors
 import com.abdoali.mymidia3.ui.theme.color.brownDarkcolorscheme
 import com.abdoali.mymidia3.ui.theme.color.brownLightColorScheme
 
-
 @Composable
 fun Mymidia3Theme(
     darkTheme: Boolean = isSystemInDarkTheme() ,
@@ -41,11 +40,11 @@ fun Mymidia3Theme(
                 Log.i("changeTheme" , "theme brown")
                 if (darkTheme) brownDarkcolorscheme else brownLightColorScheme
             }
-            Theme.Red-> {
+
+            Theme.Red -> {
                 if (darkTheme) RedDarkColors else RedLightColors
 
             }
-
 
         }
     val view = LocalView.current
@@ -53,7 +52,8 @@ fun Mymidia3Theme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window , view).isAppearanceLightStatusBars = darkTheme
+            WindowCompat.getInsetsController(window , view).isAppearanceLightStatusBars =
+                darkTheme
         }
     }
 

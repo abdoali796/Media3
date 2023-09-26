@@ -1,6 +1,5 @@
 package com.abdoali.mymidia3.data
 
-
 sealed class UIEvent {
     object PlayPause : UIEvent()
     object Backward : UIEvent()
@@ -12,7 +11,7 @@ sealed class UIEvent {
     data class Shuffle(val shuffle: Boolean) : UIEvent()
     data class Timer(val time: Int) : UIEvent()
     data class SetPlayList(val list: List<Int>) : UIEvent()
-    data class  Repeat(val repeat: Boolean): UIEvent()
+    data class Repeat(val repeat: Boolean) : UIEvent()
 
 }
 

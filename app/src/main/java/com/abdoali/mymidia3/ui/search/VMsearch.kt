@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.abdoali.datasourece.QuranItem
 import com.abdoali.mymidia3.data.Repository
 import com.abdoali.mymidia3.data.UIEvent
-import com.abdoali.playservice.MediaServiceHandler
-import com.abdoali.playservice.PlayerEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted

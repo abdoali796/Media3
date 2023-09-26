@@ -1,6 +1,5 @@
 package com.abdoali.mymidia3.composeble
 
-import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.updateTransition
@@ -22,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-
 @Composable
 fun FancyIndicator(color: Color , modifier: Modifier = Modifier) {
     // Draws a rounded rectangular with border around the Tab, with a 5.dp padding from the edges
@@ -35,7 +33,6 @@ fun FancyIndicator(color: Color , modifier: Modifier = Modifier) {
     )
 }
 
-
 @Composable
 fun FancyAnimatedIndicator(tabPositions: List<TabPosition> , selectedTabIndex: Int) {
     val colors = MaterialTheme.colorScheme.onSurface
@@ -46,9 +43,9 @@ fun FancyAnimatedIndicator(tabPositions: List<TabPosition> , selectedTabIndex: I
             // want the right side of the indicator to move faster, if we are
             // moving to the left, we want the left side to move faster.
             if (initialState < targetState) {
-                spring(dampingRatio = 1f, stiffness = 50f)
+                spring(dampingRatio = 1f , stiffness = 50f)
             } else {
-                spring(dampingRatio = 1f, stiffness = 1000f)
+                spring(dampingRatio = 1f , stiffness = 1000f)
             }
         } , label = ""
     ) {
@@ -61,9 +58,9 @@ fun FancyAnimatedIndicator(tabPositions: List<TabPosition> , selectedTabIndex: I
             // want the right side of the indicator to move faster, if we are
             // moving to the left, we want the left side to move faster.
             if (initialState < targetState) {
-                spring(dampingRatio = 1f, stiffness = 1000f)
+                spring(dampingRatio = 1f , stiffness = 1000f)
             } else {
-                spring(dampingRatio = 1f, stiffness = 50f)
+                spring(dampingRatio = 1f , stiffness = 50f)
             }
         } , label = ""
     ) {
@@ -74,7 +71,7 @@ fun FancyAnimatedIndicator(tabPositions: List<TabPosition> , selectedTabIndex: I
 
     FancyIndicator(
         // Pass the current color to the indicator
-        colors,
+        colors ,
         modifier = Modifier
             // Fill up the entire TabRow, and place the indicator at the start
             .fillMaxSize()

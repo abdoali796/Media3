@@ -17,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.abdoali.mymidia3.data.UIEvent
 
-
 @Composable
 internal fun PlayerControls(
     playResourceProvider: () -> Int ,

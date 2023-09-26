@@ -7,7 +7,6 @@ import com.abdoali.datasourece.QuranItem
 import com.abdoali.datasourece.api.Reciter
 import com.abdoali.datasourece.api.surah
 import com.abdoali.mymidia3.data.Repository
-import com.abdoali.playservice.MediaServiceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,17 +22,17 @@ class VMList @Inject constructor(
     val artistsList: StateFlow<List<Reciter>>
         get() = repository.artistsList
 
-    private val _list:StateFlow<List<QuranItem>>
+    private val _list: StateFlow<List<QuranItem>>
         get() = repository.list
     private val _fiterList = MutableStateFlow<List<QuranItem>>(emptyList())
     val list: StateFlow<List<QuranItem>>
         get() = _fiterList
+
     init {
         filter()
     }
 
     fun getKey(): List<String>? = getTitle(savedStateHandle)?.split(",")
-
 
     fun filter() {
         viewModelScope.launch {

@@ -43,9 +43,12 @@ fun MinControlImp(
 //        )
         , modifier = modifier
             .padding(horizontal = 10.dp)
-            .border(0.5.dp , color = MaterialTheme.colorScheme.onPrimaryContainer , shape = CardDefaults.outlinedShape)
+            .border(
+                0.5.dp ,
+                color = MaterialTheme.colorScheme.onPrimaryContainer ,
+                shape = CardDefaults.outlinedShape
+            )
     ) {
-
 
         Row(
             horizontalArrangement = Arrangement.SpaceBetween , modifier = modifier

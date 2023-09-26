@@ -28,27 +28,34 @@ fun Search() {
     val quranListSearch by vm.itemsFilterSearch.collectAsState()
     Column {
 
-
         DockedSearchBar(
             query = searchText ,
             onQueryChange = vm::onSearchTextChange ,
             active = isSearching ,
-placeholder = { Text(text = stringResource(R.string.search_text))},
+            placeholder = { Text(text = stringResource(R.string.search_text)) } ,
             onSearch = { vm.onSearch(false) } ,
             onActiveChange = vm::onSearch ,
             trailingIcon = { Icon(Icons.Filled.Search , contentDescription = null) } ,
             content = {
                 if (quranListSearch.size > 3) {
-                repeat(4){i->
-                        Item(main = quranListSearch[i].surah , text2 = quranListSearch[i].artist , Modifier.clickable {
-                            vm.playIndex(quranListSearch[i].index)
+                    repeat(4) { i ->
+                        Item(
+                            main = quranListSearch[i].surah ,
+                            text2 = quranListSearch[i].artist ,
+                            Modifier.clickable {
+                                vm.playIndex(quranListSearch[i].index)
 
-                    })}
-                }else{
+                            })
+                    }
+                } else {
                     quranListSearch.forEach { itme ->
-                        Item(main = itme.surah , text2 = itme.artist , Modifier.clickable {
-                            vm.playIndex(itme.index)
-                        }) }
+                        Item(
+                            main = itme.surah ,
+                            text2 = itme.artist ,
+                            Modifier.clickable {
+                                vm.playIndex(itme.index)
+                            })
+                    }
                 }
             }
         )

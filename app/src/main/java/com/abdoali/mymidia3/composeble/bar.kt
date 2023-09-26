@@ -12,7 +12,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.abdoali.mymidia3.data.UIEvent
 
-
 @Composable
 fun BottomPlayerUI(
     modifier: Modifier = Modifier ,

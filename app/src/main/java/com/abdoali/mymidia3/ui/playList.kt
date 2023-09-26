@@ -32,7 +32,6 @@ import com.abdoali.datasourece.QuranItem
 import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.uiCompount.Item
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListMp(
@@ -48,32 +47,29 @@ fun ListMp(
             }
         }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    Scaffold (
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
- topBar = {
-     MediumTopAppBar(
-         title = {
-             Row(
-                 modifier = modifier.fillMaxWidth()  ,
-                 horizontalArrangement = Arrangement.SpaceBetween,
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection) ,
+        topBar = {
+            MediumTopAppBar(
+                title = {
+                    Row(
+                        modifier = modifier.fillMaxWidth() ,
+                        horizontalArrangement = Arrangement.SpaceBetween ,
 
-             ) {
+                        ) {
 
+                        if (title != null) {
+                            Text(text = title , overflow = TextOverflow.Ellipsis)
 
-                 if (title != null) {
-                     Text(text = title , overflow = TextOverflow.Ellipsis )
-
-                 }
-                 FilledIconButton(onClick = { uiEvent(UIEvent.SetPlayList(list)) }) {
-                     Icon(Icons.Default.PlayArrow , contentDescription = null)
-                 }
-             }
-         }
-         ,scrollBehavior = scrollBehavior
-     )
- }
-    ){padding ->
-
+                        }
+                        FilledIconButton(onClick = { uiEvent(UIEvent.SetPlayList(list)) }) {
+                            Icon(Icons.Default.PlayArrow , contentDescription = null)
+                        }
+                    }
+                } , scrollBehavior = scrollBehavior
+            )
+        }
+    ) { padding ->
 
         Column(
 
@@ -82,7 +78,7 @@ fun ListMp(
                 .fillMaxSize()
 //            .border(BorderStroke(2.dp , Color.Black))
         ) {
-            LazyColumn() {
+            LazyColumn {
 //            item {
 //                Button(onClick = { uiEvent(UIEvent.SetPlayList(list)) }) {
 //                    Text(text = "تشغل القائمة كاملة")
@@ -92,10 +88,10 @@ fun ListMp(
                     Item(
                         main = it.surah ,
                         text2 = it.artist ,
-                        text3 = it.moshaf,
+                        text3 = it.moshaf ,
                         modifier = Modifier.clickable { uiEvent(UIEvent.SeekToIndex(it.index)) })
                 }
-                item{
+                item {
                     Spacer(modifier = modifier.height(30.dp))
                 }
             }
@@ -103,11 +99,11 @@ fun ListMp(
         }
     }
 }
+
 @Preview(showBackground = true)
 @Composable
-fun playlistPre()
-{
-    val list=listOf(
+fun playlistPre() {
+    val list = listOf(
         QuranItem(1 , "www" , "ssssssss" , "dd".toUri() , 0 , false) ,
         QuranItem(1 , "www" , "ssssssss" , "dd".toUri() , 0 , false) ,
         QuranItem(1 , "www" , "ssssssss" , "dd".toUri() , 0 , false) ,
@@ -139,8 +135,8 @@ fun playlistPre()
     )
 
     ListMp(
-        quranItem = list,
-        title = "title",
+        quranItem = list ,
+        title = "title" ,
         uiEvent = {}
     )
 }

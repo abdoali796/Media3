@@ -17,13 +17,13 @@ import javax.inject.Inject
 class Timer @Inject constructor(@ApplicationContext context: Context) {
 
     private var job: Job? = null
-    private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    private val alarmManager =
+        context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
     private val REQUEST_CODE = 0
     private val TRIGGER_TIME = "TRIGGER_AT"
 
     private val minute: Long = 60_000L
     private val second: Long = 1_000L
-
 
     private val notifyIntent = Intent(context , AlarmReceiver::class.java)
     private var prefs =
@@ -38,7 +38,6 @@ class Timer @Inject constructor(@ApplicationContext context: Context) {
     private var _alarmOn = MutableStateFlow<Boolean>(false)
     val isAlarmOn: StateFlow<Boolean>
         get() = _alarmOn
-
 
     private val _elapsedTime = MutableStateFlow<Long>(0L)
     val elapsedTime: StateFlow<Long>
@@ -62,7 +61,7 @@ class Timer @Inject constructor(@ApplicationContext context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        if (_alarmOn.value !!) {
+        if (_alarmOn.value) {
             createTimer()
         }
 
@@ -95,10 +94,9 @@ class Timer @Inject constructor(@ApplicationContext context: Context) {
         _alarmOn.value = false
     }
 
-
     fun setAlarm(isChecked: Boolean) {
         when (isChecked) {
-            true -> timeSelection.value?.let { startTimer(it) }
+            true -> timeSelection.value.let { startTimer(it) }
             false -> resetTimer()
         }
     }
@@ -108,7 +106,7 @@ class Timer @Inject constructor(@ApplicationContext context: Context) {
     }
 
     private fun startTimer(timerLengthSelection: Int) {
-        _alarmOn.value?.let {
+        _alarmOn.value.let {
             if (! it) {
                 _alarmOn.value = true
                 val selectedInterval = when (timerLengthSelection) {

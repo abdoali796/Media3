@@ -40,7 +40,6 @@ private fun ItemImp(
             .padding(vertical = 2.dp , horizontal = 12.dp)
     ) {
 
-
         Column(
             modifier
 //            .padding(vertical = 3.dp)
@@ -51,7 +50,12 @@ private fun ItemImp(
                 .fillMaxWidth()
         ) {
             Text(text = title , style = MaterialTheme.typography.titleLarge)
-            artists?.let { Text(text = it , style = MaterialTheme.typography.titleSmall) }
+            artists?.let {
+                Text(
+                    text = it ,
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
             moshaf?.let { Text(text = it , style = MaterialTheme.typography.titleSmall) }
 
         }

@@ -51,11 +51,18 @@ fun Timer(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text(text = stringResource(R.string.choose_the_time) ,style = MaterialTheme.typography.headlineLarge)
-                Text(text = stringResource(R.string.min , time) , style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = stringResource(R.string.choose_the_time) ,
+                    style = MaterialTheme.typography.headlineLarge
+                )
+                Text(
+                    text = stringResource(R.string.min , time) ,
+                    style = MaterialTheme.typography.titleLarge
+                )
                 Row {
 
-                    Icon(Icons.Default.ArrowUpward ,
+                    Icon(
+                        Icons.Default.ArrowUpward ,
                         contentDescription = null ,
                         Modifier
                             .padding(16.dp)
@@ -89,9 +96,12 @@ fun Timer(
                             })
                 }
                 Row {
-                    SuggestionChip(onClick = { time = 60 } , label = { Text(stringResource(R.string._60_min)) })
-                    SuggestionChip(onClick = { time = 90 } , label = { Text(stringResource(R.string._90_min)) })
-                    SuggestionChip(onClick = { time = 120 } , label = { Text(stringResource(R.string._120_min)) })
+                    SuggestionChip(onClick = { time = 60 } ,
+                        label = { Text(stringResource(R.string._60_min)) })
+                    SuggestionChip(onClick = { time = 90 } ,
+                        label = { Text(stringResource(R.string._90_min)) })
+                    SuggestionChip(onClick = { time = 120 } ,
+                        label = { Text(stringResource(R.string._120_min)) })
                 }
                 Row {
                     Button(onClick = {
@@ -129,7 +139,6 @@ fun Timer(
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

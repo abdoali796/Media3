@@ -13,16 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.abdoali.mymidia3.data.formatDuration
-import com.abdoali.mymidia3.ui.VM
 import com.abdoali.mymidia3.uiCompount.Bar
 import com.abdoali.mymidia3.uiCompount.Control
 import com.abdoali.mymidia3.uiCompount.ImageAudoi
@@ -56,7 +51,6 @@ fun PlayUi(
     val repeatOn by vm.repeat.collectAsState()
     val buffer by vm.buffering.collectAsState()
 
-
 //    LaunchedEffect(key1 = uri) {
 //        try {
 //            Log.i("uribitmap","uri$uri")
@@ -82,7 +76,6 @@ fun PlayUi(
             .fillMaxSize()
             .padding(8.dp)
 
-
     ) {
         Box {
 //            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
@@ -104,13 +97,11 @@ fun PlayUi(
 //                bitmap?.let { LegacyBlurImage(it) }
 //            }
 
-
             Column(
                 verticalArrangement = Arrangement.SpaceBetween ,
                 horizontalAlignment = Alignment.CenterHorizontally ,
                 modifier = Modifier.fillMaxSize()
             ) {
-
 
                 ImageAudoi(
                     uri = uri ,
@@ -120,13 +111,12 @@ fun PlayUi(
                     isLocal = true
                 )
 
-LaunchedEffect(key1 = process ){
-    Log.i("currentProgress", process.toString())
-}
+                LaunchedEffect(key1 = process) {
+                    Log.i("currentProgress" , process.toString())
+                }
 
 
                 Column {
-
 
                     Bar(
                         process = process ,
@@ -149,7 +139,6 @@ LaunchedEffect(key1 = process ){
         }
     }
 }
-
 
 //@Composable
 //fun BlurImage(

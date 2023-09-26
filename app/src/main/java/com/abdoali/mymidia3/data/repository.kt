@@ -30,10 +30,10 @@ interface Repository {
     val duration: StateFlow<Long>
     val uri: StateFlow<Uri?>
     val buffering: StateFlow<Boolean>
-     fun onUIEvent(uiEvent: UIEvent)
+    fun onUIEvent(uiEvent: UIEvent)
     suspend fun prepareData()
     suspend fun updateUI()
-   suspend fun updateProgress()
+    suspend fun updateProgress()
 }
 
 class RepositoryImp @Inject constructor(
@@ -83,7 +83,7 @@ class RepositoryImp @Inject constructor(
     override val uri: StateFlow<Uri?>
         get() = _url
 
-    override  fun onUIEvent(uiEvent: UIEvent) {
+    override fun onUIEvent(uiEvent: UIEvent) {
 
         when (uiEvent) {
             UIEvent.PlayPause -> mediaServiceHandler.onPlayerEvent(PlayerEvent.PlayPause)
@@ -158,18 +158,19 @@ class RepositoryImp @Inject constructor(
         }
 
     }
-  override suspend fun updateProgress() {
 
-            Log.i("UpdateProgress" , ",UpdataUi")
+    override suspend fun updateProgress() {
+
+        Log.i("UpdateProgress" , ",UpdataUi")
 
 
-            while (true) {
+        while (true) {
 
-                calculateProgressValues(mediaServiceHandler.updateProgress())
-                delay(400L)
-            }
-
+            calculateProgressValues(mediaServiceHandler.updateProgress())
+            delay(400L)
         }
+
+    }
 
     private suspend fun calculateProgressValues(currentProgress: Long) {
         _progress.emit(if (currentProgress > 0) (currentProgress.toFloat() / duration.value) else 0f)

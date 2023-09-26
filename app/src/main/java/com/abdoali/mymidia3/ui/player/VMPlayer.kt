@@ -16,9 +16,8 @@ class VMPlayer @Inject constructor(private val repository: Repository) : ViewMod
 
     val title = repository.title
 
-    val progress:StateFlow<Float>
+    val progress: StateFlow<Float>
         get() = repository.progress
-
 
     val duration = repository.duration
 
@@ -32,11 +31,13 @@ class VMPlayer @Inject constructor(private val repository: Repository) : ViewMod
     //    private var _artist = MutableStateFlow("")
     val artist: StateFlow<String>
         get() = repository.artist
-init {
-    viewModelScope.launch {
-        repository.updateProgress()
+
+    init {
+        viewModelScope.launch {
+            repository.updateProgress()
+        }
+
     }
 
-}
     fun onUIEven(uiEvent: UIEvent) = repository.onUIEvent(uiEvent)
 }

@@ -1,8 +1,5 @@
 package com.abdoali.mymidia3
 
-import android.Manifest
-import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
@@ -23,19 +20,11 @@ import com.abdoali.mymidia3.ui.settings.SettingVM
 import com.abdoali.mymidia3.ui.settings.setting
 import com.abdoali.mymidia3.ui.theme.Mymidia3Theme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-
-    override fun onStart() {
-        super.onStart()
-
-    }
 
     @OptIn(ExperimentalPermissionsApi::class)
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -55,9 +44,8 @@ class MainActivity : AppCompatActivity() {
                 val languag by settingVM.language.collectAsState()
                 if (Locale.getDefault().isO3Language != languag) {
 
-            settingVM.updateData()
+                    settingVM.updateData()
                 }
-
 
                 val mainNavController = rememberNavController()
                 Surface(
@@ -82,9 +70,5 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-
-    }
 }
 

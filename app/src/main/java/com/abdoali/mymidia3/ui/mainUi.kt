@@ -51,15 +51,13 @@ import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.data.formatDuration
 import com.abdoali.mymidia3.ui.local.navToLocale
 import com.abdoali.mymidia3.ui.online.navToOnline
+import com.abdoali.mymidia3.ui.player.PlayUi
 import com.abdoali.mymidia3.ui.search.navToSearch
 import com.abdoali.mymidia3.ui.settings.navToSetting
 import com.abdoali.mymidia3.uiCompount.MinControlImp
 import com.abdoali.mymidia3.uiCompount.NavHostAudie
-import com.abdoali.mymidia3.ui.player.PlayUi
 import com.abdoali.mymidia3.uiCompount.Timer
 import com.abdoali.mymidia3.uiCompount.getIndexDestination
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -82,7 +80,8 @@ fun MainUi(
     val navController = rememberNavController()
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     var selectedItem by rememberSaveable { mutableIntStateOf(1) }
-    val labelList = listOf(stringResource(R.string.locale) , stringResource(R.string.online))
+    val labelList =
+        listOf(stringResource(R.string.locale) , stringResource(R.string.online))
 
     val sheetScaffoldState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -103,25 +102,24 @@ fun MainUi(
     var showDig by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) ,
 
         topBar = {
 //
-                TopAppBar(title = { Text(text = "abdo ali") } ,
-                    scrollBehavior = scrollBehavior
-                    , actions = {
+            TopAppBar(title = { Text(text = "abdo ali") } ,
+                scrollBehavior = scrollBehavior , actions = {
                     AnimatedVisibility(visible = isTimerOn) {
 
                         Text(text = formatDuration(timer))
                     }
                     Row {
 
-
                         IconButton(onClick = {
                             showDig = true
                         }) {
                             if (showDig) {
-                                Timer(showTimer = { showDig = it } , onUIEvent = vm::onUIEvent)
+                                Timer(showTimer = { showDig = it } ,
+                                    onUIEvent = vm::onUIEvent)
                             }
                             if (isTimerOn) {
                                 Icon(
@@ -146,47 +144,38 @@ fun MainUi(
                         Icon(Icons.Outlined.Search , contentDescription = null)
                     }
 
-                    IconButton(onClick = { expand =true }) {
+                    IconButton(onClick = { expand = true }) {
                         Icon(Icons.Default.MoreVert , null)
                     }
-                        DropdownMenu(
-                            expanded = expand,
-                            onDismissRequest = { expand = false }
-                                ,modifier= Modifier.wrapContentSize(Alignment.TopEnd)
-                        )    {
-                            DropdownMenuItem(
-                                text = { Text(stringResource(R.string.setting)) },
-                                onClick = { mainNavController.navToSetting() },
-                                leadingIcon = {
-                                    Icon(
-                                        Icons.Outlined.Settings,
-                                        contentDescription = null
-                                    )
-                                }
-                            , modifier =  Modifier.wrapContentSize(Alignment.TopEnd)
-                            )
-                        }
+                    DropdownMenu(
+                        expanded = expand ,
+                        onDismissRequest = { expand = false } ,
+                        modifier = Modifier.wrapContentSize(Alignment.TopEnd)
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.setting)) } ,
+                            onClick = { mainNavController.navToSetting() } ,
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Outlined.Settings ,
+                                    contentDescription = null
+                                )
+                            } , modifier = Modifier.wrapContentSize(Alignment.TopEnd)
+                        )
+                    }
                 }
-                )
+            )
 
-            }
-
-
-
-        ,
+        } ,
 
         floatingActionButtonPosition = FabPosition.End ,
         bottomBar = {
             Column {
 
-    MinControlImp(isPlayerEvent = isPlaying ,
-        name = title ,
-        onUIEvent = vm::onUIEvent ,
-        modifier = Modifier.clickable { openBottomSheet = true })
-
-
-
-
+                MinControlImp(isPlayerEvent = isPlaying ,
+                    name = title ,
+                    onUIEvent = vm::onUIEvent ,
+                    modifier = Modifier.clickable { openBottomSheet = true })
 
             }
         }) { padding ->
@@ -203,7 +192,6 @@ fun MainUi(
 //                            selectedItem = index
                             if (index == 0) navController.navToLocale() else if (selectedItem == 1) navController.navToOnline()
 
-
                         } ,
                     )
                 }
@@ -219,9 +207,7 @@ fun MainUi(
 
                 uiEvent = vm::onUIEvent ,
 
-
-
-            )
+                )
 
 
 
@@ -230,7 +216,7 @@ fun MainUi(
                     .animateContentSize()
 
             ) {
-                
+
                 item {
 
                 }
@@ -238,9 +224,6 @@ fun MainUi(
                     Spacer(modifier = Modifier.height((LocalConfiguration.current.screenHeightDp).dp))
 
                 }
-
-
-
 
             }
             if (openBottomSheet) {
@@ -260,9 +243,9 @@ fun MainUi(
 }
 
 ////////////////////////////////navigation////////////////////
-const val MAIN_UI="MAIN_UI_MAIN_UI"
-fun NavGraphBuilder.mainUi(navController: NavController){
-    composable(MAIN_UI){
+const val MAIN_UI = "MAIN_UI_MAIN_UI"
+fun NavGraphBuilder.mainUi(navController: NavController) {
+    composable(MAIN_UI) {
         MainUi(navController)
     }
 }

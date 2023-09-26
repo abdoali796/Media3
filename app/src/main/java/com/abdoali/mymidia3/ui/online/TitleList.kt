@@ -16,7 +16,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.abdoali.datasourece.api.Reciter
 import com.abdoali.mymidia3.uiCompount.Item
 
 @Composable
@@ -28,7 +27,7 @@ fun screenTitle(
 //    reciter: List<Reciter> = emptyList() ,
 ) {
     val vm: VMList = hiltViewModel()
-    val sour = remember{
+    val sour = remember {
         vm.sura
     }
 
@@ -39,8 +38,7 @@ fun screenTitle(
             .border(BorderStroke(2.dp , Color.Black))
     ) {
 
-
-        LazyColumn() {
+        LazyColumn {
 
             if (keys == SOUR_LIST) {
                 items(items = sour) {
@@ -73,18 +71,17 @@ fun NavController.navToArtistList() {
     navigate(ARTIST_LIST)
 }
 
-fun NavGraphBuilder.sourList( navController: NavController) {
+fun NavGraphBuilder.sourList(navController: NavController) {
     composable(SOUR_LIST) {
         screenTitle(SOUR_LIST , navController)
     }
 }
 
-fun NavGraphBuilder.artistList( navController: NavController) {
+fun NavGraphBuilder.artistList(navController: NavController) {
     composable(ARTIST_LIST) {
         screenTitle(ARTIST_LIST , navController)
     }
 }
-
 
 const val SOUR_LIST = "SOUR_LISTSOUR_LIST"
 const val ARTIST_LIST = "ARTIST_LIST"

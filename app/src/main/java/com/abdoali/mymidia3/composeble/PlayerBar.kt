@@ -14,12 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.abdoali.mymidia3.data.UIEvent
 
-
 @Composable
 internal fun PlayerBar(
-    progress: Float,
-    durationString: String,
-    progressString: String,
+    progress: Float ,
+    durationString: String ,
+    progressString: String ,
     onUiEvent: (UIEvent) -> Unit
 ) {
     val newProgressValue = remember { mutableStateOf(0f) }
@@ -29,20 +28,20 @@ internal fun PlayerBar(
         modifier = Modifier.fillMaxWidth()
     ) {
         Slider(
-            value = if (useNewProgressValue.value) newProgressValue.value else progress,
+            value = if (useNewProgressValue.value) newProgressValue.value else progress ,
             onValueChange = { newValue ->
                 useNewProgressValue.value = true
                 newProgressValue.value = newValue
                 onUiEvent(UIEvent.UpdateProgress(newProgress = newValue))
-            },
+            } ,
             onValueChangeFinished = {
                 useNewProgressValue.value = false
-            },
+            } ,
             modifier = Modifier
                 .padding(horizontal = 8.dp)
         )
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.SpaceBetween ,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)

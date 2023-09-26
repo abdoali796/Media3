@@ -17,12 +17,15 @@ import javax.inject.Singleton
 object Module {
     @Provides
     @Singleton
-    fun timerPro(@ApplicationContext context:Context):Timer= Timer(context)
+    fun timerPro(@ApplicationContext context: Context): Timer = Timer(context)
 
     @Provides
     @Singleton
-    fun repositoryPro(mediaServiceHandler: MediaServiceHandler ,timer: Timer): Repository =
-        RepositoryImp(mediaServiceHandler=mediaServiceHandler , timer=timer)
+    fun repositoryPro(
+        mediaServiceHandler: MediaServiceHandler ,
+        timer: Timer
+    ): Repository =
+        RepositoryImp(mediaServiceHandler = mediaServiceHandler , timer = timer)
 
 
 }

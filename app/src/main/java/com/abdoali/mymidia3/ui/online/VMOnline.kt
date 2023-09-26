@@ -12,19 +12,18 @@ import javax.inject.Inject
 @HiltViewModel
 class VMOnline @Inject constructor(
     private val repository: Repository
-):ViewModel() {
+) : ViewModel() {
 
-    val list:StateFlow<List<QuranItem>>
+    val list: StateFlow<List<QuranItem>>
         get() = repository.list
 
-    val artists:StateFlow<List<Reciter>>
+    val artists: StateFlow<List<Reciter>>
         get() = repository.artistsList
 
-    val soura:StateFlow<List<String>>
+    val soura: StateFlow<List<String>>
         get() = repository.sura
 
-
-fun onUIEvent(uiEvent: UIEvent)=repository.onUIEvent(uiEvent)
+    fun onUIEvent(uiEvent: UIEvent) = repository.onUIEvent(uiEvent)
 
 
 }

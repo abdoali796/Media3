@@ -15,13 +15,13 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun Item(
     main: String ,
-    sacandery: String? ,
+    text2: String? ,
 
     modifier: Modifier = Modifier ,
-    moshaf: String? = null ,
+    text3: String? = null ,
 ) {
 
-    ItemImp(title = main , artists = sacandery , modifier = modifier , moshaf)
+    ItemImp(title = main , artists = text2 , modifier = modifier , text3)
 }
 
 @Composable

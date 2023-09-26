@@ -36,7 +36,7 @@ fun ListTitle(
             .padding(3.dp)
     ) {
         Text(text = title , style = MaterialTheme.typography.headlineLarge)
-        for (i in 0..5) {
+        for (i in 1..6) {
             Text(
                 text = titleList[i] ,
                 modifier.clickable { actionNav(titleList[i]) } ,

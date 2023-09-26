@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.abdoali.datasourece.QuranItem
 import com.abdoali.datasourece.api.Reciter
 import com.abdoali.datasourece.api.surah
+import com.abdoali.mymidia3.data.Repository
 import com.abdoali.playservice.MediaServiceHandler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,15 +15,16 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class VMTest @Inject constructor(
+class VMList @Inject constructor(
     private val savedStateHandle: SavedStateHandle ,
-    private val mediaServiceHandler: MediaServiceHandler
+    private val repository: Repository
 ) : ViewModel() {
     val sura = surah()
     val artistsList: StateFlow<List<Reciter>>
-        get() = mediaServiceHandler.artist
+        get() = repository.artistsList
 
-    private val _list = mediaServiceHandler.quranList
+    private val _list:StateFlow<List<QuranItem>>
+        get() = repository.list
     private val _fiterList = MutableStateFlow<List<QuranItem>>(emptyList())
     val list: StateFlow<List<QuranItem>>
         get() = _fiterList

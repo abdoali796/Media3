@@ -24,7 +24,7 @@ fun List(
     modifier: Modifier = Modifier
 ) {
 
-    val vm: VMTest = hiltViewModel()
+    val vm: VMList = hiltViewModel()
 
     val quranItem by vm.list.collectAsState()
 

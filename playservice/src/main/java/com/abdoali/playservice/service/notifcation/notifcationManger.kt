@@ -58,7 +58,7 @@ class NotificationManager @Inject constructor(
         PlayerNotificationManager.Builder(context, NOTIFICATION_ID, NOTIFICATION_CHANNEL_ID)
             .setMediaDescriptionAdapter(
                 NotificationAdapter(
-                    context = context,
+//                    context = context,
                     pendingIntent =  TaskStackBuilder.create(context).run {
                         addNextIntent(Intent(context, Class.forName("com.abdoali.mymidia3.MainActivity")))
                         getPendingIntent(0, FLAG_NO_CREATE or FLAG_MUTABLE)
@@ -108,7 +108,7 @@ class NotificationManager @Inject constructor(
             )
             notificationManager.createNotificationChannel(channel)
         } else {
-            null
+            return
         }
 
     }

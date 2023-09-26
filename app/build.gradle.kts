@@ -103,6 +103,12 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
 // For loading and tinting drawables on older versions of the platform
     implementation( "androidx.appcompat:appcompat-resources:1.6.1" )
+//room
+    val room_version = "2.5.2"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    kapt("androidx.room:room-compiler:$room_version")
+
 }
 kapt {
     correctErrorTypes = true

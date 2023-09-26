@@ -13,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -92,8 +91,8 @@ fun ListMp(
                 items(items = quranItem , key = { i -> i.index }) {
                     Item(
                         main = it.surah ,
-                        sacandery = it.artist ,
-                        moshaf = it.moshaf,
+                        text2 = it.artist ,
+                        text3 = it.moshaf,
                         modifier = Modifier.clickable { uiEvent(UIEvent.SeekToIndex(it.index)) })
                 }
                 item{

@@ -3,8 +3,10 @@ package com.abdoali.playservice.di
 import android.content.Context
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
+import androidx.media3.datasource.DataSourceBitmapLoader
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
+import androidx.media3.session.CacheBitmapLoader
 import androidx.media3.session.MediaSession
 import com.abdoali.datasourece.DataSources
 import com.abdoali.playservice.MediaServiceHandler
@@ -47,9 +49,12 @@ object PlayerModule {
 
     @Provides
     @Singleton
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     fun provideMediaSession(
         @ApplicationContext context: Context , player: ExoPlayer
-    ): MediaSession = MediaSession.Builder(context , player).build()
+    ): MediaSession = MediaSession.Builder(context , player)
+        .setBitmapLoader(CacheBitmapLoader(DataSourceBitmapLoader( context)))
+        .build()
 
 
     @Provides

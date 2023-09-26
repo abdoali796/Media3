@@ -4,16 +4,15 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,25 +22,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.abdoali.datasourece.QuranItem
-import com.abdoali.datasourece.api.Reciter
 import com.abdoali.mymidia3.R
 import com.abdoali.mymidia3.data.UIEvent
-import com.abdoali.mymidia3.ui.LOCALE
-import com.abdoali.mymidia3.uiCompount.Item
+import com.abdoali.mymidia3.ui.local.LOCALE
 
 @Composable
 fun OnLineUI(
-    list: List<QuranItem> ,
-    surah: List<String> ,
-    artists: List<Reciter> ,
+
     navController: NavController ,
-    onUIEvent: (UIEvent) -> Unit ,
+
     modifier: Modifier = Modifier
 ) {
+    val vmOnline :VMOnline= hiltViewModel()
+    val  list by vmOnline.list.collectAsState()
+    val artists by vmOnline.artists.collectAsState()
+    val surah by vmOnline.soura.collectAsState()
     AnimatedVisibility(list.isEmpty()) {
         Text(text = stringResource(R.string.wait_a_minute))
     }
@@ -58,7 +58,7 @@ fun OnLineUI(
                 actionNavToListSurah = { navController.navToSourList() } ,
                 actionNavToListArtists = { navController.navToArtistList() } ,
                 actionNavToSurahOrArttist = navController::navToList ,
-                actionUi = onUIEvent
+                actionUi = vmOnline::onUIEvent
             )
         }
 
@@ -197,18 +197,14 @@ fun NavController.navToOnline() {
 }
 
 fun NavGraphBuilder.online(
-    list: List<QuranItem> ,
-    surah: List<String> ,
-    artists: List<Reciter> ,
+
     navController: NavController ,
-    onUIEvent: (UIEvent) -> Unit
+
 ) {
     composable(ONLINE) {
         OnLineUI(
-            list = list ,
-            surah = surah ,
-            artists = artists ,
-            navController = navController , onUIEvent = onUIEvent
+
+            navController = navController
         )
     }
 }

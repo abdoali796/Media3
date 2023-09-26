@@ -2,7 +2,6 @@ package com.abdoali.playservice
 
 import android.annotation.SuppressLint
 import android.os.Build
-import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.media3.common.MediaItem
@@ -14,12 +13,13 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.abdoali.datasourece.DataSources
 import com.abdoali.datasourece.QuranItem
 import com.abdoali.datasourece.api.Reciter
+import com.abdoali.datasourece.api.surah
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -29,6 +29,9 @@ class MediaServiceHandler @Inject constructor(
     private val dataSources: DataSources
 ) : Player.Listener {
 
+    val _soruhList = MutableStateFlow(surah())
+    val soruhList: StateFlow<List<String>>
+        get() = _soruhList
     private val _mediaState = MutableStateFlow<MediaState>(MediaState.Initial)
     val mediaState = _mediaState.asStateFlow()
     private var job: Job? = null
@@ -37,7 +40,8 @@ class MediaServiceHandler @Inject constructor(
         MutableStateFlow<List<Int>>(listOf())
     private var index = 0
     private var isPlayList = MutableStateFlow(false)
-    private var _mediaStateAbdo = MutableStateFlow<MediaStateAbdo>(MediaStateAbdo.Initial)
+    private var _mediaStateAbdo =
+        MutableStateFlow<MediaStateAbdo>(MediaStateAbdo.Initial)
     val mediaStateAbdo: StateFlow<MediaStateAbdo>
         get() = _mediaStateAbdo
 
@@ -47,11 +51,9 @@ class MediaServiceHandler @Inject constructor(
     val quranList: StateFlow<List<QuranItem>>
         get() = _quranList
 
-
     private val _localList = MutableStateFlow<List<QuranItem>>(emptyList())
     val localList: StateFlow<List<QuranItem>>
         get() = _localList
-
 
     private val _artist = MutableStateFlow<List<Reciter>>(emptyList())
     val artist: StateFlow<List<Reciter>>
@@ -60,7 +62,9 @@ class MediaServiceHandler @Inject constructor(
     private val _shuffleMode = MutableStateFlow(false)
     val shuffleMode: StateFlow<Boolean>
         get() = _shuffleMode
-
+    private val _repeat = MutableStateFlow(false)
+    val repeat: StateFlow<Boolean>
+        get() = _repeat
     private val _isPlay = MutableStateFlow(false)
     val isPlay: StateFlow<Boolean>
         get() = _isPlay
@@ -77,24 +81,35 @@ class MediaServiceHandler @Inject constructor(
 
     fun updateProgress() = player.currentPosition
 
+   private suspend fun addMediaItem() {
 
-    suspend fun addMediaItem() {
+        player.addMediaItems(prepareMetaData())
 
-            player.addMediaItems(prepareMetaData())
-
-            player.prepare()
+        player.prepare()
 
 
     }
-    suspend fun addMediaItemLocal() {
+
+   private suspend fun addMediaItemLocal() {
 
         player.addMediaItems(prepareMetaDataLocal())
         player.prepare()
     }
 
-    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
-    suspend fun onPlayerEvent(playerEvent: PlayerEvent) {
+    suspend fun updateData() {
+        player.stop()
+        _quranList.update { emptyList() }
+        _localList.update { emptyList() }
+        player.clearMediaItems()
+        _soruhList.update { surah() }
+        addMediaItemLocal()
+        addMediaItem()
 
+
+    }
+
+    @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
+    fun onPlayerEvent(playerEvent: PlayerEvent) {
 
         when (playerEvent) {
             PlayerEvent.Backward -> player.seekBack()
@@ -135,9 +150,19 @@ class MediaServiceHandler @Inject constructor(
 
             PlayerEvent.Stop -> stopProgressUpdate()
 
-            PlayerEvent.Kill -> player.pause()
+            PlayerEvent.Kill -> {
+//                player.seekTo(0,0)
+//                player.clearMediaItems()
+//                _quranList.update { emptyList() }
+//                _localList.update { emptyList() }
+                player.stop()
+
+
+            }
+
             is PlayerEvent.Shuffle -> player.shuffleModeEnabled = playerEvent.shuffle
             is PlayerEvent.SeekToIndex -> {
+                Log.i("PlayerEvent.SeekToIndex" , playerEvent.index.toString())
                 player.seekTo(playerEvent.index , 0)
                 player.play()
                 if (! _list.value.contains(playerEvent.index)) isPlayList.value = false
@@ -147,6 +172,15 @@ class MediaServiceHandler @Inject constructor(
             is PlayerEvent.UpdateProgress -> player.seekTo((player.duration * playerEvent.newProgress).toLong())
 
             is PlayerEvent.SetPlayList -> preparePlayList(playerEvent.list)
+
+            is PlayerEvent.Repeat-> {
+                if (playerEvent.repeat){
+                    player.repeatMode=Player.REPEAT_MODE_ONE
+                }else{
+                    player.repeatMode=Player.REPEAT_MODE_OFF
+                }
+            }
+
         }
     }
 
@@ -190,7 +224,6 @@ class MediaServiceHandler @Inject constructor(
 
     override fun onMediaItemTransition(mediaItem: MediaItem? , reason: Int) {
 
-
         if (reason == 1 && index < _list.value.size - 1) {
             player.seekTo(_list.value[index] , 0L)
             index ++
@@ -200,6 +233,10 @@ class MediaServiceHandler @Inject constructor(
         }
     }
 
+    override fun onRepeatModeChanged(repeatMode: Int) {
+        _repeat.update { repeatMode != Player.REPEAT_MODE_OFF }
+        super.onRepeatModeChanged(repeatMode)
+    }
 
     @SuppressLint("SwitchIntDef")
     override fun onPlaybackStateChanged(playbackState: Int) {
@@ -243,35 +280,39 @@ class MediaServiceHandler @Inject constructor(
 
     private suspend fun prepareMetaDataLocal(): List<MediaItem> {
         val date = dataSources.gitLocal()
-_list
+        _list
         _localList.emit(date)
         return date.map { item: QuranItem ->
 
             val metadata =
-                MediaMetadata.Builder().setArtist(item.artist).setDisplayTitle(item.surah)
+                MediaMetadata.Builder().setArtist(item.artist)
+                    .setDisplayTitle(item.surah)
                     .setArtworkUri(item.uri).build()
             MediaItem.Builder().setMediaMetadata(metadata).setUri(item.uri).build()
 
         }
 
     }
+
     private suspend fun prepareMetaData(): List<MediaItem> {
 
-
-        return withContext(Dispatchers.IO){
-            val date =  dataSources.gitContent()
+        return withContext(Dispatchers.IO) {
+            val date = dataSources.gitContent()
             _artist.emit(dataSources.getArtist())
             _quranList.emit(date)
-Log.i("withContext",date.size.toString())
+            Log.i("withContext" , date.size.toString())
             date.map { item: QuranItem ->
-            if (item.isLocal) {
-                val metadata =
-                    MediaMetadata.Builder().setArtist(item.artist).setDisplayTitle(item.surah)
-                        .setArtworkUri(item.uri).build()
-                MediaItem.Builder().setMediaMetadata(metadata).setUri(item.uri).build()
-            } else {
-                MediaItem.fromUri(item.uri)
-            }}
+                if (item.isLocal) {
+                    val metadata =
+                        MediaMetadata.Builder().setArtist(item.artist)
+                            .setDisplayTitle(item.surah)
+                            .setArtworkUri(item.uri).build()
+                    MediaItem.Builder().setMediaMetadata(metadata).setUri(item.uri)
+                        .build()
+                } else {
+                    MediaItem.fromUri(item.uri)
+                }
+            }
         }
 
     }
@@ -299,11 +340,15 @@ Log.i("withContext",date.size.toString())
 sealed class MediaState {
     object Initial : MediaState()
     data class Ready(
-        val duration: Long , val metadata: MediaMetadata , val shuffleModeEnabled: Boolean
+        val duration: Long ,
+        val metadata: MediaMetadata ,
+        val shuffleModeEnabled: Boolean
     ) : MediaState()
 
     data class Progress(
-        val progress: Long , val metadata: MediaMetadata , val shuffleModeEnabled: Boolean
+        val progress: Long ,
+        val metadata: MediaMetadata ,
+        val shuffleModeEnabled: Boolean
     ) : MediaState()
 
     data class Buffering(val progress: Long) : MediaState()
@@ -334,6 +379,6 @@ sealed class PlayerEvent {
     data class SeekToIndex(val index: Int) : PlayerEvent()
     data class Shuffle(val shuffle: Boolean) : PlayerEvent()
     data class UpdateProgress(val newProgress: Float) : PlayerEvent()
-
+    data class Repeat(val repeat: Boolean) : PlayerEvent()
     data class SetPlayList(val list: List<Int>) : PlayerEvent()
 }

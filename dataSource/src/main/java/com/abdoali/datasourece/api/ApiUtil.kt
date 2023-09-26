@@ -22,7 +22,14 @@ fun parserReciterMp3(jsonObject: JSONObject): Mp3quran {
             val surah_total = moshafJSONObject.getInt("surah_total")
             val moshaf_type = moshafJSONObject.getInt("moshaf_type")
             val surah_list = moshafJSONObject.getString("surah_list")
-            moshafList += Moshaf(id , moshaf_type , name , server , surah_list , surah_total)
+            moshafList += Moshaf(
+                id ,
+                moshaf_type ,
+                name ,
+                server ,
+                surah_list ,
+                surah_total
+            )
         }
 
         reciter += Reciter(id = id , letter = letter , moshaf = moshafList , name = name)

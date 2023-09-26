@@ -1,10 +1,10 @@
 package com.abdoali.mymidia3
 
 import android.Manifest
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,8 +25,9 @@ import com.abdoali.mymidia3.ui.theme.Mymidia3Theme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import dagger.hilt.android.AndroidEntryPoint
-
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -42,27 +43,31 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         MySharedPreferences.initShared(this)
         setContent {
-            val settingVM :SettingVM= hiltViewModel()
+            val settingVM: SettingVM = hiltViewModel()
+
             val colorTheme by settingVM.theme.collectAsState()
-            LaunchedEffect(key1 = colorTheme , block ={
-                Log.i("changeTheme","main $colorTheme")
-            } )
+            LaunchedEffect(key1 = colorTheme , block = {
+                Log.i("changeTheme" , "main $colorTheme")
+            })
             Mymidia3Theme(
-                colorTheme =colorTheme
+                colorTheme = colorTheme
             ) {
-                val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    rememberPermissionState(permission = Manifest.permission.READ_MEDIA_AUDIO)
-                } else {
-                    rememberPermissionState(permission = Manifest.permission.READ_EXTERNAL_STORAGE , )
+                val languag by settingVM.language.collectAsState()
+                if (Locale.getDefault().isO3Language != languag) {
+
+            settingVM.updateData()
                 }
-                LaunchedEffect(key1 = true , block = {
-                    if (! permission.status.isGranted) permission.launchPermissionRequest()
-                })
-val mainNavController= rememberNavController()
+
+
+                val mainNavController = rememberNavController()
                 Surface(
-                    modifier = Modifier.fillMaxSize() , color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize() ,
+                    color = MaterialTheme.colorScheme.background
                 ) {
-                    NavHost(navController =mainNavController , startDestination = MAIN_UI ){
+                    NavHost(
+                        navController = mainNavController ,
+                        startDestination = MAIN_UI
+                    ) {
 
                         mainUi(mainNavController)
                         search()

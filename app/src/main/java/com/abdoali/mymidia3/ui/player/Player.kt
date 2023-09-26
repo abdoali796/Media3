@@ -1,5 +1,6 @@
-package com.abdoali.mymidia3.uiCompount
+package com.abdoali.mymidia3.ui.player
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,8 +21,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.abdoali.mymidia3.data.formatDuration
 import com.abdoali.mymidia3.ui.VM
-
+import com.abdoali.mymidia3.uiCompount.Bar
+import com.abdoali.mymidia3.uiCompount.Control
+import com.abdoali.mymidia3.uiCompount.ImageAudoi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,7 +43,7 @@ fun PlayUi(
 
     modifier: Modifier = Modifier
 ) {
-    val vm: VM = hiltViewModel()
+    val vm: VMPlayer = hiltViewModel()
     val title by vm.title.collectAsState()
     val artists by vm.artist.collectAsState()
     val process by vm.progress.collectAsState()
@@ -47,12 +52,10 @@ fun PlayUi(
     val shuffle: Boolean by vm.shuffle.collectAsState()
     val uri by vm.uri.collectAsState()
     val duration by vm.duration.collectAsState()
-    val context = LocalContext.current
 
-    val buffer by vm.BUFFERING.collectAsState()
-    var bitmap by remember {
-        mutableStateOf<Any?>(null)
-    }
+    val repeatOn by vm.repeat.collectAsState()
+    val buffer by vm.buffering.collectAsState()
+
 
 //    LaunchedEffect(key1 = uri) {
 //        try {
@@ -117,7 +120,9 @@ fun PlayUi(
                     isLocal = true
                 )
 
-
+LaunchedEffect(key1 = process ){
+    Log.i("currentProgress", process.toString())
+}
 
 
                 Column {
@@ -126,13 +131,15 @@ fun PlayUi(
                     Bar(
                         process = process ,
                         processString = processString ,
-                        durationString = vm.formatDuration(duration) ,
-                        onUIEvent = vm::onUIEvent
+                        durationString = formatDuration(duration) ,
+                        onUIEvent = vm::onUIEven
                     )
+
                     Control(
                         isPlay = isPlaying ,
                         shuffle = shuffle ,
-                        onUiEvent = vm::onUIEvent ,
+                        onUiEvent = vm::onUIEven ,
+                        repeatOn = repeatOn ,
                         modifier = Modifier.padding(bottom = 20.dp , top = 20.dp)
                     )
                     Spacer(modifier = modifier.height(20.dp))

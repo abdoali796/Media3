@@ -1,5 +1,8 @@
 package com.abdoali.datasourece
 
+//import androidx.media3.common.MediaItem
+//import androidx.media3.common.MediaMetadata
+
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
@@ -7,15 +10,11 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.WorkerThread
-import com.abdoali.datasourece.api.ApiService
-//import androidx.media3.common.MediaItem
-//import androidx.media3.common.MediaMetadata
-
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class ContentResolverHelper @Inject constructor(@ApplicationContext val context: Context ) {
+class ContentResolverHelper @Inject constructor(@ApplicationContext val context: Context) {
 
     private var mcursor: Cursor? = null
 
@@ -37,10 +36,9 @@ class ContentResolverHelper @Inject constructor(@ApplicationContext val context:
         MediaStore.Audio.AudioColumns.ARTIST ,
         MediaStore.Audio.AudioColumns.DATA ,
         MediaStore.Audio.AudioColumns.DURATION ,
-        MediaStore.Audio.Media.TITLE,
+        MediaStore.Audio.Media.TITLE ,
 
-
-    )
+        )
     val sortOrder = "${MediaStore.Audio.Media.DISPLAY_NAME} ASC"
 
     @WorkerThread
@@ -62,61 +60,66 @@ class ContentResolverHelper @Inject constructor(@ApplicationContext val context:
 //    }
 
     private fun getCursor(): MutableList<Song> {
-        val audioList = mutableListOf<Song>()
+        //try and catch for API Less than 28
+        try {
 
-        mcursor = context.contentResolver.query(
-            collection ,
-            projection ,
-            selection ,
-            selectionArgs ,
-            sortOrder
-        )
+            val audioList = mutableListOf<Song>()
 
-        mcursor?.use { cursor ->
-            // Cache column indices.
-            val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
-            val nameColumn =
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
-            val durationColumn =
-                cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
+            mcursor = context.contentResolver.query(
+                collection ,
+                projection ,
+                selection ,
+                selectionArgs ,
+                sortOrder
+            )
+
+            mcursor?.use { cursor ->
+                // Cache column indices.
+                val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media._ID)
+                val nameColumn =
+                    cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DISPLAY_NAME)
+                val durationColumn =
+                    cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.DURATION)
 //            val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
-            val artistColumns = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
-            val titleColumns = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE)
-            val dateColumns = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATA)
-            var index = 0
-            while (cursor.moveToNext()) {
-                val id = cursor.getLong(idColumn)
-                val name = cursor.getString(nameColumn)
-                val duration = cursor.getInt(durationColumn)
-                val artists = cursor.getString(artistColumns)
-                val title = cursor.getString(titleColumns)
-                val data = cursor.getString(durationColumn)
-                val contentUri: Uri =
-                    ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI , id)
-                audioList += Song(
-                    uri = contentUri ,
-                    displayName = name ,
-                    id = id ,
-                    artists = artists ,
-                    duration = duration ,
-                    title = title ,
-                    date = data,
+                val artistColumns =
+                    cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST)
+                val titleColumns =
+                    cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE)
+                val dateColumns =
+                    cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATA)
+                var index = 0
+                while (cursor.moveToNext()) {
+                    val id = cursor.getLong(idColumn)
+                    val name = cursor.getString(nameColumn)
+                    val duration = cursor.getInt(durationColumn)
+                    val artists = cursor.getString(artistColumns)
+                    val title = cursor.getString(titleColumns)
+                    val data = cursor.getString(durationColumn)
+                    val contentUri: Uri =
+                        ContentUris.withAppendedId(
+                            MediaStore.Audio.Media.EXTERNAL_CONTENT_URI ,
+                            id
+                        )
+                    audioList += Song(
+                        uri = contentUri ,
+                        displayName = name ,
+                        id = id ,
+                        artists = artists ,
+                        duration = duration ,
+                        title = title ,
+                        date = data ,
 
-                )
+                        )
 
-//                audioList +=Song(
-//                    uri = contentUri ,
-//                    displayName = name ,
-//                    id = id ,
-//                    artists = artists ,
-//                    duration = duration ,
-//                    title =  title,
-//                    date = data
 
+                }
 
             }
+            return audioList
+        } catch (e: Exception) {
 
-
+            return mutableListOf()
         }
-        return audioList
-    }}
+    }
+
+}

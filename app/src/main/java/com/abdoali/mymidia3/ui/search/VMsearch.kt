@@ -3,6 +3,8 @@ package com.abdoali.mymidia3.ui.search
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abdoali.datasourece.QuranItem
+import com.abdoali.mymidia3.data.Repository
+import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.PlayerEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VMSearch @Inject constructor(
-    private val mediaServiceHandler: MediaServiceHandler
+    private val repository: Repository
 ) : ViewModel() {
 
     private val _searchText = MutableStateFlow("")
@@ -29,7 +31,7 @@ class VMSearch @Inject constructor(
         _isSearching.value = boolean
     }
 
-    private val _list = mediaServiceHandler.quranList
+    private val _list = repository.list
     val itemsFilter = _list
 
     val itemsFilterSearch = searchText.combine(_list) { text , item ->
@@ -64,7 +66,7 @@ class VMSearch @Inject constructor(
 
     fun playIndex(index: Int) {
         viewModelScope.launch {
-            mediaServiceHandler.onPlayerEvent(PlayerEvent.SeekToIndex(index))
+            repository.onUIEvent(UIEvent.SeekToIndex(index))
         }
     }
 }

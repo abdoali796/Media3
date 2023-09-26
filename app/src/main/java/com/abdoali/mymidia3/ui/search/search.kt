@@ -40,13 +40,13 @@ placeholder = { Text(text = stringResource(R.string.search_text))},
             content = {
                 if (quranListSearch.size > 3) {
                 repeat(4){i->
-                        Item(main = quranListSearch[i].surah , sacandery = quranListSearch[i].artist , Modifier.clickable {
+                        Item(main = quranListSearch[i].surah , text2 = quranListSearch[i].artist , Modifier.clickable {
                             vm.playIndex(quranListSearch[i].index)
 
                     })}
                 }else{
                     quranListSearch.forEach { itme ->
-                        Item(main = itme.surah , sacandery = itme.artist , Modifier.clickable {
+                        Item(main = itme.surah , text2 = itme.artist , Modifier.clickable {
                             vm.playIndex(itme.index)
                         }) }
                 }
@@ -54,9 +54,9 @@ placeholder = { Text(text = stringResource(R.string.search_text))},
         )
         LazyColumn {
             items(items = quranListSearch , key = { i -> i.index }) { quran ->
-                Item(main = quran.surah , sacandery = quran.artist , Modifier.clickable {
+                Item(main = quran.surah , text2 = quran.artist , Modifier.clickable {
                     vm.playIndex(quran.index)
-                } , moshaf = quran.moshaf)
+                } , text3 = quran.moshaf)
             }
 
         }

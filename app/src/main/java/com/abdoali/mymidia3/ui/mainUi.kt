@@ -1,6 +1,5 @@
 package com.abdoali.mymidia3.ui
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
@@ -20,7 +19,6 @@ import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,11 +36,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -50,16 +45,17 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.abdoali.datasourece.QuranItem
 import com.abdoali.mymidia3.R
 import com.abdoali.mymidia3.composeble.FancyAnimatedIndicator
 import com.abdoali.mymidia3.data.UIEvent
+import com.abdoali.mymidia3.data.formatDuration
+import com.abdoali.mymidia3.ui.local.navToLocale
 import com.abdoali.mymidia3.ui.online.navToOnline
 import com.abdoali.mymidia3.ui.search.navToSearch
 import com.abdoali.mymidia3.ui.settings.navToSetting
 import com.abdoali.mymidia3.uiCompount.MinControlImp
 import com.abdoali.mymidia3.uiCompount.NavHostAudie
-import com.abdoali.mymidia3.uiCompount.PlayUi
+import com.abdoali.mymidia3.ui.player.PlayUi
 import com.abdoali.mymidia3.uiCompount.Timer
 import com.abdoali.mymidia3.uiCompount.getIndexDestination
 
@@ -78,13 +74,11 @@ fun MainUi(
 
     val isPlaying by vm.isPlaying.collectAsState()
 
-    val quranList = emptyList<QuranItem>()
-    val localList by vm.localList.collectAsState()
+//    val quranList = emptyList<QuranItem>()
+//    val localList by vm.localList.collectAsState()
     val isTimerOn by vm.isTimerOn.collectAsState()
-    val soura =  remember {
-        vm.sura
-    }
-    val artistsList by vm.artistsList.collectAsState()
+//    val soura by  vm.sura.collectAsState()
+//    val artistsList by vm.artistsList.collectAsState()
     val navController = rememberNavController()
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     var selectedItem by rememberSaveable { mutableIntStateOf(1) }
@@ -118,7 +112,7 @@ fun MainUi(
                     , actions = {
                     AnimatedVisibility(visible = isTimerOn) {
 
-                        Text(text = vm.formatDuration(timer))
+                        Text(text = formatDuration(timer))
                     }
                     Row {
 
@@ -216,17 +210,15 @@ fun MainUi(
 
             }
 
-            AnimatedVisibility(visible = artistsList.isEmpty()) {
-                Text(text = stringResource(R.string.wait_a_minute))
-            }
+//            AnimatedVisibility(visible = artistsList.isEmpty()) {
+//                Text(text = stringResource(R.string.wait_a_minute))
+//            }
 
             NavHostAudie(
                 navController = navController ,
-                quranList = quranList ,
-                soura = soura ,
-               local= localList,
-                artistsList = artistsList ,
+
                 uiEvent = vm::onUIEvent ,
+
 
 
             )
@@ -244,10 +236,10 @@ fun MainUi(
                 }
                 item {
                     Spacer(modifier = Modifier.height((LocalConfiguration.current.screenHeightDp).dp))
-                    Text(text = localList.size.toString())
+
                 }
 
-                item { Text(text = artistsList.size.toString()) }
+
 
 
             }

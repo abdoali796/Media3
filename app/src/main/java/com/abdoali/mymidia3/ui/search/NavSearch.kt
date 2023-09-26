@@ -16,7 +16,7 @@ fun NavGraphBuilder.search(){
         when(initialState.destination.route){
             MAIN_UI -> slideIntoContainer(
                  AnimatedContentTransitionScope.SlideDirection.Down,
-                animationSpec = tween(3500)
+                animationSpec = tween(350)
             )
 
             else->null

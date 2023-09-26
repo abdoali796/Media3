@@ -27,7 +27,7 @@ fun screenTitle(
     modifier: Modifier = Modifier ,
 //    reciter: List<Reciter> = emptyList() ,
 ) {
-    val vm: VMTest = hiltViewModel()
+    val vm: VMList = hiltViewModel()
     val sour = remember{
         vm.sura
     }
@@ -46,7 +46,7 @@ fun screenTitle(
                 items(items = sour) {
                     Item(
                         main = it ,
-                        sacandery = null ,
+                        text2 = null ,
                         modifier.clickable { navController.navToList(it) })
                 }
             } else {
@@ -54,7 +54,8 @@ fun screenTitle(
                     reciter.moshaf.forEach {
                         Item(
                             main = reciter.name ,
-                            sacandery = it.name ,
+                            text2 = it.name ,
+
                             modifier.clickable { navController.navToList(reciter.name + "," + it.name) })
                     }
                 }
@@ -72,13 +73,13 @@ fun NavController.navToArtistList() {
     navigate(ARTIST_LIST)
 }
 
-fun NavGraphBuilder.sourList(list: List<String> , navController: NavController) {
+fun NavGraphBuilder.sourList( navController: NavController) {
     composable(SOUR_LIST) {
         screenTitle(SOUR_LIST , navController)
     }
 }
 
-fun NavGraphBuilder.artistList(list: List<Reciter> , navController: NavController) {
+fun NavGraphBuilder.artistList( navController: NavController) {
     composable(ARTIST_LIST) {
         screenTitle(ARTIST_LIST , navController)
     }

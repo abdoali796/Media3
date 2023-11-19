@@ -1,6 +1,7 @@
 package com.abdoali.mymidia3.ui.player
 
 import android.util.Log
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,7 +9,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -47,7 +52,7 @@ fun PlayUi(
     val shuffle: Boolean by vm.shuffle.collectAsState()
     val uri by vm.uri.collectAsState()
     val duration by vm.duration.collectAsState()
-
+    val itFav by vm.itFov.collectAsState()
     val repeatOn by vm.repeat.collectAsState()
     val buffer by vm.buffering.collectAsState()
 
@@ -117,7 +122,13 @@ fun PlayUi(
 
 
                 Column {
-
+                    Icon(if (itFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder ,
+                        contentDescription
+                        = null ,
+                        modifier =
+                        modifier
+                            .clickable
+                            { vm.addFav() })
                     Bar(
                         process = process ,
                         processString = processString ,

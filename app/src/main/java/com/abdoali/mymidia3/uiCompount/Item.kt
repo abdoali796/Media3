@@ -42,9 +42,7 @@ private fun ItemImp(
 
         Column(
             modifier
-//            .padding(vertical = 3.dp)
-//            .border( 1.dp ,MaterialTheme.colorScheme.primary ,MaterialTheme.shapes.large)
-//            .shadow(3.dp , )
+
                 .padding(8.dp)
 
                 .fillMaxWidth()

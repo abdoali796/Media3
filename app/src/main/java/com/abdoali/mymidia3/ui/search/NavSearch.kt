@@ -9,7 +9,9 @@ import com.abdoali.mymidia3.ui.MAIN_UI
 
 const val SEARCH = "SEARCHSEARCH"
 
-fun NavGraphBuilder.search() {
+fun NavGraphBuilder.search(
+    subNavController: NavController
+) {
     composable(SEARCH , enterTransition = {
         when (initialState.destination.route) {
             MAIN_UI -> slideIntoContainer(
@@ -30,7 +32,7 @@ fun NavGraphBuilder.search() {
         }
     }
     ) {
-        Search()
+        Search(subNavController = subNavController)
 
     }
 }

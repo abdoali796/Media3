@@ -14,6 +14,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.abdoali.mymidia3.R
 import com.abdoali.mymidia3.ui.ListMp
+import com.abdoali.mymidia3.uiCompount.lottie.LottieCompose
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -38,12 +39,16 @@ fun LocaleList(
     Column {
 
         AnimatedVisibility(! permission.status.isGranted) {
-            Button(onClick = {
+            Column {
 
-                permission.launchPermissionRequest()
+                LottieCompose()
+                Button(onClick = {
 
-            }) {
-                Text(text = "allow permission")
+                    permission.launchPermissionRequest()
+
+                }) {
+                    Text(text = "allow permission")
+                }
             }
         }
         AnimatedVisibility(
@@ -70,7 +75,10 @@ fun LocaleList(
             ListMp(
                 quranItem = quranItem ,
                 stringResource(R.string.locale) ,
-                uiEvent = vmLocal::onUIEven
+                uiEvent = vmLocal::onUIEven ,
+                id = null ,
+                favorAddAction = { i: Int , s: String -> } ,
+                favorDelAction = { i: Int , s: String -> }
             )
         }
     }

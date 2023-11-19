@@ -48,6 +48,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 val mainNavController = rememberNavController()
+                val subNavController = rememberNavController()
                 Surface(
                     modifier = Modifier.fillMaxSize() ,
                     color = MaterialTheme.colorScheme.background
@@ -57,8 +58,8 @@ class MainActivity : AppCompatActivity() {
                         startDestination = MAIN_UI
                     ) {
 
-                        mainUi(mainNavController)
-                        search()
+                        mainUi(mainNavController , subNavController)
+                        search(subNavController)
                         setting(settingVM)
                     }
 

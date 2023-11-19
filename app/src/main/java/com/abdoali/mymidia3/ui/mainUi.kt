@@ -42,9 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
 import com.abdoali.mymidia3.R
 import com.abdoali.mymidia3.composeble.FancyAnimatedIndicator
 import com.abdoali.mymidia3.data.UIEvent
@@ -62,7 +62,7 @@ import com.abdoali.mymidia3.uiCompount.getIndexDestination
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainUi(
-    mainNavController: NavController
+    mainNavController: NavController , subNavController: NavHostController
 ) {
     val vm: VM = hiltViewModel()
 //    val context = LocalContext.
@@ -77,9 +77,9 @@ fun MainUi(
     val isTimerOn by vm.isTimerOn.collectAsState()
 //    val soura by  vm.sura.collectAsState()
 //    val artistsList by vm.artistsList.collectAsState()
-    val navController = rememberNavController()
+
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
-    var selectedItem by rememberSaveable { mutableIntStateOf(1) }
+    val selectedItem by rememberSaveable { mutableIntStateOf(1) }
     val labelList =
         listOf(stringResource(R.string.locale) , stringResource(R.string.online))
 
@@ -91,7 +91,7 @@ fun MainUi(
     }
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
-    val navback by navController.currentBackStackEntryAsState()
+    val navback by subNavController.currentBackStackEntryAsState()
     val destination = navback?.destination
     val indicator = @Composable { tabPositions: List<TabPosition> ->
         FancyAnimatedIndicator(
@@ -101,13 +101,13 @@ fun MainUi(
     }
     var showDig by rememberSaveable { mutableStateOf(false) }
 
-    Scaffold(
-        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) ,
+    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) ,
 
         topBar = {
 //
             TopAppBar(title = { Text(text = "abdo ali") } ,
-                scrollBehavior = scrollBehavior , actions = {
+                scrollBehavior = scrollBehavior ,
+                actions = {
                     AnimatedVisibility(visible = isTimerOn) {
 
                         Text(text = formatDuration(timer))
@@ -122,8 +122,7 @@ fun MainUi(
                                     onUIEvent = vm::onUIEvent)
                             }
                             if (isTimerOn) {
-                                Icon(
-                                    Icons.Outlined.Timer ,
+                                Icon(Icons.Outlined.Timer ,
                                     contentDescription = null ,
                                     modifier = Modifier.clickable {
                                         vm.onUIEvent(UIEvent.Timer(0))
@@ -132,8 +131,7 @@ fun MainUi(
                                 if (showDig) {
                                     Timer(showTimer = {
                                         showDig = it
-                                    } ,
-                                        onUIEvent = vm::onUIEvent)
+                                    } , onUIEvent = vm::onUIEvent)
                                 }
                                 Icon(Icons.Rounded.Timer , contentDescription = null)
 
@@ -147,29 +145,23 @@ fun MainUi(
                     IconButton(onClick = { expand = true }) {
                         Icon(Icons.Default.MoreVert , null)
                     }
-                    DropdownMenu(
-                        expanded = expand ,
+                    DropdownMenu(expanded = expand ,
                         onDismissRequest = { expand = false } ,
-                        modifier = Modifier.wrapContentSize(Alignment.TopEnd)
-                    ) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(R.string.setting)) } ,
+                        modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
+                        DropdownMenuItem(text = { Text(stringResource(R.string.setting)) } ,
                             onClick = { mainNavController.navToSetting() } ,
                             leadingIcon = {
                                 Icon(
-                                    Icons.Outlined.Settings ,
-                                    contentDescription = null
+                                    Icons.Outlined.Settings , contentDescription = null
                                 )
-                            } , modifier = Modifier.wrapContentSize(Alignment.TopEnd)
-                        )
+                            } ,
+                            modifier = Modifier.wrapContentSize(Alignment.TopEnd))
                     }
-                }
-            )
+                })
 
         } ,
 
-        floatingActionButtonPosition = FabPosition.End ,
-        bottomBar = {
+        floatingActionButtonPosition = FabPosition.End , bottomBar = {
             Column {
 
                 MinControlImp(isPlayerEvent = isPlaying ,
@@ -181,8 +173,7 @@ fun MainUi(
         }) { padding ->
         Column(Modifier.padding(padding)) {
             TabRow(
-                selectedTabIndex = 0 ,
-                indicator = indicator
+                selectedTabIndex = 0 , indicator = indicator
             ) {
                 labelList.forEachIndexed { index , title ->
                     Tab(
@@ -190,7 +181,7 @@ fun MainUi(
                         selected = false ,
                         onClick = {
 //                            selectedItem = index
-                            if (index == 0) navController.navToLocale() else if (selectedItem == 1) navController.navToOnline()
+                            if (index == 0) subNavController.navToLocale() else if (selectedItem == 1) subNavController.navToOnline()
 
                         } ,
                     )
@@ -201,9 +192,9 @@ fun MainUi(
 //            AnimatedVisibility(visible = artistsList.isEmpty()) {
 //                Text(text = stringResource(R.string.wait_a_minute))
 //            }
-
+//            val subNavController = rememberNavController()
             NavHostAudie(
-                navController = navController ,
+                navController = subNavController ,
 
                 uiEvent = vm::onUIEvent ,
 
@@ -212,8 +203,7 @@ fun MainUi(
 
 
             LazyColumn(
-                modifier = Modifier
-                    .animateContentSize()
+                modifier = Modifier.animateContentSize()
 
             ) {
 
@@ -244,8 +234,10 @@ fun MainUi(
 
 ////////////////////////////////navigation////////////////////
 const val MAIN_UI = "MAIN_UI_MAIN_UI"
-fun NavGraphBuilder.mainUi(navController: NavController) {
+fun NavGraphBuilder.mainUi(
+    mainNavController: NavController , subNavController: NavHostController
+) {
     composable(MAIN_UI) {
-        MainUi(navController)
+        MainUi(mainNavController , subNavController = subNavController)
     }
 }

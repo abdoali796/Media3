@@ -6,6 +6,10 @@ fun surahString(int: Int): String {
     return surah()[int]
 }
 
+fun surahIndex(string: String): Int {
+    return surah().indexOf(string)
+}
+
 object SurahSort {
     val sura = listOf(
         "المدثر" ,

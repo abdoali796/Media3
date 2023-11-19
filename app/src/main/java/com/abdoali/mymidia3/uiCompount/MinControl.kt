@@ -22,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.abdoali.mymidia3.data.UIEvent
@@ -56,7 +57,10 @@ fun MinControlImp(
                 .fillMaxWidth()
 
         ) {
-            Text(name , style = MaterialTheme.typography.titleSmall)
+            Text(
+                name , style = MaterialTheme.typography.headlineSmall , overflow =
+                TextOverflow.Clip , modifier = modifier.fillMaxWidth(0.8f)
+            )
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally ,
                 verticalArrangement = Arrangement.Center ,
@@ -81,7 +85,7 @@ fun MinControlImp(
 fun MinConPre() {
     MinControlImp(
         true ,
-        "abdo" ,
+        "acccccccccccvcvvvvvvvvvvvccccccccbdo" ,
         {}
     )
 }

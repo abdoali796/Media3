@@ -7,9 +7,11 @@ import androidx.navigation.compose.NavHost
 import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.ui.local.LOCALE
 import com.abdoali.mymidia3.ui.local.locale
+import com.abdoali.mymidia3.ui.online.artistFavList
 import com.abdoali.mymidia3.ui.online.artistList
 import com.abdoali.mymidia3.ui.online.list
 import com.abdoali.mymidia3.ui.online.online
+import com.abdoali.mymidia3.ui.online.sourFavList
 import com.abdoali.mymidia3.ui.online.sourList
 
 @Composable
@@ -33,8 +35,10 @@ fun NavHostAudie(
 
             navController = navController
         )
+        sourFavList(navController)
         sourList(navController)
         artistList(navController)
+        artistFavList(navController)
 
     }
 }

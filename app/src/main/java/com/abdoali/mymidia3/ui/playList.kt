@@ -1,18 +1,17 @@
 package com.abdoali.mymidia3.ui
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -37,39 +36,68 @@ import com.abdoali.mymidia3.uiCompount.Item
 fun ListMp(
     quranItem: List<QuranItem> ,
     title: String? ,
+    id: Int? ,
+    favorAddAction: (Int , String) -> Unit ,
+    favorDelAction: (Int , String) -> Unit ,
     uiEvent: (UIEvent) -> Unit ,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier ,
+    itFav: Boolean = false ,
 ) {
-    val list =
-        remember {
-            quranItem.map {
-                it.index
-            }
+    val list = remember {
+        quranItem.map {
+            it.index
         }
+    }
+
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-    Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection) ,
+    Scaffold(modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection) ,
         topBar = {
-            MediumTopAppBar(
-                title = {
-                    Row(
-                        modifier = modifier.fillMaxWidth() ,
-                        horizontalArrangement = Arrangement.SpaceBetween ,
+            MediumTopAppBar(title = {
+                if (title != null) {
+                    Text(text = title , overflow = TextOverflow.Clip)
 
-                        ) {
+                }
+            } , navigationIcon = {
 
-                        if (title != null) {
-                            Text(text = title , overflow = TextOverflow.Ellipsis)
+            } , actions = {
+                if (id != null) {
+                    if (id == 0) return@MediumTopAppBar
+                    FilledIconButton(onClick = {
+                        //id =-1 it surah list
+                        if (id != - 1) {
+                            if (! itFav) {
+                                favorAddAction(id , "")
+                            } else {
+                                favorDelAction(id , "")
+                            }
 
-                        }
-                        FilledIconButton(onClick = { uiEvent(UIEvent.SetPlayList(list)) }) {
-                            Icon(Icons.Default.PlayArrow , contentDescription = null)
+                        } else {
+                            if (! itFav) {
+                                if (title != null) {
+                                    favorAddAction(- 1 , title)
+                                }
+                            } else {
+                                if (title != null) {
+                                    favorDelAction(- 1 , title)
+                                }
+                            }
                         }
                     }
-                } , scrollBehavior = scrollBehavior
-            )
-        }
-    ) { padding ->
+                    ) {
+                        if (itFav) Icon(
+                            Icons.Default.Favorite , contentDescription = null
+                        )
+                        else Icon(
+                            Icons.Outlined.FavoriteBorder , contentDescription = null
+                        )
+
+                    }
+                }
+                FilledIconButton(onClick = { uiEvent(UIEvent.SetPlayList(list)) }) {
+                    Icon(Icons.Default.PlayArrow , contentDescription = null)
+                }
+            } , scrollBehavior = scrollBehavior)
+        }) { padding ->
 
         Column(
 
@@ -85,8 +113,7 @@ fun ListMp(
 //                }
 //            }
                 items(items = quranItem , key = { i -> i.index }) {
-                    Item(
-                        main = it.surah ,
+                    Item(main = it.surah ,
                         text2 = it.artist ,
                         text3 = it.moshaf ,
                         modifier = Modifier.clickable { uiEvent(UIEvent.SeekToIndex(it.index)) })
@@ -134,9 +161,10 @@ fun playlistPre() {
 //        QuranItem(1 , "www" , "ssssssss" , "dd".toUri() , 0 , false) ,
     )
 
-    ListMp(
-        quranItem = list ,
+    ListMp(quranItem = list ,
         title = "title" ,
-        uiEvent = {}
-    )
+        uiEvent = {} ,
+        id = 0 ,
+        favorAddAction = { i: Int , s: String -> } ,
+        favorDelAction = { i: Int , s: String -> })
 }

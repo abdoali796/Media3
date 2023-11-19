@@ -29,7 +29,7 @@ class MediaServiceHandler @Inject constructor(
     private val dataSources: DataSources
 ) : Player.Listener {
 
-    val _soruhList = MutableStateFlow(surah())
+    private val _soruhList = MutableStateFlow(surah())
     val soruhList: StateFlow<List<String>>
         get() = _soruhList
     private val _mediaState = MutableStateFlow<MediaState>(MediaState.Initial)
@@ -69,10 +69,9 @@ class MediaServiceHandler @Inject constructor(
     val isPlay: StateFlow<Boolean>
         get() = _isPlay
 
-    val test = MutableStateFlow("")
-//    private var _progress = MutableStateFlow(0L)
-//    val progress: StateFlow<Long>
-//        get() = _progress
+    private val _currentMediaItemIndex = MutableStateFlow(0)
+    val currentMediaItemIndex: StateFlow<Int>
+        get() = _currentMediaItemIndex
 
     init {
         player.addListener(this)
@@ -81,7 +80,7 @@ class MediaServiceHandler @Inject constructor(
 
     fun updateProgress() = player.currentPosition
 
-   private suspend fun addMediaItem() {
+    private suspend fun addMediaItem() {
 
         player.addMediaItems(prepareMetaData())
 
@@ -90,7 +89,7 @@ class MediaServiceHandler @Inject constructor(
 
     }
 
-   private suspend fun addMediaItemLocal() {
+    private suspend fun addMediaItemLocal() {
 
         player.addMediaItems(prepareMetaDataLocal())
         player.prepare()
@@ -125,7 +124,7 @@ class MediaServiceHandler @Inject constructor(
 //                    stopProgressUpdate()
                 } else {
                     player.play()
-                    _mediaState.value = MediaState.Playing(isPlaying = true)
+//                    _mediaState.value = MediaState.Playing(isPlaying = true)
 
                 }
             }
@@ -155,6 +154,7 @@ class MediaServiceHandler @Inject constructor(
 //                player.clearMediaItems()
 //                _quranList.update { emptyList() }
 //                _localList.update { emptyList() }
+
                 player.stop()
 
 
@@ -173,11 +173,11 @@ class MediaServiceHandler @Inject constructor(
 
             is PlayerEvent.SetPlayList -> preparePlayList(playerEvent.list)
 
-            is PlayerEvent.Repeat-> {
-                if (playerEvent.repeat){
-                    player.repeatMode=Player.REPEAT_MODE_ONE
-                }else{
-                    player.repeatMode=Player.REPEAT_MODE_OFF
+            is PlayerEvent.Repeat -> {
+                if (playerEvent.repeat) {
+                    player.repeatMode = Player.REPEAT_MODE_ONE
+                } else {
+                    player.repeatMode = Player.REPEAT_MODE_OFF
                 }
             }
 
@@ -223,7 +223,7 @@ class MediaServiceHandler @Inject constructor(
     }
 
     override fun onMediaItemTransition(mediaItem: MediaItem? , reason: Int) {
-
+        _currentMediaItemIndex.update { player.currentMediaItemIndex }
         if (reason == 1 && index < _list.value.size - 1) {
             player.seekTo(_list.value[index] , 0L)
             index ++

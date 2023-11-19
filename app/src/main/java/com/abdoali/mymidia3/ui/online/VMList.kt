@@ -5,11 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.abdoali.datasourece.QuranItem
 import com.abdoali.datasourece.api.Reciter
-import com.abdoali.datasourece.api.surah
 import com.abdoali.mymidia3.data.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,23 +19,32 @@ class VMList @Inject constructor(
     private val savedStateHandle: SavedStateHandle ,
     private val repository: Repository
 ) : ViewModel() {
-    val sura = surah()
+    val sura = repository.sura
     val artistsList: StateFlow<List<Reciter>>
         get() = repository.artistsList
+
+    val favItems: StateFlow<List<QuranItem>>
+        get() = repository.favItem
 
     private val _list: StateFlow<List<QuranItem>>
         get() = repository.list
     private val _fiterList = MutableStateFlow<List<QuranItem>>(emptyList())
     val list: StateFlow<List<QuranItem>>
         get() = _fiterList
+    private val _itFav = MutableStateFlow(false)
+    val itFav: StateFlow<Boolean>
+        get() = _itFav
 
     init {
+
         filter()
+        itFov()
     }
 
     fun getKey(): List<String>? = getTitle(savedStateHandle)?.split(",")
+    fun getID(): Int? = getID(savedStateHandle)
 
-    fun filter() {
+    private fun filter() {
         viewModelScope.launch {
             val key = getKey()
 
@@ -54,5 +64,49 @@ class VMList @Inject constructor(
 
 
     }
+
+    val favArtist: StateFlow<List<Reciter>>
+        get() = repository.favArtist
+
+    val favSurah: StateFlow<List<String>>
+        get() = repository.favSurah
+
+    private fun itFov() {
+        viewModelScope.launch {
+            delay(100)
+            val key = getKey()?.get(0)
+            val artist = artistsList.value.find { key == it.name }
+
+            _itFav.update {
+                favArtist.value.contains(artist) || favSurah.value.contains(
+                    key
+                )
+            }
+        }
+    }
+
+    fun addFav(reciter: Int , surah: String) = viewModelScope.launch {
+
+        if (reciter != - 1) {
+            repository.addArtistFav(reciter)
+        } else {
+            repository.addSurahFav(
+                surah
+            )
+        }
+        itFov()
+    }
+
+    fun deleteFav(reciter: Int , surah: String) = viewModelScope.launch {
+        if (reciter != - 1) {
+            repository.deleteArtistFav(reciter)
+        } else {
+            repository
+                .deleteSurahFav(surah)
+        }
+
+        itFov()
+    }
+
 
 }

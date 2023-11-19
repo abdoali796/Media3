@@ -44,7 +44,12 @@ class SettingVM @Inject constructor(
         language.value = Locale.getDefault().isO3Language
         viewModelScope.launch {
             repository.prepareData()
+            repository.getFavArtist()
         }
+        viewModelScope.launch {
+            repository.getFavSurah()
+        }
+
     }
 
 }

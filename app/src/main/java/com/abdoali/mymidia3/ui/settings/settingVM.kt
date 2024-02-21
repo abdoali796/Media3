@@ -26,10 +26,18 @@ class SettingVM @Inject constructor(
     var language = MutableStateFlow<String>(Locale.getDefault().isO3Language)
         private set
 
+    val isLoading=repository.isLoading
+
     init {
 
         updateData()
         Log.i("language" , "settingVM${language.value}")
+
+
+        viewModelScope.launch {
+            repository.updateUI()
+        }
+
     }
 
     fun changeTheme(newTheme: Theme) {
@@ -41,6 +49,7 @@ class SettingVM @Inject constructor(
     }
 
     fun updateData() {
+        Log.i("updateData","updateData")
         language.value = Locale.getDefault().isO3Language
         viewModelScope.launch {
             repository.prepareData()

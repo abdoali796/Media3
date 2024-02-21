@@ -1,7 +1,9 @@
 package com.abdoali.mymidia3.ui
 
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,8 +33,14 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -54,6 +62,7 @@ import com.abdoali.mymidia3.ui.online.navToOnline
 import com.abdoali.mymidia3.ui.player.PlayUi
 import com.abdoali.mymidia3.ui.search.navToSearch
 import com.abdoali.mymidia3.ui.settings.navToSetting
+import com.abdoali.mymidia3.ui.splashscreen.SPLASH
 import com.abdoali.mymidia3.uiCompount.MinControlImp
 import com.abdoali.mymidia3.uiCompount.NavHostAudie
 import com.abdoali.mymidia3.uiCompount.Timer
@@ -62,7 +71,7 @@ import com.abdoali.mymidia3.uiCompount.getIndexDestination
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainUi(
-    mainNavController: NavController , subNavController: NavHostController
+    mainNavController: NavController, subNavController: NavHostController
 ) {
     val vm: VM = hiltViewModel()
 //    val context = LocalContext.
@@ -81,7 +90,7 @@ fun MainUi(
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     val selectedItem by rememberSaveable { mutableIntStateOf(1) }
     val labelList =
-        listOf(stringResource(R.string.locale) , stringResource(R.string.online))
+        listOf(stringResource(R.string.locale), stringResource(R.string.online))
 
     val sheetScaffoldState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -95,18 +104,18 @@ fun MainUi(
     val destination = navback?.destination
     val indicator = @Composable { tabPositions: List<TabPosition> ->
         FancyAnimatedIndicator(
-            tabPositions = tabPositions ,
+            tabPositions = tabPositions,
             selectedTabIndex = getIndexDestination(destination?.route)
         )
     }
     var showDig by rememberSaveable { mutableStateOf(false) }
 
-    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection) ,
+    Scaffold(modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
 
         topBar = {
 //
-            TopAppBar(title = { Text(text = "abdo ali") } ,
-                scrollBehavior = scrollBehavior ,
+            TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) },
+                scrollBehavior = scrollBehavior,
                 actions = {
                     AnimatedVisibility(visible = isTimerOn) {
 
@@ -118,12 +127,14 @@ fun MainUi(
                             showDig = true
                         }) {
                             if (showDig) {
-                                Timer(showTimer = { showDig = it } ,
-                                    onUIEvent = vm::onUIEvent)
+                                Timer(
+                                    showTimer = { showDig = it },
+                                    onUIEvent = vm::onUIEvent
+                                )
                             }
                             if (isTimerOn) {
-                                Icon(Icons.Outlined.Timer ,
-                                    contentDescription = null ,
+                                Icon(Icons.Outlined.Timer,
+                                    contentDescription = null,
                                     modifier = Modifier.clickable {
                                         vm.onUIEvent(UIEvent.Timer(0))
                                     })
@@ -131,59 +142,63 @@ fun MainUi(
                                 if (showDig) {
                                     Timer(showTimer = {
                                         showDig = it
-                                    } , onUIEvent = vm::onUIEvent)
+                                    }, onUIEvent = vm::onUIEvent)
                                 }
-                                Icon(Icons.Rounded.Timer , contentDescription = null)
+                                Icon(Icons.Rounded.Timer, contentDescription = null)
 
                             }
                         }
                     }
                     IconButton(onClick = { mainNavController.navToSearch() }) {
-                        Icon(Icons.Outlined.Search , contentDescription = null)
+                        Icon(Icons.Outlined.Search, contentDescription = null)
                     }
 
                     IconButton(onClick = { expand = true }) {
-                        Icon(Icons.Default.MoreVert , null)
+                        Icon(Icons.Default.MoreVert, null)
                     }
-                    DropdownMenu(expanded = expand ,
-                        onDismissRequest = { expand = false } ,
-                        modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
-                        DropdownMenuItem(text = { Text(stringResource(R.string.setting)) } ,
-                            onClick = { mainNavController.navToSetting() } ,
+                    DropdownMenu(
+                        expanded = expand,
+                        onDismissRequest = { expand = false },
+                        modifier = Modifier.wrapContentSize(Alignment.TopEnd)
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.setting)) },
+                            onClick = { mainNavController.navToSetting() },
                             leadingIcon = {
                                 Icon(
-                                    Icons.Outlined.Settings , contentDescription = null
+                                    Icons.Outlined.Settings, contentDescription = null
                                 )
-                            } ,
-                            modifier = Modifier.wrapContentSize(Alignment.TopEnd))
+                            },
+                            modifier = Modifier.wrapContentSize(Alignment.TopEnd)
+                        )
                     }
                 })
 
-        } ,
+        },
 
-        floatingActionButtonPosition = FabPosition.End , bottomBar = {
+        floatingActionButtonPosition = FabPosition.End, bottomBar = {
             Column {
 
-                MinControlImp(isPlayerEvent = isPlaying ,
-                    name = title ,
-                    onUIEvent = vm::onUIEvent ,
+                MinControlImp(isPlayerEvent = isPlaying,
+                    name = title,
+                    onUIEvent = vm::onUIEvent,
                     modifier = Modifier.clickable { openBottomSheet = true })
 
             }
         }) { padding ->
         Column(Modifier.padding(padding)) {
             TabRow(
-                selectedTabIndex = 0 , indicator = indicator
+                selectedTabIndex = 0, indicator = indicator
             ) {
-                labelList.forEachIndexed { index , title ->
+                labelList.forEachIndexed { index, title ->
                     Tab(
-                        text = { Text(title) } ,
-                        selected = false ,
+                        text = { Text(title) },
+                        selected = false,
                         onClick = {
 //                            selectedItem = index
                             if (index == 0) subNavController.navToLocale() else if (selectedItem == 1) subNavController.navToOnline()
 
-                        } ,
+                        },
                     )
                 }
 
@@ -194,9 +209,9 @@ fun MainUi(
 //            }
 //            val subNavController = rememberNavController()
             NavHostAudie(
-                navController = subNavController ,
+                navController = subNavController,
 
-                uiEvent = vm::onUIEvent ,
+                uiEvent = vm::onUIEvent,
 
                 )
 
@@ -217,8 +232,8 @@ fun MainUi(
 
             }
             if (openBottomSheet) {
-                ModalBottomSheet(onDismissRequest = { openBottomSheet = false } ,
-                    sheetState = sheetScaffoldState ,
+                ModalBottomSheet(onDismissRequest = { openBottomSheet = false },
+                    sheetState = sheetScaffoldState,
                     content = {
                         PlayUi(
 
@@ -235,9 +250,29 @@ fun MainUi(
 ////////////////////////////////navigation////////////////////
 const val MAIN_UI = "MAIN_UI_MAIN_UI"
 fun NavGraphBuilder.mainUi(
-    mainNavController: NavController , subNavController: NavHostController
+    mainNavController: NavController, subNavController: NavHostController
 ) {
-    composable(MAIN_UI) {
-        MainUi(mainNavController , subNavController = subNavController)
+    composable(MAIN_UI, enterTransition = {
+        when (initialState.destination.route) {
+            SPLASH -> slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Up,
+                animationSpec = tween(2000)
+            )
+
+            else -> null
+
+        }
+    }
+    ) {
+        MainUi(mainNavController, subNavController = subNavController)
+    }
+}
+
+fun NavController.navToMainUi() {
+    navigate(MAIN_UI) {
+        popUpTo(this@navToMainUi.graph.id) {
+            clearBackStack(SPLASH)
+            inclusive = true
+        }
     }
 }

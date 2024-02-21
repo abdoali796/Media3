@@ -41,7 +41,7 @@ fun LocaleList(
         AnimatedVisibility(! permission.status.isGranted) {
             Column {
 
-                LottieCompose()
+//                LottieCompose()
                 Button(onClick = {
 
                     permission.launchPermissionRequest()

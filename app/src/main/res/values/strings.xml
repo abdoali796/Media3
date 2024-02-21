@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mymidia3</string>
+    <string name="app_name">Quran</string>
     <string name="exo_controls_shuffle_on_description" translatable="false">shuffle on</string>
     <string name="exo_controls_shuffle_off_description" translatable="false">shuffle off</string>
     <string name="eng">eng</string>

@@ -1,21 +1,26 @@
 package com.abdoali.mymidia3.ui.player
 
-import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowColumn
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -26,6 +31,7 @@ import com.abdoali.mymidia3.data.formatDuration
 import com.abdoali.mymidia3.uiCompount.Bar
 import com.abdoali.mymidia3.uiCompount.Control
 import com.abdoali.mymidia3.uiCompount.ImageAudoi
+import com.abdoali.mymidia3.uiCompount.ReadUi
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,7 +47,7 @@ fun PlayUi(
 //    isLocal: Boolean,
 //    onUIEvent: (UIEvent) -> Unit ,
 
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val vm: VMPlayer = hiltViewModel()
     val title by vm.title.collectAsState()
@@ -55,6 +61,10 @@ fun PlayUi(
     val itFav by vm.itFov.collectAsState()
     val repeatOn by vm.repeat.collectAsState()
     val buffer by vm.buffering.collectAsState()
+    val isLocal by vm.isLocal.collectAsState()
+    val read by vm.read.collectAsState()
+    val currAyaTiming by vm.currencyItemAya.collectAsState()
+    val showWords by vm.showWords.collectAsState()
 
 //    LaunchedEffect(key1 = uri) {
 //        try {
@@ -75,75 +85,85 @@ fun PlayUi(
 //    }
 
     Column(
-        verticalArrangement = Arrangement.Center ,
-        horizontalAlignment = Alignment.CenterHorizontally ,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
             .fillMaxSize()
             .padding(8.dp)
 
     ) {
         Box {
-//            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S) {
 
-//                AsyncImage(
-//                    model = bitmap ,
-//                    contentDescription = null ,
-//                    modifier = modifier
-//                        .fillMaxSize()
-//                        .blur(14.dp) ,
-//                    placeholder = painterResource(
-//                        id = com.abdoali.playservice.R.drawable.plass_foreground
-//                    ) ,
-//                    error = painterResource(
-//                        id = com.abdoali.playservice.R.drawable.plass_foreground
-//                    )
-//                )
-//            } else {
-//                bitmap?.let { LegacyBlurImage(it) }
-//            }
 
             Column(
-                verticalArrangement = Arrangement.SpaceBetween ,
-                horizontalAlignment = Alignment.CenterHorizontally ,
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxSize()
             ) {
 
-                ImageAudoi(
-                    uri = uri ,
-                    buffer ,
-                    title = title ,
-                    artist = artists ,
-                    isLocal = true
-                )
 
-                LaunchedEffect(key1 = process) {
-                    Log.i("currentProgress" , process.toString())
+                if (!showWords || isLocal) {
+                    ImageAudoi(
+                        uri = uri, buffer, title = title, artist = artists, isLocal = true
+                    )
+                }
+                AnimatedVisibility(showWords) {
+                    read?.let { ReadUi(list = it.verses, currAyaTiming ,title = title, artist = artists,) }
+
                 }
 
 
-                Column {
-                    Icon(if (itFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder ,
-                        contentDescription
-                        = null ,
-                        modifier =
-                        modifier
-                            .clickable
-                            { vm.addFav() })
+
+                Column(
+                    modifier = modifier.fillMaxWidth()
+
+                ) {
+                    AnimatedVisibility(visible = !isLocal) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = modifier.fillMaxWidth()
+
+                        ) {
+                            Button(onClick = { vm.showWords() }) {
+                                if (showWords) Text(text = "اخفى الايات ") else Text(text = "اظهر الايات")
+                            }
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = modifier.fillMaxWidth()
+
+                            ) {
+
+
+                                Icon(if (itFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                    contentDescription = null,
+                                    modifier = modifier.clickable { vm.addFav() })
+
+                                Icon(Icons.Default.FileDownload,
+                                    contentDescription = null,
+                                    Modifier.clickable {
+                                        vm.download()
+                                    })
+                            }
+                        }
+
+
+                    }
                     Bar(
-                        process = process ,
-                        processString = processString ,
-                        durationString = formatDuration(duration) ,
+                        process = process,
+                        processString = processString,
+                        durationString = formatDuration(duration),
                         onUIEvent = vm::onUIEven
                     )
 
                     Control(
-                        isPlay = isPlaying ,
-                        shuffle = shuffle ,
-                        onUiEvent = vm::onUIEven ,
-                        repeatOn = repeatOn ,
-                        modifier = Modifier.padding(bottom = 20.dp , top = 20.dp)
+                        isPlay = isPlaying,
+                        shuffle = shuffle,
+                        onUiEvent = vm::onUIEven,
+                        repeatOn = repeatOn,
+                        modifier = Modifier.padding(bottom = 20.dp, top = 20.dp)
                     )
                     Spacer(modifier = modifier.height(20.dp))
+
                 }
 
             }

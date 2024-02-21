@@ -1,5 +1,7 @@
 package com.abdoali.mymidia3.data
 
+import android.net.Uri
+
 sealed class UIEvent {
     object PlayPause : UIEvent()
     object Backward : UIEvent()
@@ -12,6 +14,7 @@ sealed class UIEvent {
     data class Timer(val time: Int) : UIEvent()
     data class SetPlayList(val list: List<Int>) : UIEvent()
     data class Repeat(val repeat: Boolean) : UIEvent()
+    data class Download(val uri: String , val fileName:String):UIEvent()
 
 }
 

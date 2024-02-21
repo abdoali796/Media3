@@ -73,7 +73,7 @@ fun ImageAudoi(
                 modifier.size(200.dp)
             )
         }
-        AnimatedVisibility(visible = ! buffer) {
+        if( ! buffer) {
 
             AsyncImage(
                 model = bitmap ,

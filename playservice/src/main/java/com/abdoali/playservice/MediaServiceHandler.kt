@@ -13,7 +13,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.abdoali.datasourece.DataSources
 import com.abdoali.datasourece.QuranItem
 import com.abdoali.datasourece.api.Reciter
-import com.abdoali.datasourece.api.surah
+import com.abdoali.datasourece.surah
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MediaServiceHandler @Inject constructor(
-    private val player: ExoPlayer ,
+    private val player: ExoPlayer,
 
     private val dataSources: DataSources
 ) : Player.Listener {
@@ -36,8 +36,7 @@ class MediaServiceHandler @Inject constructor(
     val mediaState = _mediaState.asStateFlow()
     private var job: Job? = null
 
-    private var _list =
-        MutableStateFlow<List<Int>>(listOf())
+    private var _list = MutableStateFlow<List<Int>>(listOf())
     private var index = 0
     private var isPlayList = MutableStateFlow(false)
     private var _mediaStateAbdo =
@@ -81,8 +80,23 @@ class MediaServiceHandler @Inject constructor(
     fun updateProgress() = player.currentPosition
 
     private suspend fun addMediaItem() {
+//        dataSources.getArtist()
+////        _artist.emit(dataSources.getArtist())
+//       dataSources.gitContent().firstOrNull { data ->
+//            _quranList.emit(data)
+//           Log.i("_quranList.emit(data)","data.toString()")
+//
+//           if (data.isEmpty())Log.i("_quranList.emit(data)",data.toString()) else  Log.i("_quranList.emit(data)",data[0].toString())
+//
+//
+////            val mediaItem = data.forEach { MediaItem.fromUri(it.uri) } ?
+//            player.addMediaItems(data.map { MediaItem.fromUri(it.uri) })
+//            player.prepare()
+//           data.size>10
+//        }
 
         player.addMediaItems(prepareMetaData())
+        _mediaStateAbdo.tryEmit(MediaStateAbdo.Loading(0.8f))
 
         player.prepare()
 
@@ -90,19 +104,36 @@ class MediaServiceHandler @Inject constructor(
     }
 
     private suspend fun addMediaItemLocal() {
+//dataSources.getArtist()
+//        dataSources.getArtist().first{
+//           Log.i("dataSources.getArtist()","${it.size}")
+//            _artist.emit(it)
+//            it.size>10
+//        }
 
         player.addMediaItems(prepareMetaDataLocal())
         player.prepare()
     }
 
     suspend fun updateData() {
+        _mediaStateAbdo.tryEmit(MediaStateAbdo.Loading(0.1f))
+        Log.i("isLoading", "isLoadingFrom serves${_mediaStateAbdo.value}")
+
         player.stop()
         _quranList.update { emptyList() }
         _localList.update { emptyList() }
         player.clearMediaItems()
+        _mediaStateAbdo.tryEmit(MediaStateAbdo.Loading(0.2f))
+
         _soruhList.update { surah() }
+//        _mediaStateAbdo.tryEmit(MediaStateAbdo.Loading(0.3f))
+
         addMediaItemLocal()
+        _mediaStateAbdo.tryEmit(MediaStateAbdo.Loading(0.3f))
+
         addMediaItem()
+        _mediaStateAbdo.tryEmit(MediaStateAbdo.Loading(1f))
+        Log.i("isLoading", "isLoadingFrom serves${_mediaStateAbdo.value}")
 
 
     }
@@ -116,7 +147,7 @@ class MediaServiceHandler @Inject constructor(
             PlayerEvent.PlayPause -> {
                 if (_mediaStateAbdo.value == MediaStateAbdo.Idle) {
                     player.prepare()
-                    Log.i("onPlaybackStateAbdoali" , "player.prepare()")
+                    Log.i("onPlaybackStateAbdoali", "player.prepare()")
                 }
                 if (player.isPlaying) {
                     player.pause()
@@ -131,8 +162,8 @@ class MediaServiceHandler @Inject constructor(
 
             PlayerEvent.PlayNext -> {
                 if (isPlayList.value && index < _list.value.size - 1) {
-                    player.seekTo(_list.value[index] , 0L)
-                    index ++
+                    player.seekTo(_list.value[index], 0L)
+                    index++
                 } else {
                     player.seekToNextMediaItem()
                 }
@@ -140,8 +171,8 @@ class MediaServiceHandler @Inject constructor(
 
             PlayerEvent.PlayPre -> {
                 if (isPlayList.value && index < _list.value.size - 1 && index != 0) {
-                    player.seekTo(_list.value[index] , 0L)
-                    index --
+                    player.seekTo(_list.value[index], 0L)
+                    index--
                 } else {
                     player.seekToPreviousMediaItem()
                 }
@@ -162,10 +193,10 @@ class MediaServiceHandler @Inject constructor(
 
             is PlayerEvent.Shuffle -> player.shuffleModeEnabled = playerEvent.shuffle
             is PlayerEvent.SeekToIndex -> {
-                Log.i("PlayerEvent.SeekToIndex" , playerEvent.index.toString())
-                player.seekTo(playerEvent.index , 0)
+                Log.i("PlayerEvent.SeekToIndex", playerEvent.index.toString())
+                player.seekTo(playerEvent.index, 0)
                 player.play()
-                if (! _list.value.contains(playerEvent.index)) isPlayList.value = false
+                if (!_list.value.contains(playerEvent.index)) isPlayList.value = false
 
             }
 
@@ -178,6 +209,7 @@ class MediaServiceHandler @Inject constructor(
                     player.repeatMode = Player.REPEAT_MODE_ONE
                 } else {
                     player.repeatMode = Player.REPEAT_MODE_OFF
+
                 }
             }
 
@@ -194,7 +226,7 @@ class MediaServiceHandler @Inject constructor(
 
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {
         super.onPlaybackParametersChanged(playbackParameters)
-        Log.i("playbackParameters" , "playbackParameters.pitch")
+        Log.i("playbackParameters", "playbackParameters.pitch")
 
 
     }
@@ -217,19 +249,21 @@ class MediaServiceHandler @Inject constructor(
         _shuffleMode.value = shuffleModeEnabled
     }
 
-    override fun onEvents(player: Player , events: Player.Events) {
+    override fun onEvents(player: Player, events: Player.Events) {
 
-        super.onEvents(player , events)
+        super.onEvents(player, events)
     }
 
-    override fun onMediaItemTransition(mediaItem: MediaItem? , reason: Int) {
+    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         _currentMediaItemIndex.update { player.currentMediaItemIndex }
+        Log.i("onMediaItemTransition" ,"onMediaItemTransition res$reason med ${player.deviceInfo.minVolume}")
+      _mediaStateAbdo.tryEmit(MediaStateAbdo.Ready(player.mediaMetadata ,player.duration))
         if (reason == 1 && index < _list.value.size - 1) {
-            player.seekTo(_list.value[index] , 0L)
-            index ++
+            player.seekTo(_list.value[index], 0L)
+            index++
 
         } else {
-            super.onMediaItemTransition(mediaItem , reason)
+            super.onMediaItemTransition(mediaItem, reason)
         }
     }
 
@@ -240,7 +274,7 @@ class MediaServiceHandler @Inject constructor(
 
     @SuppressLint("SwitchIntDef")
     override fun onPlaybackStateChanged(playbackState: Int) {
-        Log.i("onPlaybackStateAbdoali" , "playbackState$playbackState")
+        Log.i("onPlaybackStateAbdoali", "playbackState$playbackState")
         when (playbackState) {
             ExoPlayer.STATE_IDLE -> {
                 _mediaStateAbdo.tryEmit(MediaStateAbdo.Idle)
@@ -252,12 +286,12 @@ class MediaServiceHandler @Inject constructor(
 
             ExoPlayer.STATE_READY -> _mediaStateAbdo.tryEmit(
                 MediaStateAbdo.Ready(
-                    metadata = player.mediaMetadata ,
+                    metadata = player.mediaMetadata,
                     duration = player.duration
                 )
             )
 
-            ExoPlayer.STATE_ENDED -> player.seekTo(0 , 0L)
+            ExoPlayer.STATE_ENDED -> player.seekTo(0, 0L)
         }
     }
 
@@ -273,14 +307,14 @@ class MediaServiceHandler @Inject constructor(
 //        }
     }
 
-    override fun onIsLoadingChanged(isLoading: Boolean) {
-        super.onIsLoadingChanged(isLoading)
-        Log.i("onIsLoadingChanged" , isLoading.toString())
-    }
+//    override fun onIsLoadingChanged(isLoading: Boolean) {
+//        super.onIsLoadingChanged(isLoading)
+//        Log.i("onIsLoadingChanged", isLoading.toString())
+//    }
 
     private suspend fun prepareMetaDataLocal(): List<MediaItem> {
         val date = dataSources.gitLocal()
-        _list
+//        _list
         _localList.emit(date)
         return date.map { item: QuranItem ->
 
@@ -297,21 +331,18 @@ class MediaServiceHandler @Inject constructor(
     private suspend fun prepareMetaData(): List<MediaItem> {
 
         return withContext(Dispatchers.IO) {
+            _mediaStateAbdo.tryEmit(MediaStateAbdo.Loading(0.6f))
+
             val date = dataSources.gitContent()
             _artist.emit(dataSources.getArtist())
             _quranList.emit(date)
-            Log.i("withContext" , date.size.toString())
+            _mediaStateAbdo.tryEmit(MediaStateAbdo.Loading(0.7f))
+
+            Log.i("withContext", date.size.toString())
             date.map { item: QuranItem ->
-                if (item.isLocal) {
-                    val metadata =
-                        MediaMetadata.Builder().setArtist(item.artist)
-                            .setDisplayTitle(item.surah)
-                            .setArtworkUri(item.uri).build()
-                    MediaItem.Builder().setMediaMetadata(metadata).setUri(item.uri)
-                        .build()
-                } else {
-                    MediaItem.fromUri(item.uri)
-                }
+
+                MediaItem.fromUri(item.uri)
+
             }
         }
 
@@ -340,14 +371,14 @@ class MediaServiceHandler @Inject constructor(
 sealed class MediaState {
     object Initial : MediaState()
     data class Ready(
-        val duration: Long ,
-        val metadata: MediaMetadata ,
+        val duration: Long,
+        val metadata: MediaMetadata,
         val shuffleModeEnabled: Boolean
     ) : MediaState()
 
     data class Progress(
-        val progress: Long ,
-        val metadata: MediaMetadata ,
+        val progress: Long,
+        val metadata: MediaMetadata,
         val shuffleModeEnabled: Boolean
     ) : MediaState()
 
@@ -359,9 +390,13 @@ sealed class MediaState {
 sealed class MediaStateAbdo {
     object Idle : MediaStateAbdo()
     object Initial : MediaStateAbdo()
+    data class Loading(
+        val isLoading: Float
+    ) : MediaStateAbdo()
+
     data class Ready(
 
-        val metadata: MediaMetadata ,
+        val metadata: MediaMetadata,
 
         val duration: Long
 

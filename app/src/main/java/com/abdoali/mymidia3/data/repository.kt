@@ -5,8 +5,10 @@ import android.util.Log
 import androidx.core.net.toUri
 import com.abdoali.datasourece.QuranItem
 import com.abdoali.datasourece.api.Reciter
-import com.abdoali.datasourece.api.surahIndex
-import com.abdoali.datasourece.api.surahString
+import com.abdoali.datasourece.read.QuranWords
+import com.abdoali.datasourece.read.ReadAndTiming
+import com.abdoali.datasourece.surahIndex
+import com.abdoali.datasourece.surahString
 import com.abdoali.mymidia3.Timer
 import com.abdoali.mymidia3.data.database.favorite.artist.ArtistDatabase
 import com.abdoali.mymidia3.data.database.favorite.artist.ArtistID
@@ -14,6 +16,7 @@ import com.abdoali.mymidia3.data.database.favorite.item.ItemID
 import com.abdoali.mymidia3.data.database.favorite.item.ItemUrlDatabase
 import com.abdoali.mymidia3.data.database.favorite.surah.SurahDatabase
 import com.abdoali.mymidia3.data.database.favorite.surah.SurahID
+import com.abdoali.mymidia3.data.downloed.DownloadFile
 import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.MediaStateAbdo
 import com.abdoali.playservice.PlayerEvent
@@ -30,6 +33,7 @@ interface Repository {
     val repeat: StateFlow<Boolean>
     val isPlaying: StateFlow<Boolean>
     val sura: StateFlow<List<String>>
+    val isLoading: StateFlow<Float>
     val currentMediaItemIndex: StateFlow<Int>
 
     val artistsList: StateFlow<List<Reciter>>
@@ -37,6 +41,7 @@ interface Repository {
     val localList: StateFlow<List<QuranItem>>
     val progress: StateFlow<Float>
     val progressString: StateFlow<String>
+    val processLong: StateFlow<Long>
     val title: StateFlow<String>
     val artist: StateFlow<String>
     val duration: StateFlow<Long>
@@ -59,23 +64,29 @@ interface Repository {
     suspend fun addItemURlFav(uri: Uri)
     suspend fun addItemIndexFav(index: Int)
     fun itFavItem(id: Int): Boolean
+    fun itLocal(id: Int): Boolean
 
     suspend fun deleteItemFav(id: Int)
 
     suspend fun getFavArtist()
     suspend fun getFavSurah()
     suspend fun getFAVItem()
+    suspend fun getQuranWords(): ReadAndTiming?
 }
 
 class RepositoryImp @Inject constructor(
-    private val mediaServiceHandler: MediaServiceHandler ,
-    private val timer: Timer ,
-    private val artistDatabase: ArtistDatabase ,
-    private val surahDatabase: SurahDatabase ,
-    private val itemUrlDatabase: ItemUrlDatabase
+    private val mediaServiceHandler: MediaServiceHandler,
+    private val timer: Timer,
+    private val artistDatabase: ArtistDatabase,
+    private val surahDatabase: SurahDatabase,
+    private val itemUrlDatabase: ItemUrlDatabase,
+    private val downloadFile: DownloadFile,
+    private val quranWords: QuranWords,
 ) : Repository {
     private var resetTimer = timer.isAlarmOn
-
+    private var _isLoading = MutableStateFlow(0.0f)
+    override val isLoading: StateFlow<Float>
+        get() = _isLoading
     override val currentMediaItemIndex: StateFlow<Int>
         get() = mediaServiceHandler.currentMediaItemIndex
     override val elapsedTime: StateFlow<Long>
@@ -90,6 +101,7 @@ class RepositoryImp @Inject constructor(
         get() = mediaServiceHandler.isPlay
     override val sura: StateFlow<List<String>>
         get() = mediaServiceHandler.soruhList
+
     override val artistsList: StateFlow<List<Reciter>>
         get() = mediaServiceHandler.artist
     override val list: StateFlow<List<QuranItem>>
@@ -115,6 +127,9 @@ class RepositoryImp @Inject constructor(
     private var _progressString = MutableStateFlow("00:00")
     override val progressString: StateFlow<String>
         get() = _progressString
+    private val _processLong = MutableStateFlow(0L)
+    override val processLong: StateFlow<Long>
+        get() = _processLong
 
     private var _title = MutableStateFlow("")
     override val title: StateFlow<String>
@@ -158,7 +173,7 @@ class RepositoryImp @Inject constructor(
 
             is UIEvent.Timer -> {
                 timer.setTimeSelected(uiEvent.time)
-                timer.setAlarm(! resetTimer.value)
+                timer.setAlarm(!resetTimer.value)
             }
 
             is UIEvent.SetPlayList -> mediaServiceHandler.onPlayerEvent(
@@ -172,6 +187,16 @@ class RepositoryImp @Inject constructor(
                     uiEvent.repeat
                 )
             )
+
+            is UIEvent.Download -> {
+                val currentItem = list.value.find { currentMediaItemIndex.value == it.index }
+                downloadFile.downloadFile(
+                    currentItem?.uri.toString(),
+                    "${currentItem?.artist}",
+                    "${currentItem?.moshaf}",
+                    "${currentItem?.surah}"
+                )
+            }
         }
 
     }
@@ -200,6 +225,10 @@ class RepositoryImp @Inject constructor(
 
                 }
 
+                is MediaStateAbdo.Loading -> {
+                    _isLoading.emit(state.isLoading)
+                }
+
                 else -> {}
             }
         }
@@ -208,7 +237,7 @@ class RepositoryImp @Inject constructor(
 
     override suspend fun updateProgress() {
 
-        Log.i("UpdateProgress" , ",UpdataUi")
+        Log.i("UpdateProgress", ",UpdataUi")
 
 
         while (true) {
@@ -256,8 +285,14 @@ class RepositoryImp @Inject constructor(
 
     override fun itFavItem(id: Int): Boolean {
         val find = _favItem.value.find { it.index == currentMediaItemIndex.value }
-        Log.i("  itFavItem" , "reps $find")
+        Log.i("  itFavItem", "reps $find")
         return find != null
+    }
+
+    override fun itLocal(id: Int): Boolean {
+        val find = localList.value.find { it.index == currentMediaItemIndex.value }
+        return find != null
+
     }
 
     override suspend fun deleteItemFav(id: Int) {
@@ -296,7 +331,17 @@ class RepositoryImp @Inject constructor(
         }
     }
 
+    override suspend fun getQuranWords(): ReadAndTiming? {
+        val currentItem = list.value.find { currentMediaItemIndex.value == it.index }
+//     val timing= currentItem?.let { quranWords.getTiming(it.surah ,currentItem.id.toInt()) }
+//       Log.i("timingAya",currentItem.toString())
+//        Log.i("timingAya","fl"+timing.toString())
+        return currentItem?.surah?.let { quranWords.getWordsAndTiming(it, currentItem.id.toInt()) }
+
+    }
+
     private suspend fun calculateProgressValues(currentProgress: Long) {
+        _processLong.emit(currentProgress)
         _progress.emit(if (currentProgress > 0) (currentProgress.toFloat() / duration.value) else 0f)
 
         _progressString.emit(formatDuration(currentProgress))

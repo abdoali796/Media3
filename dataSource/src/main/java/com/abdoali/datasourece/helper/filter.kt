@@ -1,7 +1,7 @@
 package com.abdoali.datasourece.helper
 
 import com.abdoali.datasourece.QuranItem
-import com.abdoali.datasourece.api.SurahSort
+import com.abdoali.datasourece.SurahSort
 
 fun List<QuranItem>.itSort():List<QuranItem>{
     val list=this

@@ -6,9 +6,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ButtonElevation
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,86 +27,91 @@ import com.abdoali.mymidia3.data.UIEvent
 
 @Composable
 fun MinListTitle(
-    title: String ,
-    titleReciter: List<Reciter>? ,
-    actionNav: (String , Int) -> Unit ,
-    actionShowAll: () -> Unit ,
-    modifier: Modifier = Modifier ,
+    title: String,
+    titleReciter: List<Reciter>?,
+    actionNav: (String, Int) -> Unit,
+    actionShowAll: () -> Unit,
+    modifier: Modifier = Modifier,
     any: Float = 0.1f//of solve Platform declaration clash: The following declarations have the same JVM signature //
 ) {
-    Column(
+    Card(
         modifier
+            .padding(8.dp)
             .fillMaxWidth()
-            .border(
-                1.dp ,
-                color = MaterialTheme.colorScheme.onPrimaryContainer ,
-                shape = MaterialTheme.shapes.large
-            )
-            .padding(3.dp)
     ) {
-        Text(text = title , style = MaterialTheme.typography.headlineLarge)
-        if (! titleReciter.isNullOrEmpty()) {
 
-            if (titleReciter.size < 5) {
-                titleReciter.forEach { reciter ->
-                    Text(
-                        text = reciter.name ,
-                        modifier.clickable {
-                            actionNav(
-                                reciter.name ,
-                                reciter.id
-                            )
-                        } ,
-                        style = MaterialTheme.typography.titleLarge)
+        Column(
+            modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+                .padding(1.dp)
+        ) {
+            Text(text = title, style = MaterialTheme.typography.headlineLarge)
+            if (!titleReciter.isNullOrEmpty()) {
+
+                if (titleReciter.size < 5) {
+                    titleReciter.forEach { reciter ->
+                        Text(
+                            text = reciter.name, modifier.clickable {
+                                actionNav(
+                                    reciter.name, reciter.id
+                                )
+                            }, style = MaterialTheme.typography.titleLarge
+                        )
+                    }
+                } else {
+                    for (i in 0..5) {
+                        Text(
+                            text = titleReciter[i].name, modifier.clickable {
+                                actionNav(
+                                    titleReciter[i].name, titleReciter[i].id
+                                )
+                            }, style = MaterialTheme.typography.titleLarge
+                        )
+                    }
+
                 }
-            } else {
-                for (i in 0..5) {
-                    Text(
-                        text = titleReciter[i].name ,
-                        modifier.clickable {
-                            actionNav(
-                                titleReciter[i].name ,
-                                titleReciter[i].id
-                            )
-                        } ,
-                        style = MaterialTheme.typography.titleLarge)
+            }
+            Column(
+                horizontalAlignment = Alignment.End, modifier = modifier.fillMaxWidth()
+            ) {
+                Button(onClick = actionShowAll ,shape = CardDefaults.shape , elevation = ButtonDefaults.buttonElevation(defaultElevation = 5.dp)) {
+                    Text(text = stringResource(R.string.show_all, title))
                 }
 
             }
         }
-        Button(onClick = actionShowAll) {
-            Text(text = stringResource(R.string.show_all , title))
-        }
     }
-
 
 }
 
 @Composable
 fun MinListTitleItem(
-    title: String ,
-    list: List<QuranItem> ,
-    onUIEvent: (UIEvent) -> Unit ,
-    actionShowAll: () -> Unit ,
+    title: String,
+    list: List<QuranItem>,
+    onUIEvent: (UIEvent) -> Unit,
+    actionShowAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (list.isEmpty()) return
-    Column(
+    Card(
         modifier
+            .padding(8.dp)
             .fillMaxWidth()
-            .border(
-                1.dp ,
-                color = MaterialTheme.colorScheme.onPrimaryContainer ,
-                shape = MaterialTheme.shapes.large
-            )
-            .padding(3.dp)
     ) {
-        Text(text = title , style = MaterialTheme.typography.headlineLarge)
+
+        Column(
+            modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+                .padding(1.dp)
+        ){
+
+        Text(text = title, style = MaterialTheme.typography.headlineLarge)
 
         if (list.size < 10) {
             list.forEach { quranItem: QuranItem ->
-                Text(
-                    text = "${quranItem.surah} -> ${quranItem.artist}" ,
+                Text(text = "${quranItem.surah} -> ${quranItem.artist}",
                     modifier
                         .fillMaxWidth()
                         .clickable { onUIEvent(UIEvent.SeekToIndex(quranItem.index)) })
@@ -109,67 +119,80 @@ fun MinListTitleItem(
         } else {
             repeat(10) { i ->
                 Text(
-                    text = "${list[i].surah}  ${list[i].artist}" ,
+                    text = "${list[i].surah}  ${list[i].artist}",
                     modifier
                         .fillMaxWidth()
-                        .clickable { onUIEvent(UIEvent.SeekToIndex(list[i].index)) } ,
-                    style = MaterialTheme.typography.titleLarge)
+                        .clickable { onUIEvent(UIEvent.SeekToIndex(list[i].index)) },
+                    style = MaterialTheme.typography.titleLarge
+                )
             }
         }
+            Column(
+                horizontalAlignment = Alignment.End, modifier = modifier.fillMaxWidth()
+            ) {
+                Button(onClick = actionShowAll ,shape = CardDefaults.shape , elevation = ButtonDefaults.buttonElevation(defaultElevation = 5.dp)) {
+                    Text(text = stringResource(R.string.show_all, title))
+                }
 
-        Button(onClick = actionShowAll) {
-            Text(text = stringResource(R.string.show_all , title))
-        }
-    }
+            }
+    }}
 }
 
 @Composable
 fun MinListTitle(
-    title: String ,
-    titleSurh: List<String> ,
-    actionNav: (String , Int) -> Unit ,
-    actionShowAll: () -> Unit ,
+    title: String,
+    titleSurh: List<String>,
+    actionNav: (String, Int) -> Unit,
+    actionShowAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
+    Card(
         modifier
+            .padding(8.dp)
             .fillMaxWidth()
-            .border(
-                1.dp ,
-                color = MaterialTheme.colorScheme.onPrimaryContainer ,
-                shape = MaterialTheme.shapes.large
-            )
-            .padding(3.dp)
     ) {
-        Text(text = title , style = MaterialTheme.typography.headlineLarge)
-        if (titleSurh.size < 5) {
-            titleSurh.forEach { surah ->
-                Text(
-                    text = surah ,
-                    modifier.clickable { actionNav(surah , - 1) } ,
-                    style = MaterialTheme.typography.titleLarge)
-            }
-        } else {
-            for (i in 1..6) {
-                Text(
-                    text = titleSurh[i] ,
-                    modifier.clickable { actionNav(titleSurh[i] , - 1) } ,
-                    style = MaterialTheme.typography.titleLarge)
-            }
-        }
 
-        Button(onClick = actionShowAll) {
-            Text(text = stringResource(R.string.show_all , title))
+        Column(
+            modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+                .padding(1.dp)
+        ) {
+
+            Text(text = title, style = MaterialTheme.typography.headlineLarge)
+            if (titleSurh.size < 5) {
+                titleSurh.forEach { surah ->
+                    Text(
+                        text = surah,
+                        modifier.clickable { actionNav(surah, -1) },
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+            } else {
+                for (i in 1..6) {
+                    Text(
+                        text = titleSurh[i],
+                        modifier.clickable { actionNav(titleSurh[i], -1) },
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+            }
+
+            Column(
+                horizontalAlignment = Alignment.End, modifier = modifier.fillMaxWidth()
+            ) {
+                Button(onClick = actionShowAll ,shape = CardDefaults.shape , elevation = ButtonDefaults.buttonElevation(defaultElevation = 5.dp)) {
+                    Text(text = stringResource(R.string.show_all, title))
+                }
+
+            }
         }
-    }
-}
+    }}
 
 @Preview(showBackground = true)
 @Composable
 private fun ListPre() {
-//    val reciter=Reciter
-//    MinListTitle(
-//        "test" ,
-//      titleReciter = Reciter() , null ,
-//        { i: String , s: Int -> } , {})
+//Button(onClick = { /*TODO*/ } , shape = CardDefaults.shape) {
+//
+//}
 }

@@ -4,6 +4,7 @@ import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
@@ -21,9 +22,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import com.abdoali.mymidia3.data.UIEvent
 
 @Composable
@@ -53,13 +56,17 @@ private fun ControlImp(
     modifier: Modifier = Modifier ,
 
     ) {
+    val local = LocalConfiguration.current.screenHeightDp/10
+
+
     CompositionLocalProvider(
         LocalLayoutDirection provides LayoutDirection.Ltr
     ) {
 
         Row(
             horizontalArrangement = Arrangement.Center ,
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth().sizeIn(minHeight = local.dp),
+
         ) {
 
             IconButton(onClick = { onUiEvent(UIEvent.Shuffle(! shuffle)) }) {

@@ -26,76 +26,76 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.abdoali.mymidia3.R
 import com.abdoali.mymidia3.ui.online.navToList
-import com.abdoali.mymidia3.uiCompount.Item
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Search(
-    subNavController: NavController
-) {
+    subNavController: NavController,
+    mainNavController: NavController,
+
+    ) {
     val vm: VMSearch = hiltViewModel()
     val searchText by vm.searchText.collectAsState()
     val isSearching by vm.isSearching.collectAsState()
-    val quranListSearch by vm.itemsFilterSearch.collectAsState()
+    val artistListSearch by vm.itemsFilterSearch.collectAsState()
     Column {
 
-        SearchBar(query = searchText ,
-            onQueryChange = vm::onSearchTextChange ,
-            active = isSearching ,
-            placeholder = { Text(text = stringResource(R.string.search_text)) } ,
-            onSearch = { vm.onSearch(false) } ,
-            onActiveChange = vm::onSearch ,
-            trailingIcon = { Icon(Icons.Filled.Search , contentDescription = null) } ,
+        SearchBar(query = searchText,
+            onQueryChange = vm::onSearchTextChange,
+            active = isSearching,
+            placeholder = { Text(text = stringResource(R.string.search_text)) },
+            onSearch = { vm.onSearch(false) },
+            onActiveChange = vm::onSearch,
+            trailingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
             content = {
-                if (quranListSearch.size > 3) {
-                    repeat(4) { i ->
-                        ItemSearch(title = quranListSearch[i].surah ,
-                            artists = quranListSearch[i].artist ,
-                            titleAction = {
-                                subNavController.navToList(
-                                    title = quranListSearch[i].surah , id = - 1
-                                )
-                            } ,
-                            artistsAction = {})
-                    }
-                } else {
-                    quranListSearch.forEach { itme ->
-                        Item(main = itme.surah ,
-                            text2 = itme.artist ,
-                            Modifier.clickable {
-                                vm.playIndex(itme.index)
-                            })
+
+                LazyColumn() {
+                    items(artistListSearch) { artist ->
+                        artist.moshaf.forEach { moshaf ->
+
+
+                            ItemSearch(
+                                title = artist.name,
+                                artists = moshaf.name,
+                                action = {
+                                    subNavController.navToList(
+                                        title = artist.name + "," + moshaf.name, id = artist.id
+                                    )
+                                    mainNavController.popBackStack()
+                                },
+                            )
+                        }
                     }
                 }
-            })
-        LazyColumn {
-            items(items = quranListSearch , key = { i -> i.index }) { quran ->
-                Item(main = quran.surah , text2 = quran.artist , Modifier.clickable {
-                    vm.playIndex(quran.index)
-                } , text3 = quran.moshaf)
-            }
 
-        }
+            })
+//        LazyColumn {
+//            items(items = artistListSearch , key = { i -> i.index }) { quran ->
+//                Item(main = quran.surah , text2 = quran.artist , Modifier.clickable {
+//                    vm.playIndex(quran.index)
+//                } , text3 = quran.moshaf)
+//            }
+//
+//        }
     }
 }
 
 @Composable
 private fun ItemSearch(
 
-    title: String ,
-    titleAction: () -> Unit ,
-    artists: String? ,
-    artistsAction: () -> Unit ,
-    modifier: Modifier = Modifier ,
-    moshaf: String? = null ,
+    title: String,
+    action: () -> Unit,
+    artists: String?,
+    modifier: Modifier = Modifier,
+    moshaf: String? = null,
 ) {
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 1.dp
-        ) ,
-        modifier = modifier
+        ), modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp , horizontal = 12.dp)
+            .padding(vertical = 2.dp, horizontal = 12.dp)
+            .clickable { action.invoke() }
     ) {
 
         Column(
@@ -106,18 +106,18 @@ private fun ItemSearch(
                 .fillMaxWidth()
         ) {
             Text(
-                text = title ,
-                style = MaterialTheme.typography.titleLarge ,
-                modifier = modifier.clickable(onClick = titleAction)
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = modifier
             )
             artists?.let {
                 Text(
-                    text = it ,
-                    style = MaterialTheme.typography.titleSmall ,
-                    modifier = modifier.clickable(onClick = artistsAction)
+                    text = it,
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = modifier
                 )
             }
-            moshaf?.let { Text(text = it , style = MaterialTheme.typography.titleSmall) }
+            moshaf?.let { Text(text = it, style = MaterialTheme.typography.titleSmall) }
 
         }
     }

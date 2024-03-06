@@ -20,7 +20,7 @@ import androidx.navigation.compose.composable
 import com.abdoali.mymidia3.uiCompount.Item
 
 @Composable
-fun screenTitle(
+fun ScreenTitle(
 //    list: List<String>? ,
     keys: String ,
     navController: NavController ,
@@ -119,25 +119,25 @@ fun NavController.navToFavArtist() {
 
 fun NavGraphBuilder.sourList(navController: NavController) {
     composable(SOUR_LIST) {
-        screenTitle(SOUR_LIST , navController)
+        ScreenTitle(SOUR_LIST , navController)
     }
 }
 
 fun NavGraphBuilder.sourFavList(navController: NavController) {
     composable(SOUR_LIST_Fav) {
-        screenTitle(SOUR_LIST_Fav , navController)
+        ScreenTitle(SOUR_LIST_Fav , navController)
     }
 }
 
 fun NavGraphBuilder.artistFavList(navController: NavController) {
     composable(ARTIST_LIST_FAVOR) {
-        screenTitle(ARTIST_LIST_FAVOR , navController)
+        ScreenTitle(ARTIST_LIST_FAVOR , navController)
     }
 }
 
 fun NavGraphBuilder.artistList(navController: NavController) {
     composable(ARTIST_LIST) {
-        screenTitle(ARTIST_LIST , navController)
+        ScreenTitle(ARTIST_LIST , navController)
     }
 }
 

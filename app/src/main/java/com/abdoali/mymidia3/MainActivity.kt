@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.abdoali.datasourece.read.QuranWords
 import com.abdoali.mymidia3.data.MySharedPreferences
 import com.abdoali.mymidia3.ui.mainUi
 import com.abdoali.mymidia3.ui.search.search
@@ -71,8 +70,7 @@ class MainActivity : AppCompatActivity() {
                 val mainNavController = rememberNavController()
                 val subNavController = rememberNavController()
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     LaunchedEffect(key1 = isLoading, block = {
                         Log.i("isLoading", "isLoadingForMain$isLoading")
@@ -82,12 +80,17 @@ class MainActivity : AppCompatActivity() {
 
 
                     NavHost(
-                        navController = mainNavController,
-                        startDestination = SPLASH
+                        navController = mainNavController, startDestination = SPLASH
                     ) {
 
-                        mainUi(mainNavController, subNavController)
-                        search(subNavController)
+                        mainUi(
+                            mainNavController = mainNavController,
+                            subNavController = subNavController
+                        )
+                        search(
+                            subNavController = subNavController,
+                            mainNavController = mainNavController
+                        )
                         setting(settingVM)
                         splash(mainNavController, isLoading)
 

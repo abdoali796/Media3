@@ -60,6 +60,7 @@ import com.abdoali.mymidia3.data.formatDuration
 import com.abdoali.mymidia3.ui.local.navToLocale
 import com.abdoali.mymidia3.ui.online.navToOnline
 import com.abdoali.mymidia3.ui.player.PlayUi
+import com.abdoali.mymidia3.ui.search.SEARCH
 import com.abdoali.mymidia3.ui.search.navToSearch
 import com.abdoali.mymidia3.ui.settings.navToSetting
 import com.abdoali.mymidia3.ui.splashscreen.SPLASH
@@ -258,6 +259,14 @@ fun NavGraphBuilder.mainUi(
                 AnimatedContentTransitionScope.SlideDirection.Up,
                 animationSpec = tween(2000)
             )
+
+
+
+//            SEARCH -> slideIntoContainer(
+//                AnimatedContentTransitionScope.SlideDirection.Up,
+//                animationSpec = tween(2000)
+//            )
+
 
             else -> null
 

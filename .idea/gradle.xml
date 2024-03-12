@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/dataSource" />
             <option value="$PROJECT_DIR$/playservice" />
+            <option value="$PROJECT_DIR$/read" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

@@ -17,3 +17,4 @@ rootProject.name = "Mymidia3"
 include(":app")
 include(":playservice")
 include(":dataSource")
+include(":read")

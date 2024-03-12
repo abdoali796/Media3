@@ -9,14 +9,15 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.magnifier
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.abdoali.datasourece.read.Verse
 import kotlinx.coroutines.launch
@@ -36,14 +37,24 @@ fun ReadUi(
     val local = LocalConfiguration.current.screenHeightDp
     LaunchedEffect(key1 = process) {
         if (process == -1) return@LaunchedEffect
-
         scope.launch {
-            if (process >= 2) state.animateScrollToItem(
-                process - 2
-            ) else state.animateScrollToItem(process)
+            if (process >= 4) {
+                state.animateScrollToItem(
+                    process - 4)
+            }
+
 
         }
     }
+    val currentView = LocalView.current
+    DisposableEffect(key1 = Unit, effect = {
+        currentView.keepScreenOn=true
+
+        onDispose {
+            currentView.keepScreenOn=false
+        }
+    })
+
     val size = local / 2
     Column(
 

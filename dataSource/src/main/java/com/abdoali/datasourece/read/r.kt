@@ -15,15 +15,12 @@ class QuranWords @Inject constructor(
 ) {
 
    suspend fun  getWordsAndTiming(suwarString: String ,readId: Int):ReadAndTiming{
-        val words=getWord(suwarString)
+        val words=getWord(suwarString ,context)
         val timing=getTiming(suwarString, readId)
        return ReadAndTiming(words ,timing)
     }
-    private fun getWord(suwarString: String): Read {
-        val surahIndex = surahIndex(suwarString)
-        val x = context.assets.open("$surahIndex.json").bufferedReader().use { it.readText() }
-        return parserWords(JSONObject(x))
-    }
+
+
 
    private suspend fun getTiming(suwarString: String, readId: Int): AyaTiming? {
         val surahIndex = surahIndex(suwarString)
@@ -36,4 +33,9 @@ class QuranWords @Inject constructor(
             return null
         }
     }
+}
+fun getWord(suwarInt: String, context: Context): Read {
+    val surahIndex = surahIndex(suwarInt)
+    val x = context.assets.open("$surahIndex.json").bufferedReader().use { it.readText() }
+    return parserWords(JSONObject(x))
 }

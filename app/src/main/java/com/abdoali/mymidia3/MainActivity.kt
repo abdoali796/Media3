@@ -34,23 +34,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MySharedPreferences.initShared(this)
-//        val r = QuranWords(this).getWord("f")
-//        Log.i("assetAbdo ", r.toString())
-// Usage example
-//        val url = "https://server10.mp3quran.net/minsh/001.mp3"
-//        val fileName = "abdo.mp3"
-//        downloadFile(this, url, fileName, onComplete = {
-//            Log.i("DownloadAbdo!", fileName)
-//        }, onProgress = {a,v -> Log.i("DownloadAbdo", "$a/$v")}
-//        )
 
-//        downloadFile(this, url, fileName) { downloadedBytes, totalBytes ->
-//            // Update progress UI
-//            Log.d("Download", "Downloaded $downloadedBytes/$totalBytes bytes")
-//        } {
-//            // Download complete
-//            Log.d("Download", "Download complete!")
-//        }
         setContent {
             val settingVM: SettingVM = hiltViewModel()
             val isLoading by settingVM.isLoading.collectAsState()

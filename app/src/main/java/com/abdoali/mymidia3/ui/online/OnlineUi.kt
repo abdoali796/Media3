@@ -1,5 +1,8 @@
 package com.abdoali.mymidia3.ui.online
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,12 +30,15 @@ import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.ui.local.LOCALE
 import com.abdoali.mymidia3.uiCompount.lottie.LottieCompose
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun OnLineUI(
 
     navController: NavController,
 
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    animationSpec: AnimatedContentScope,
+    sharedTransitionScope: SharedTransitionScope
 ) {
     val vmOnline: VMOnline = hiltViewModel()
     val artists by vmOnline.artists.collectAsState()
@@ -61,6 +67,8 @@ fun OnLineUI(
             actionNavToListSurah = navController::navToSourList,
             actionNavToListArtists = navController::navToArtistList,
             actionNavToSurahOrArttist = navController::navToList,
+            animationSpec = animationSpec,
+            sharedTransitionScope = sharedTransitionScope,
             actionNavToFavSurahFav = navController::navToFavSourList,
             actionNavToItemFav = { navController.navToList("Fav", -1) },
             uiEvent = vmOnline::onUIEvent
@@ -69,6 +77,7 @@ fun OnLineUI(
 
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun OnLineUIImp(
     surah: List<String>,
@@ -82,6 +91,8 @@ fun OnLineUIImp(
     actionNavToItemFav: () -> Unit,
     actionNavToSurahOrArttist: (String, Int) -> Unit,
     uiEvent: (UIEvent) -> Unit,
+    animationSpec: AnimatedContentScope,
+    sharedTransitionScope: SharedTransitionScope,
     modifier: Modifier = Modifier,
     actionNavToFavSurahFav: () -> Unit
 ) {
@@ -101,13 +112,17 @@ Column(
             title = "faveroSurah",
             titleSurh = surahFav,
             actionNav = actionNavToSurahOrArttist,
-            actionShowAll = actionNavToFavSurahFav
+            actionShowAll = actionNavToFavSurahFav,
+            animationSpec = animationSpec,
+            sharedTransitionScope = sharedTransitionScope
         )
     }
     if (favArtist.isNotEmpty()) {
         MinListTitle(
             title = "favor",
             titleReciter = favArtist,
+            animationSpec = animationSpec,
+            sharedTransitionScope = sharedTransitionScope,
             actionNav = actionNavToSurahOrArttist,
             actionShowAll = actionNavToArtistFav
         )
@@ -116,7 +131,8 @@ Column(
     MinListTitle(
         title = stringResource(R.string.artist),
         titleReciter = artists,
-
+animationSpec = animationSpec,
+        sharedTransitionScope = sharedTransitionScope,
         actionNav = actionNavToSurahOrArttist,
         actionShowAll = actionNavToListArtists
     )
@@ -125,7 +141,9 @@ Column(
         titleSurh = surah,
 
         actionNav = actionNavToSurahOrArttist,
-        actionShowAll = actionNavToListSurah
+        actionShowAll = actionNavToListSurah,
+        animationSpec = animationSpec,
+        sharedTransitionScope = sharedTransitionScope
     )
 
 }
@@ -254,22 +272,22 @@ private fun OnLineUIPre() {
 //        QuranItem(1 , "www" , "ssssssss" , "dd".toUri() , 0 , false) ,
 //        QuranItem(1 , "www" , "ssssssss" , "dd".toUri() , 0 , false) ,
 //    )
-    OnLineUIImp(
-        surah = listOf("one", "tow", "three", "four", "00000"),
-
-        surahFav = emptyList(),
-        favArtist = emptyList(),
-        artists = listOf(),
-        actionNavToArtistFav = {},
-        actionNavToListSurah = {},
-        actionNavToListArtists = {},
-        actionNavToSurahOrArttist = { s: String, i: Int -> },
-        actionNavToFavSurahFav = {},
-        favItem = emptyList(),
-        actionNavToItemFav = {},
-
-        uiEvent = {}
-    )
+//    OnLineUIImp(
+//        surah = listOf("one", "tow", "three", "four", "00000"),
+//
+//        surahFav = emptyList(),
+//        favArtist = emptyList(),
+//        artists = listOf(),
+//        actionNavToArtistFav = {},
+//        actionNavToListSurah = {},
+//        actionNavToListArtists = {},
+//        actionNavToSurahOrArttist = { s: String, i: Int -> },
+//        actionNavToFavSurahFav = {},
+//        favItem = emptyList(),
+//        actionNavToItemFav = {},
+//
+//        uiEvent = {}
+//    )
 }
 
 fun NavController.navToOnline() {
@@ -282,15 +300,19 @@ fun NavController.navToOnline() {
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.online(
 
     navController: NavController,
+    sharedTransitionScope: SharedTransitionScope,
 
     ) {
     composable(ONLINE) {
         OnLineUI(
 
-            navController = navController
+            navController = navController,
+            animationSpec = this@composable ,
+            sharedTransitionScope = sharedTransitionScope
         )
     }
 }

@@ -33,7 +33,7 @@ fun NavHostAudie(
         ) {
             list(onUIEvent = uiEvent, sharedTransitionScope = this@SharedTransitionLayout)
             locale()
-            online(navController = navController)
+            online(navController = navController , sharedTransitionScope = this@SharedTransitionLayout)
             sourFavList(
                 navController = navController, sharedTransitionScope = this@SharedTransitionLayout
             )

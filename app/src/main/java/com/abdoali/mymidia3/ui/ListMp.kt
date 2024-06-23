@@ -56,13 +56,11 @@ fun ListMp(
         Scaffold(modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
             MediumTopAppBar(title = {
                 if (title != null) {
-                    Text(
-                        text = title,
-                        overflow = TextOverflow.Clip,
-                        modifier = modifier.sharedElement(
-                            rememberSharedContentState(key = if (id==-1)"title$title"+"null" else "title$title${quranItem[0].moshaf}"),
-                            animatedVisibilityScope = animatedVisibilityScope
-                        )
+                    Title(
+                        title = title,
+                        id = id,
+                        animatedVisibilityScope = animatedVisibilityScope,
+                        moshaf = quranItem[0].moshaf
                     )
                 }
             }, navigationIcon = {
@@ -135,7 +133,7 @@ fun ListMp(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, )
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListMp(
     quranItem: List<QuranItem>,
@@ -154,84 +152,105 @@ fun ListMp(
         }
     }
 
-        val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
-        Scaffold(modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
-            MediumTopAppBar(title = {
-                if (title != null) {
-                    Text(
-                        text = title,
-                        overflow = TextOverflow.Clip,
-                    )
-                }
-            }, navigationIcon = {
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    Scaffold(modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection), topBar = {
+        MediumTopAppBar(title = {
+            if (title != null) {
+                Text(
+                    text = title,
+                    overflow = TextOverflow.Clip,
+                )
+            }
+        }, navigationIcon = {
 
-            }, actions = {
-                if (id != null) {
-                    if (id == 0) return@MediumTopAppBar
-                    FilledIconButton(onClick = {
-                        //id =-1 it surah list
-                        if (id != -1) {
-                            if (!itFav) {
-                                favorAddAction(id, "")
-                            } else {
-                                favorDelAction(id, "")
-                            }
-
+        }, actions = {
+            if (id != null) {
+                if (id == 0) return@MediumTopAppBar
+                FilledIconButton(onClick = {
+                    //id =-1 it surah list
+                    if (id != -1) {
+                        if (!itFav) {
+                            favorAddAction(id, "")
                         } else {
-                            if (!itFav) {
-                                if (title != null) {
-                                    favorAddAction(-1, title)
-                                }
-                            } else {
-                                if (title != null) {
-                                    favorDelAction(-1, title)
-                                }
+                            favorDelAction(id, "")
+                        }
+
+                    } else {
+                        if (!itFav) {
+                            if (title != null) {
+                                favorAddAction(-1, title)
+                            }
+                        } else {
+                            if (title != null) {
+                                favorDelAction(-1, title)
                             }
                         }
-                    }) {
-                        if (itFav) Icon(
-                            Icons.Default.Favorite, contentDescription = null
-                        )
-                        else Icon(
-                            Icons.Outlined.FavoriteBorder, contentDescription = null
-                        )
-
                     }
-                }
-                FilledIconButton(onClick = { uiEvent(UIEvent.SetPlayList(list)) }) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = null)
-                }
-            }, scrollBehavior = scrollBehavior)
-        }) { padding ->
+                }) {
+                    if (itFav) Icon(
+                        Icons.Default.Favorite, contentDescription = null
+                    )
+                    else Icon(
+                        Icons.Outlined.FavoriteBorder, contentDescription = null
+                    )
 
-            Column(
+                }
+            }
+            FilledIconButton(onClick = { uiEvent(UIEvent.SetPlayList(list)) }) {
+                Icon(Icons.Default.PlayArrow, contentDescription = null)
+            }
+        }, scrollBehavior = scrollBehavior)
+    }) { padding ->
 
-                modifier = modifier
-                    .padding(padding)
-                    .fillMaxSize()
+        Column(
+
+            modifier = modifier
+                .padding(padding)
+                .fillMaxSize()
 //            .border(BorderStroke(2.dp , Color.Black))
-            ) {
-                LazyColumn {
+        ) {
+            LazyColumn {
 //            item {
 //                Button(onClick = { uiEvent(UIEvent.SetPlayList(list)) }) {
 //                    Text(text = "تشغل القائمة كاملة")
 //                }
 //            }
-                    items(items = quranItem, key = { i -> i.index }) {
-                        Item(main = it.surah,
-                            text2 = it.artist,
-                            text3 = it.moshaf,
-                            modifier = Modifier.clickable { uiEvent(UIEvent.SeekToIndex(it.index)) })
-                    }
-                    item {
-                        Spacer(modifier = modifier.height(30.dp))
-                    }
+                items(items = quranItem, key = { i -> i.index }) {
+                    Item(main = it.surah,
+                        text2 = it.artist,
+                        text3 = it.moshaf,
+                        modifier = Modifier.clickable { uiEvent(UIEvent.SeekToIndex(it.index)) })
                 }
-
+                item {
+                    Spacer(modifier = modifier.height(30.dp))
+                }
             }
+
         }
+    }
 
 }
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun SharedTransitionScope.Title(
+    title: String,
+    id: Int?,
+    animatedVisibilityScope: AnimatedContentScope,
+    moshaf: String?,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = title,
+        overflow = TextOverflow.Clip,
+        modifier = modifier.sharedElement(
+            rememberSharedContentState(key = if (id == -1) "title$title" + "null" else "title$title${moshaf}"),
+            animatedVisibilityScope = animatedVisibilityScope
+        )
+    )
+}
+
+
 //
 //@Preview(showBackground = true)
 //@Composable

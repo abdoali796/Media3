@@ -3,12 +3,8 @@ package com.abdoali.playservice.service.notifcation
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_CANCEL_CURRENT
-import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.app.PendingIntent.FLAG_MUTABLE
 import android.app.PendingIntent.FLAG_NO_CREATE
-import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -22,7 +18,6 @@ import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerNotificationManager
 import com.abdoali.playservice.R
-import com.abdoali.playservice.service.ServicePlayer
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -96,17 +91,17 @@ class NotificationManager @Inject constructor(
             .build()
 
         mediaSessionService.startForeground(NOTIFICATION_ID, notification)
+
     }
 
     private fun createNotificationChannel() {
          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-          val   channel=
-            NotificationChannel(
+          val   myChannel=NotificationChannel(
                 NOTIFICATION_CHANNEL_ID,
                 NOTIFICATION_CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_LOW
             )
-            notificationManager.createNotificationChannel(channel)
+            notificationManager.createNotificationChannel(myChannel)
         } else {
             return
         }

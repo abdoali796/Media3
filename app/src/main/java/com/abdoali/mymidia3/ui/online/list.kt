@@ -1,6 +1,9 @@
 package com.abdoali.mymidia3.ui.online
 
 import android.util.Log
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -17,12 +20,16 @@ import androidx.navigation.navArgument
 import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.mymidia3.ui.ListMp
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun List(
 //    quran: List<QuranItem> ,
-    uiEvent: (UIEvent) -> Unit ,
-    modifier: Modifier = Modifier
-) {
+    uiEvent: (UIEvent) -> Unit,
+    modifier: Modifier = Modifier,
+    sharedTransitionScope: SharedTransitionScope,
+    animatedVisibilityScope: AnimatedContentScope,
+
+    ) {
 
     val vm: VMList = hiltViewModel()
 
@@ -36,31 +43,35 @@ fun List(
         vm.getID()
     }
     LaunchedEffect(key1 = key) {
-        Log.i("getKey" , "key$key")
+        Log.i("getKey", "key$key")
 
     }
 
     if (key?.get(0) == "Fav") {
         ListMp(
-            title = "المفضبلة" ,
-            quranItem = favItems ,
-            uiEvent = uiEvent ,
-            id = null ,
-            modifier = modifier ,
-            favorAddAction = vm::addFav ,
-            favorDelAction = vm::deleteFav ,
+            title = "المفضلة",
+            quranItem = favItems,
+            uiEvent = uiEvent,
+            id = null,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
+            modifier = modifier,
+            favorAddAction = vm::addFav,
+            favorDelAction = vm::deleteFav,
             itFav = itFav
 
         )
     } else {
         ListMp(
-            title = key?.get(0) ,
-            quranItem = quranItem ,
-            uiEvent = uiEvent ,
-            id = id ,
-            modifier = modifier ,
-            favorAddAction = vm::addFav ,
-            favorDelAction = vm::deleteFav ,
+            title = key?.get(0),
+            quranItem = quranItem,
+            uiEvent = uiEvent,
+            id = id,
+            modifier = modifier,
+            favorAddAction = vm::addFav,
+            favorDelAction = vm::deleteFav,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = animatedVisibilityScope,
             itFav = itFav
 
         )
@@ -69,17 +80,27 @@ fun List(
 
 }
 
-fun NavController.navToList(title: String , id: Int) {
+fun NavController.navToList(title: String, id: Int) {
     navigate("$LIST/$title/$id")
 }
 
-fun NavGraphBuilder.list(onUIEvent: (UIEvent) -> Unit) {
+@OptIn(ExperimentalSharedTransitionApi::class)
+fun NavGraphBuilder.list(
+    onUIEvent: (UIEvent) -> Unit,
+    sharedTransitionScope: SharedTransitionScope,
+) {
     composable(
-        "$LIST/{$TITLE_LIST}/{$ID}" , arguments = listOf(
-            navArgument(TITLE_LIST) { NavType.StringType } ,
-            navArgument(ID) { NavType.IntType }
-        )) {
-        List(uiEvent = onUIEvent)
+        "$LIST/{$TITLE_LIST}/{$ID}",
+        arguments = listOf(navArgument(TITLE_LIST) { NavType.StringType },
+            navArgument(ID) { NavType.IntType })
+    ) {
+        List(
+            uiEvent = onUIEvent,
+            sharedTransitionScope = sharedTransitionScope,
+            animatedVisibilityScope = this@composable,
+
+            )
+
     }
 }
 

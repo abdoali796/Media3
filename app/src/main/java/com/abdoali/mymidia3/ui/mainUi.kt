@@ -2,16 +2,12 @@ package com.abdoali.mymidia3.ui
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Search
@@ -44,9 +40,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.font.FontFamily
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -60,7 +55,6 @@ import com.abdoali.mymidia3.data.formatDuration
 import com.abdoali.mymidia3.ui.local.navToLocale
 import com.abdoali.mymidia3.ui.online.navToOnline
 import com.abdoali.mymidia3.ui.player.PlayUi
-import com.abdoali.mymidia3.ui.search.SEARCH
 import com.abdoali.mymidia3.ui.search.navToSearch
 import com.abdoali.mymidia3.ui.settings.navToSetting
 import com.abdoali.mymidia3.ui.splashscreen.SPLASH
@@ -72,21 +66,16 @@ import com.abdoali.mymidia3.uiCompount.getIndexDestination
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainUi(
-    mainNavController: NavController, subNavController: NavHostController
+    mainNavController: NavController, subNavController: NavHostController,
 ) {
     val vm: VM = hiltViewModel()
-//    val context = LocalContext.
 
     val timer by vm.name.collectAsState()
     val title by vm.title.collectAsState()
 
     val isPlaying by vm.isPlaying.collectAsState()
 
-//    val quranList = emptyList<QuranItem>()
-//    val localList by vm.localList.collectAsState()
     val isTimerOn by vm.isTimerOn.collectAsState()
-//    val soura by  vm.sura.collectAsState()
-//    val artistsList by vm.artistsList.collectAsState()
 
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     val selectedItem by rememberSaveable { mutableIntStateOf(1) }
@@ -120,7 +109,7 @@ fun MainUi(
                 actions = {
                     AnimatedVisibility(visible = isTimerOn) {
 
-                        Text(text = formatDuration(timer))
+                        Text(text = formatDuration(timer), fontFamily = FontFamily.Default)
                     }
                     Row {
 
@@ -134,18 +123,14 @@ fun MainUi(
                                 )
                             }
                             if (isTimerOn) {
-                                Icon(Icons.Outlined.Timer,
+                                Icon(Icons.Rounded.Timer,
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
                                         vm.onUIEvent(UIEvent.Timer(0))
                                     })
                             } else {
-                                if (showDig) {
-                                    Timer(showTimer = {
-                                        showDig = it
-                                    }, onUIEvent = vm::onUIEvent)
-                                }
-                                Icon(Icons.Rounded.Timer, contentDescription = null)
+
+                                Icon(Icons.Outlined.Timer, contentDescription = null)
 
                             }
                         }
@@ -218,20 +203,6 @@ fun MainUi(
 
 
 
-            LazyColumn(
-                modifier = Modifier.animateContentSize()
-
-            ) {
-
-                item {
-
-                }
-                item {
-                    Spacer(modifier = Modifier.height((LocalConfiguration.current.screenHeightDp).dp))
-
-                }
-
-            }
             if (openBottomSheet) {
                 ModalBottomSheet(onDismissRequest = { openBottomSheet = false },
                     sheetState = sheetScaffoldState,
@@ -251,7 +222,7 @@ fun MainUi(
 ////////////////////////////////navigation////////////////////
 const val MAIN_UI = "MAIN_UI_MAIN_UI"
 fun NavGraphBuilder.mainUi(
-    mainNavController: NavController, subNavController: NavHostController
+    mainNavController: NavController, subNavController: NavHostController,
 ) {
     composable(MAIN_UI, enterTransition = {
         when (initialState.destination.route) {
@@ -259,7 +230,6 @@ fun NavGraphBuilder.mainUi(
                 AnimatedContentTransitionScope.SlideDirection.Up,
                 animationSpec = tween(2000)
             )
-
 
 
 //            SEARCH -> slideIntoContainer(

@@ -1,13 +1,10 @@
 package com.abdoali.mymidia3.ui.online
 
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -38,7 +35,6 @@ fun OnLineUI(
     modifier: Modifier = Modifier
 ) {
     val vmOnline: VMOnline = hiltViewModel()
-//    val list by vmOnline.list.collectAsState()
     val artists by vmOnline.artists.collectAsState()
     val surah by vmOnline.surah.collectAsState()
     val favArtist by vmOnline.favArtist.collectAsState()

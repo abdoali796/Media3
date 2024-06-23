@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">قران</string>
-    <string name="eng">انجليوي</string>
+    <string name="eng">انجليزي</string>
     <string name="arab">عربي</string>
     <string name="setting">الاعداد</string>
     <string name="brown">بني</string>
     <string name="blue">ازرق</string>
     <string name="red">احمر</string>
-    <string name="search_text">ابحث بسورة او بقارئ</string>
+    <string name="search_text">ابحث  عن اي قارئ</string>
     <string name="no_thing_to_show">لا شئ لعرضة</string>
     <string name="locale">محلي</string>
     <string name="online">علي الانترنت</string>
@@ -22,4 +22,9 @@
     <string name="surah">سورة</string>
     <string name="artist">قارئ</string>
     <string name="show_all">عرض كل %1$s</string>
+    <string name="sync_text">"مزامنه النص :"</string>
+    <string name="active">فعال</string>
+    <string name="inactive">غير فعال</string>
+    <string name="language">اللغة</string>
+    <string name="theme">اللون</string>
 </resources>

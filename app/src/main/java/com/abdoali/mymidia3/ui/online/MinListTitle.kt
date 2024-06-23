@@ -1,13 +1,11 @@
 package com.abdoali.mymidia3.ui.online
 
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ButtonElevation
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -60,7 +58,8 @@ fun MinListTitle(
                         )
                     }
                 } else {
-                    for (i in 0..5) {
+
+                    for (i in 0..4) {
                         Text(
                             text = titleReciter[i].name, modifier.clickable {
                                 actionNav(

@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.abdoali.mymidia3.data.UIEvent
@@ -45,8 +46,8 @@ fun BarImp(
             modifier = modifier.fillMaxWidth() ,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = processString)
-            Text(text = durationString)
+            Text(text = processString , fontFamily = FontFamily.Default)
+            Text(text = durationString ,fontFamily = FontFamily.Default)
         }
         Slider(value = if (useNewProgressValue.value) newProgressValue.floatValue else process ,
             onValueChange = {
@@ -64,11 +65,11 @@ fun BarImp(
 
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true , locale = "ar")
 @Composable
 fun BarPreview() {
     BarImp(
         0.5f ,
-        "00:55" ,
+        "87:93" ,
         "20:00" , {})
 }

@@ -202,7 +202,11 @@ class MediaServiceHandler @Inject constructor(
 
             is PlayerEvent.UpdateProgress -> player.seekTo((player.duration * playerEvent.newProgress).toLong())
 
-            is PlayerEvent.SetPlayList -> preparePlayList(playerEvent.list)
+            is PlayerEvent.SetPlayList -> {
+                player.seekTo(playerEvent.list[0], 0)
+                preparePlayList(playerEvent.list)
+
+            }
 
             is PlayerEvent.Repeat -> {
                 if (playerEvent.repeat) {
@@ -217,7 +221,7 @@ class MediaServiceHandler @Inject constructor(
     }
 
     private fun preparePlayList(intList: List<Int>) {
-        index = 0
+        index = 1
         isPlayList.value = true
         _list.value = intList
 

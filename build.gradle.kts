@@ -2,17 +2,25 @@
 buildscript {
 
 
-    repositories{
+    repositories {
         mavenCentral()
         google()
     }
-    dependencies{
+    dependencies {
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.44")
+    }
+
+    extra.apply {
+        
+        set("media3Version", "1.3.1")
     }
 }
 plugins {
     id("com.android.application") version "8.1.0" apply false
     id("org.jetbrains.kotlin.android") version "1.8.10" apply false
-    id ("com.google.dagger.hilt.android") version "2.44" apply false
+    id("com.google.dagger.hilt.android") version "2.44" apply false
     id("com.android.library") version "8.1.0" apply false
+    id("com.google.gms.google-services") version "4.4.1" apply false
+    id("com.google.firebase.crashlytics") version "3.0.1" apply false
+
 }

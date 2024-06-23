@@ -4,7 +4,6 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import android.util.Size
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
@@ -43,22 +42,19 @@ fun ImageAudoi(
 //    val animationFloat= AnimationState(process * 306)
     LaunchedEffect(key1 = uri) {
         try {
-            bitmap = if (uri == null) {
-                com.abdoali.mymidia3.R.drawable.quran
-            } else {
-                uri.let {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                        context.applicationContext.contentResolver.loadThumbnail(
-                            it ,
-                            Size(100 , 100) ,
-                            null
-                        )
-                    } else {
-                        TODO("VERSION.SDK_INT < Q")
-                    }
-
+            bitmap = uri?.let {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    context.applicationContext.contentResolver.loadThumbnail(
+                        it ,
+                        Size(100 , 100) ,
+                        null
+                    )
+                } else {
+                    TODO("VERSION.SDK_INT < Q")
                 }
+
             }
+                ?: com.abdoali.mymidia3.R.drawable.quran
         } catch (e: Exception) {
             Log.i("bitmap" , e.toString())
 

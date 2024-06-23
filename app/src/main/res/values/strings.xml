@@ -2,13 +2,13 @@
     <string name="app_name">Quran</string>
     <string name="exo_controls_shuffle_on_description" translatable="false">shuffle on</string>
     <string name="exo_controls_shuffle_off_description" translatable="false">shuffle off</string>
-    <string name="eng">eng</string>
-    <string name="arab">arab</string>
+    <string name="eng">English</string>
+    <string name="arab">Arabic</string>
     <string name="setting">"Setting "</string>
     <string name="brown">brown</string>
     <string name="blue">blue</string>
     <string name="red">red</string>
-    <string name="search_text">search sourh or artist</string>
+    <string name="search_text">search  artist</string>
     <string name="no_thing_to_show">no thing to show</string>
     <string name="locale">Locale</string>
     <string name="online">ONLINE</string>
@@ -23,4 +23,9 @@
     <string name="show_all">Show  All %1$s</string>
     <string name="surah">surah</string>
     <string name="artist">artist</string>
+    <string name="sync_text">Sync Text :</string>
+    <string name="active">active</string>
+    <string name="inactive">inactive</string>
+    <string name="language">"language "</string>
+    <string name="theme">"theme "</string>
 </resources>

@@ -1,5 +1,8 @@
 package com.abdoali.mymidia3.uiCompount
 
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -14,30 +17,33 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun Item(
-    main: String ,
-    text2: String? ,
+    main: String,
+    text2: String?,
 
-    modifier: Modifier = Modifier ,
-    text3: String? = null ,
+    modifier: Modifier = Modifier,
+    text3: String? = null,
 ) {
 
-    ItemImp(title = main , artists = text2 , modifier = modifier , text3)
+    ItemImp(title = main, artists = text2, modifier = modifier, text3)
 }
 
-@Composable
-private fun ItemImp(
 
-    title: String ,
-    artists: String? ,
-    modifier: Modifier = Modifier ,
-    moshaf: String? = null ,
+@OptIn(ExperimentalSharedTransitionApi::class)
+@Composable
+fun SharedTransitionScope.Item(
+
+    main: String,
+    text2: String?,
+    animationSpec: AnimatedVisibilityScope,
+    modifier: Modifier = Modifier,
+    text3: String? = null,
 ) {
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 1.dp
-        ) , modifier = modifier
+        ), modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 2.dp , horizontal = 12.dp)
+            .padding(vertical = 2.dp, horizontal = 12.dp)
     ) {
 
         Column(
@@ -47,14 +53,57 @@ private fun ItemImp(
 
                 .fillMaxWidth()
         ) {
-            Text(text = title , style = MaterialTheme.typography.titleLarge)
+            Text(
+                text = main,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = modifier.sharedElement(
+                    rememberSharedContentState(key = "title$main$text2"),
+                    animationSpec
+                )
+            )
+            text2?.let {
+                Text(
+                    text = it, style = MaterialTheme.typography.titleSmall
+                )
+            }
+            text3?.let { Text(text = it, style = MaterialTheme.typography.titleSmall) }
+
+        }
+    }
+}
+
+
+@Composable
+private fun ItemImp(
+
+    title: String,
+    artists: String?,
+    modifier: Modifier = Modifier,
+    moshaf: String? = null,
+) {
+    Card(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 1.dp
+        ), modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 2.dp, horizontal = 12.dp)
+    ) {
+
+        Column(
+            modifier
+
+                .padding(8.dp)
+
+                .fillMaxWidth()
+        ) {
+            Text(text = title, style = MaterialTheme.typography.titleLarge)
             artists?.let {
                 Text(
-                    text = it ,
+                    text = it,
                     style = MaterialTheme.typography.titleSmall
                 )
             }
-            moshaf?.let { Text(text = it , style = MaterialTheme.typography.titleSmall) }
+            moshaf?.let { Text(text = it, style = MaterialTheme.typography.titleSmall) }
 
         }
     }
@@ -64,5 +113,5 @@ private fun ItemImp(
 @Composable
 private fun ItemPew() {
 
-    ItemImp("abdo" , "all")
+    ItemImp("abdo", "all")
 }

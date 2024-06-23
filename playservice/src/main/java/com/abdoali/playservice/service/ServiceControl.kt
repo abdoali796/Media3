@@ -31,6 +31,7 @@ class ServiceControl @Inject constructor(@ApplicationContext val context: Contex
     fun stopService() {
         try {
             context.stopService(intent)
+
             Toast.makeText(context , "StopForegroundService" , Toast.LENGTH_LONG).show()
             Log.i("onPlaybackStateAbdoali" , "StopForegroundService")
         } catch (e: Exception) {

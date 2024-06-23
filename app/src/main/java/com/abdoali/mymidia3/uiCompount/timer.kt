@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -19,8 +19,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -43,27 +49,27 @@ fun Timer(
     var decreasePrs by remember {
         mutableStateOf(false)
     }
-    AlertDialog(onDismissRequest = { showTimer(false) }) {
+    BasicAlertDialog(onDismissRequest = { showTimer(false) }) {
         Card(onClick = {}) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally ,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.choose_the_time) ,
+                    text = stringResource(R.string.choose_the_time),
                     style = MaterialTheme.typography.headlineLarge
                 )
                 Text(
-                    text = stringResource(R.string.min , time) ,
+                    text = stringResource(R.string.min, time),
                     style = MaterialTheme.typography.titleLarge
                 )
                 Row {
 
                     Icon(
-                        Icons.Default.ArrowUpward ,
-                        contentDescription = null ,
+                        Icons.Default.ArrowUpward,
+                        contentDescription = null,
                         Modifier
                             .padding(16.dp)
                             .pointerInput(Unit) {
@@ -79,8 +85,8 @@ fun Timer(
                             })
 
 
-                    Icon(Icons.Default.ArrowDownward ,
-                        contentDescription = null ,
+                    Icon(Icons.Default.ArrowDownward,
+                        contentDescription = null,
                         Modifier
                             .padding(16.dp)
                             .pointerInput(Unit) {
@@ -96,11 +102,11 @@ fun Timer(
                             })
                 }
                 Row {
-                    SuggestionChip(onClick = { time = 60 } ,
+                    SuggestionChip(onClick = { time = 60 },
                         label = { Text(stringResource(R.string._60_min)) })
-                    SuggestionChip(onClick = { time = 90 } ,
+                    SuggestionChip(onClick = { time = 90 },
                         label = { Text(stringResource(R.string._90_min)) })
-                    SuggestionChip(onClick = { time = 120 } ,
+                    SuggestionChip(onClick = { time = 120 },
                         label = { Text(stringResource(R.string._120_min)) })
                 }
                 Row {
@@ -111,7 +117,7 @@ fun Timer(
                         Text(text = stringResource(R.string.save))
                     }
                     Spacer(modifier = Modifier.width(20.dp))
-                    Button(onClick = { showTimer(false) } ,
+                    Button(onClick = { showTimer(false) },
                         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)) {
                         Text(text = stringResource(R.string.cancel))
                     }

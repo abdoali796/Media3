@@ -114,12 +114,12 @@ fun showWords(){
 
 
             processLong.collect { progressTime ->
-                Log.i("timingAya", "currPre $progressTime And time ${timing.value}")
+//                Log.i("timingAya", "currPre $progressTime And time ${timing.value}")
 
                 if (timing.value.isNullOrEmpty()) {
 
                     currencyItemAya.emit(-1)
-                    Log.i("timingAya", "currPre $progressTime And tivvvvvvvvvme ${currencyItemAya.value}")
+//                    Log.i("timingAya", "currPre $progressTime And tivvvvvvvvvme ${currencyItemAya.value}")
 
                     return@collect
                 }
@@ -127,14 +127,14 @@ fun showWords(){
 
                 val t =
                     timing.value?.find { progressTime <= it.start_time && progressTime >= it.end_time }
-                Log.i("timingAya", "currPre $t")
+//                Log.i("timingAya", "currPre $t")
 
                 if (t != null) {
                     currencyItemAya.emit(t.ayah)
 
                 }
 
-                Log.i("timingAya", "fl" + currencyItemAya.value.toString())
+//                Log.i("timingAya", "fl" + currencyItemAya.value.toString())
             }
         }
     }

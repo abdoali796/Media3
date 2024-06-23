@@ -4,6 +4,10 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("dagger.hilt.android.plugin")
     kotlin("kapt")
+    id("com.google.gms.google-services")
+
+    id("com.google.firebase.crashlytics")
+
 }
 
 android {
@@ -31,7 +35,7 @@ android {
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt") ,
+                getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
@@ -65,51 +69,66 @@ android {
 dependencies {
     implementation(project(":playservice"))
 
-    implementation("androidx.core:core-ktx:1.10.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation("androidx.core:core-ktx:1.13.1")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.1")
+    implementation("androidx.activity:activity-compose:1.9.0")
+    implementation(platform("androidx.compose:compose-bom:2024.05.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.material3:material3:1.2.0")
-    implementation("androidx.compose.material3:material3-window-size-class:1.2.0")
+    implementation("androidx.compose.material3:material3:1.2.1")
+    implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
     implementation(project(mapOf("path" to ":playservice")))
+//    implementation("com.google.firebase:firebase-crashlytics:19.0.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.05.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
-    val media3_version = "1.2.0"
-    implementation("androidx.compose.material:material-icons-extended:1.6.1")
 
-    implementation("androidx.media3:media3-common:$media3_version")
+    implementation("androidx.compose.material:material-icons-extended:1.6.7")
+
+    val media3Version = rootProject.extra.get("media3Version") as String
+
+    implementation("androidx.media3:media3-common:$media3Version")
     implementation("com.google.accompanist:accompanist-permissions:0.31.5-beta")
 
     implementation("com.google.dagger:hilt-android:2.44")
 //    kapt ("com.google.dagger:hilt-compiler:2.45")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
-    implementation("io.coil-kt:coil-compose:2.3.0")
+    implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("com.github.bumptech.glide:compose:1.0.0-alpha.1")
 
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
-    implementation("androidx.navigation:navigation-compose:2.7.2")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation("androidx.compose.animation:animation:1.7.0-beta03")
+
 //    debugImplementation ("com.squareup.leakcanary:leakcanary-android:2.12")
 
-    implementation("androidx.appcompat:appcompat:1.7.0-alpha03")
+    implementation("androidx.appcompat:appcompat:1.7.0")
 // For loading and tinting drawables on older versions of the platform
-    implementation("androidx.appcompat:appcompat-resources:1.6.1")
+    implementation("androidx.appcompat:appcompat-resources:1.7.0")
 //room
-    val roomVersion = "2.5.2"
+    val roomVersion = "2.6.1"
     implementation("androidx.room:room-ktx:$roomVersion")
     implementation("androidx.room:room-runtime:$roomVersion")
     kapt("androidx.room:room-compiler:$roomVersion")
 
 //lottie
     implementation("com.airbnb.android:lottie-compose:6.0.0")
+
+
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+
+    // Add the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
+
 }
 kapt {
     correctErrorTypes = true

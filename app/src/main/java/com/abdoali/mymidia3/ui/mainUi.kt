@@ -1,7 +1,10 @@
 package com.abdoali.mymidia3.ui
 
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -10,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material.icons.rounded.Timer
@@ -20,6 +22,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -41,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -55,7 +59,6 @@ import com.abdoali.mymidia3.data.formatDuration
 import com.abdoali.mymidia3.ui.local.navToLocale
 import com.abdoali.mymidia3.ui.online.navToOnline
 import com.abdoali.mymidia3.ui.player.PlayUi
-import com.abdoali.mymidia3.ui.search.navToSearch
 import com.abdoali.mymidia3.ui.settings.navToSetting
 import com.abdoali.mymidia3.ui.splashscreen.SPLASH
 import com.abdoali.mymidia3.uiCompount.MinControlImp
@@ -63,12 +66,16 @@ import com.abdoali.mymidia3.uiCompount.NavHostAudie
 import com.abdoali.mymidia3.uiCompount.Timer
 import com.abdoali.mymidia3.uiCompount.getIndexDestination
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun MainUi(
     mainNavController: NavController, subNavController: NavHostController,
+    scope: SharedTransitionScope,
+
+//    animatedVisibilityScope: AnimatedVisibilityScope,
 ) {
     val vm: VM = hiltViewModel()
+//    SharedTransitionLayout {
 
     val timer by vm.name.collectAsState()
     val title by vm.title.collectAsState()
@@ -79,8 +86,7 @@ fun MainUi(
 
     var openBottomSheet by rememberSaveable { mutableStateOf(false) }
     val selectedItem by rememberSaveable { mutableIntStateOf(1) }
-    val labelList =
-        listOf(stringResource(R.string.locale), stringResource(R.string.online))
+    val labelList = listOf(stringResource(R.string.locale), stringResource(R.string.online))
 
     val sheetScaffoldState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true
@@ -104,7 +110,16 @@ fun MainUi(
 
         topBar = {
 //
-            TopAppBar(title = { Text(text = stringResource(id = R.string.app_name)) },
+            TopAppBar(
+                title = {
+//                    with(sharedTransitionScope) {
+//                        TextLoge(
+//                            animatedContentScope = animatedContentScope,
+//                            appName = stringResource(id = R.string.app_name)
+//                        )
+//                    }
+                    Text(text = stringResource(id = R.string.app_name))
+                },
                 scrollBehavior = scrollBehavior,
                 actions = {
                     AnimatedVisibility(visible = isTimerOn) {
@@ -118,8 +133,7 @@ fun MainUi(
                         }) {
                             if (showDig) {
                                 Timer(
-                                    showTimer = { showDig = it },
-                                    onUIEvent = vm::onUIEvent
+                                    showTimer = { showDig = it }, onUIEvent = vm::onUIEvent
                                 )
                             }
                             if (isTimerOn) {
@@ -134,9 +148,6 @@ fun MainUi(
 
                             }
                         }
-                    }
-                    IconButton(onClick = { mainNavController.navToSearch() }) {
-                        Icon(Icons.Outlined.Search, contentDescription = null)
                     }
 
                     IconButton(onClick = { expand = true }) {
@@ -165,9 +176,12 @@ fun MainUi(
         floatingActionButtonPosition = FabPosition.End, bottomBar = {
             Column {
 
+
                 MinControlImp(isPlayerEvent = isPlaying,
                     name = title,
                     onUIEvent = vm::onUIEvent,
+//                        sharedTransitionScope = this@SharedTransitionLayout,
+//                        animatedVisibilityScope = animatedVisibilityScope,
                     modifier = Modifier.clickable { openBottomSheet = true })
 
             }
@@ -198,8 +212,8 @@ fun MainUi(
                 navController = subNavController,
 
                 uiEvent = vm::onUIEvent,
-
-                )
+                sharedTransitionScope = scope
+            )
 
 
 
@@ -207,10 +221,9 @@ fun MainUi(
                 ModalBottomSheet(onDismissRequest = { openBottomSheet = false },
                     sheetState = sheetScaffoldState,
                     content = {
-                        PlayUi(
-
-                        )
-                    })
+                        PlayUi()
+                    }
+                )
             }
 
         }
@@ -218,17 +231,39 @@ fun MainUi(
     }
 
 }
+//}
+////////////////////////SharedTransitionScope//////////////
+
+@Composable
+@OptIn(ExperimentalSharedTransitionApi::class)
+fun SharedTransitionScope.TextLoge(
+
+    animatedContentScope: AnimatedContentScope,
+    appName: String,
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.titleLarge,
+) {
+    Text(
+        text = appName, modifier.sharedElement(
+            rememberSharedContentState(key = "Loge${appName}"),
+            animatedVisibilityScope = animatedContentScope
+        ), style = style
+    )
+}
 
 ////////////////////////////////navigation////////////////////
 const val MAIN_UI = "MAIN_UI_MAIN_UI"
+
+@OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.mainUi(
-    mainNavController: NavController, subNavController: NavHostController,
+    mainNavController: NavController,
+    subNavController: NavHostController,
+    sharedTransitionScope: SharedTransitionScope,
 ) {
     composable(MAIN_UI, enterTransition = {
         when (initialState.destination.route) {
             SPLASH -> slideIntoContainer(
-                AnimatedContentTransitionScope.SlideDirection.Up,
-                animationSpec = tween(2000)
+                AnimatedContentTransitionScope.SlideDirection.Up, animationSpec = tween(2000)
             )
 
 
@@ -241,9 +276,12 @@ fun NavGraphBuilder.mainUi(
             else -> null
 
         }
-    }
-    ) {
-        MainUi(mainNavController, subNavController = subNavController)
+    }) {
+        MainUi(
+            mainNavController,
+            subNavController = subNavController,
+            scope = sharedTransitionScope
+        )
     }
 }
 

@@ -2,11 +2,16 @@ package com.abdoali.mymidia3.ui.local
 
 import android.Manifest
 import android.os.Build
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -14,7 +19,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.abdoali.mymidia3.R
 import com.abdoali.mymidia3.ui.ListMp
-import com.abdoali.mymidia3.uiCompount.lottie.LottieCompose
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -38,7 +42,7 @@ fun LocaleList(
     }
     Column {
 
-        AnimatedVisibility(! permission.status.isGranted) {
+        AnimatedVisibility(!permission.status.isGranted) {
             Column {
 
 //                LottieCompose()
@@ -73,12 +77,12 @@ fun LocaleList(
         AnimatedVisibility(quranItem.isNotEmpty()) {
 
             ListMp(
-                quranItem = quranItem ,
-                stringResource(R.string.locale) ,
-                uiEvent = vmLocal::onUIEven ,
-                id = null ,
-                favorAddAction = { i: Int , s: String -> } ,
-                favorDelAction = { i: Int , s: String -> }
+                quranItem = quranItem,
+                stringResource(R.string.locale),
+                uiEvent = vmLocal::onUIEven,
+                id = null,
+                favorAddAction = { _: Int, _: String -> },
+                favorDelAction = { _: Int, _: String -> }
             )
         }
     }
@@ -86,7 +90,20 @@ fun LocaleList(
 //////////////////////////Navigation//////////////////////
 
 fun NavGraphBuilder.locale() {
-    composable(LOCALE) {
+    composable(
+        LOCALE,
+        enterTransition = {
+            slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.End,
+                animationSpec = tween(700)
+            )
+        },
+        exitTransition = {
+            slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start,
+            animationSpec = tween(700)
+            )
+        },
+    ) {
         LocaleList(
 
         )

@@ -35,6 +35,7 @@ class VMOnline @Inject constructor(
 
     val favItem: StateFlow<List<QuranItem>>
         get() = repository.favItem
+    private var count = 10
 
     init {
         updateFavItem()
@@ -45,10 +46,14 @@ class VMOnline @Inject constructor(
     private fun updateFavItem() {
         Log.i("updateFavItem" , "called")
         viewModelScope.launch {
+
             if (artists.value.isEmpty()) {
                 delay(1000L)
-                Log.i("updateFavItem" , "false")
-                updateFavItem()
+                //count ==0 (app is offline)
+                Log.i("updateFavItem" , "false$count")
+                count--
+
+                if (count>0) updateFavItem()
 
             } else {
                 repository.getFAVItem()

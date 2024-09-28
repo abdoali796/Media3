@@ -3,14 +3,18 @@ package com.abdoali.mymidia3.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.abdoali.mymidia3.data.MySharedPreferences
 import com.abdoali.mymidia3.data.Repository
 import com.abdoali.mymidia3.data.UIEvent
 import com.abdoali.playservice.service.ServiceControl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class VM @Inject constructor(
 
@@ -21,7 +25,7 @@ class VM @Inject constructor(
 ) : ViewModel() {
 
     var name = repository.elapsedTime
-
+private val currencyIt=repository.currentMediaItemIndex
     val isTimerOn = repository.isTimerOn
     val isPlaying = repository.isPlaying
 
@@ -42,7 +46,18 @@ class VM @Inject constructor(
 
         startSarvie()
         viewModelScope.launch {
+
+                currencyIt.debounce(1000).collect{
+
+                    repository.log()
+                    MySharedPreferences.item=it
+                }
+
+        }
+
+        viewModelScope.launch {
             repository.updateUI()
+
         }
 
 

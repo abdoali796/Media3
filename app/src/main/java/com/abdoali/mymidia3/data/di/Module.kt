@@ -9,6 +9,7 @@ import com.abdoali.mymidia3.data.RepositoryImp
 import com.abdoali.mymidia3.data.database.favorite.artist.ArtistDatabase
 import com.abdoali.mymidia3.data.database.favorite.item.ItemUrlDatabase
 import com.abdoali.mymidia3.data.database.favorite.surah.SurahDatabase
+import com.abdoali.mymidia3.data.database.log.played.PlayedLogDatabase
 import com.abdoali.mymidia3.data.downloed.DownloadFile
 import com.abdoali.playservice.MediaServiceHandler
 import dagger.Module
@@ -33,6 +34,7 @@ object Module {
         artistDatabase: ArtistDatabase,
         surahDatabase: SurahDatabase,
         itemUrlDatabase: ItemUrlDatabase,
+        playedLogDatabase: PlayedLogDatabase,
         downloadFile: DownloadFile,
         quranWords: QuranWords
     ): Repository = RepositoryImp(
@@ -41,6 +43,7 @@ object Module {
         artistDatabase = artistDatabase,
         surahDatabase = surahDatabase,
         itemUrlDatabase = itemUrlDatabase,
+        playedLogDatabase = playedLogDatabase,
         downloadFile = downloadFile,
         quranWords=quranWords
     )
@@ -58,6 +61,14 @@ object Module {
     fun surahDatabasePro(@ApplicationContext context: Context): SurahDatabase {
         return Room.databaseBuilder(
             context, SurahDatabase::class.java, "SurahDatabase"
+        ).build()
+
+    }
+    @Provides
+    @Singleton
+    fun playedListDatabasePro(@ApplicationContext context: Context): PlayedLogDatabase {
+        return Room.databaseBuilder(
+            context, PlayedLogDatabase::class.java, "PlayedLogDatabase"
         ).build()
 
     }

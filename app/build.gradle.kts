@@ -33,11 +33,13 @@ android {
 
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
+
         }
     }
 
@@ -54,6 +56,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.4.3"
@@ -70,9 +73,9 @@ dependencies {
     implementation(project(":playservice"))
 
     implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.1")
-    implementation("androidx.activity:activity-compose:1.9.0")
-    implementation(platform("androidx.compose:compose-bom:2024.05.00"))
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.8.4")
+    implementation("androidx.activity:activity-compose:1.9.1")
+    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
@@ -81,15 +84,17 @@ dependencies {
     implementation(project(mapOf("path" to ":playservice")))
 //    implementation("com.google.firebase:firebase-crashlytics:19.0.0")
     testImplementation("junit:junit:4.13.2")
+//    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
+//    testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation(platform("androidx.compose:compose-bom:2024.05.00"))
+    androidTestImplementation(platform("androidx.compose:compose-bom:2024.06.00"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
 
-    implementation("androidx.compose.material:material-icons-extended:1.6.7")
+    implementation("androidx.compose.material:material-icons-extended:1.6.8")
 
     val media3Version = rootProject.extra.get("media3Version") as String
 
@@ -104,7 +109,7 @@ dependencies {
 
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation("androidx.navigation:navigation-compose:2.7.7")
-    implementation("androidx.compose.animation:animation:1.7.0-beta03")
+    implementation("androidx.compose.animation:animation:1.7.0-beta07")
 
 //    debugImplementation ("com.squareup.leakcanary:leakcanary-android:2.12")
 
@@ -122,13 +127,18 @@ dependencies {
 
 
     // Import the BoM for the Firebase platform
-    implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
 
     // Add the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-crashlytics")
     implementation("com.google.firebase:firebase-analytics")
 
+    // For AppWidgets support
+    implementation ("androidx.glance:glance-appwidget:1.1.0")
+
+    // For interop APIs with Material 3
+    implementation ("androidx.glance:glance-material3:1.1.0")
 }
 kapt {
     correctErrorTypes = true

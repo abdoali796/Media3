@@ -28,4 +28,11 @@
     <string name="inactive">inactive</string>
     <string name="language">"language "</string>
     <string name="theme">"theme "</string>
+    <string name="log">log</string>
+    <string name="favorite_reciter">Favorite Reciter</string>
+    <string name="favorite_surah">Favorite Surah</string>
+    <string name="favorite_item">Favorite item</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
+    <string name="app_widget_description">This is an app widget description</string>
 </resources>

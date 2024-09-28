@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.abdoali.mymidia3.data.UIEvent
 
@@ -37,35 +40,39 @@ fun BarImp(
 ) {
     val newProgressValue = remember { mutableFloatStateOf(0f) }
     val useNewProgressValue = remember { mutableStateOf(false) }
+
     Column(
         modifier
             .fillMaxWidth()
             .padding(8.dp)
     ) {
-        Row(
-            modifier = modifier.fillMaxWidth() ,
-            horizontalArrangement = Arrangement.SpaceBetween
+        CompositionLocalProvider(
+            LocalLayoutDirection provides LayoutDirection.Ltr
         ) {
-            Text(text = processString , fontFamily = FontFamily.Default)
-            Text(text = durationString ,fontFamily = FontFamily.Default)
-        }
-        Slider(value = if (useNewProgressValue.value) newProgressValue.floatValue else process ,
-            onValueChange = {
-                useNewProgressValue.value = true
-                newProgressValue.floatValue = it
-                onUIEvent(UIEvent.UpdateProgress(newProgressValue.floatValue))
-
-            } ,
-            onValueChangeFinished = {
-                useNewProgressValue.value = false
+            Row(
+                modifier = modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = processString, fontFamily = FontFamily.Default)
+                Text(text = durationString, fontFamily = FontFamily.Default)
             }
-        )
+            Slider(value = if (useNewProgressValue.value) newProgressValue.floatValue else process,
+                onValueChange = {
+                    useNewProgressValue.value = true
+                    newProgressValue.floatValue = it
+                    onUIEvent(UIEvent.UpdateProgress(newProgressValue.floatValue))
+
+                },
+                onValueChangeFinished = {
+                    useNewProgressValue.value = false
+                }
+            )
+
+        }
 
     }
-
 }
-
-@Preview(showBackground = true , locale = "ar")
+@Preview(showBackground = true , locale = "us")
 @Composable
 fun BarPreview() {
     BarImp(

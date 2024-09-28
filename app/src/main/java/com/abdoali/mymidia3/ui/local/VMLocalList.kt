@@ -20,6 +20,7 @@ class VMLocalList @Inject constructor(private val repository: Repository) : View
         viewModelScope.launch {
             repository.prepareData()
             repository.getFAVItem()
+
         }
     }
 }

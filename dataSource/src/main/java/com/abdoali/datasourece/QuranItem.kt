@@ -1,10 +1,11 @@
 package com.abdoali.datasourece
 
 import android.net.Uri
+import androidx.annotation.Keep
 import androidx.core.net.toUri
 import com.abdoali.datasourece.api.Mp3quran
 import com.abdoali.datasourece.cach.QuranItemCach
-
+@Keep
 data class QuranItem(
     val index: Int ,
     val artist: String ,

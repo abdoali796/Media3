@@ -1,5 +1,6 @@
 package com.abdoali.mymidia3.uiCompount
 
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,12 +28,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.abdoali.mymidia3.data.UIEvent
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun MinControlImp(
-    isPlayerEvent: Boolean ,
-    name: String ,
-    onUIEvent: (UIEvent) -> Unit ,
-    modifier: Modifier = Modifier
+    isPlayerEvent: Boolean,
+    name: String,
+    onUIEvent: (UIEvent) -> Unit,
+    modifier: Modifier = Modifier,
+//    sharedTransitionScope: SharedTransitionScope,
+//    animatedVisibilityScope: AnimatedVisibilityScope
 ) {
     Card(
         elevation = CardDefaults.cardElevation(
@@ -45,8 +49,8 @@ fun MinControlImp(
         , modifier = modifier
             .padding(horizontal = 10.dp)
             .border(
-                0.5.dp ,
-                color = MaterialTheme.colorScheme.onPrimaryContainer ,
+                0.5.dp,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 shape = CardDefaults.outlinedShape
             )
     ) {
@@ -57,9 +61,16 @@ fun MinControlImp(
                 .fillMaxWidth()
 
         ) {
+//            with(sharedTransitionScope) {
             Text(
                 name , style = MaterialTheme.typography.headlineSmall , overflow =
-                TextOverflow.Clip , modifier = modifier.fillMaxWidth(0.8f)
+                TextOverflow.Clip , modifier = modifier
+                    .fillMaxWidth(0.8f)
+//                    .sharedBounds(
+//                        rememberSharedContentState(key = "name"),
+//                        animatedVisibilityScope = animatedVisibilityScope
+//                    )
+
             )
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally ,
@@ -67,25 +78,29 @@ fun MinControlImp(
                 modifier = modifier
                     .size(40.dp)
                     .clip(CircleShape)
-                    .border(2.dp , color = Color.Black , CircleShape)
+                    .border(2.dp, color = Color.Black, CircleShape)
                     .clickable(onClick = { onUIEvent(UIEvent.PlayPause) })
             ) {
                 Icon(
                     imageVector = if (! isPlayerEvent) Icons.Default.PlayArrow else Icons.Default.Pause ,
                     contentDescription = null ,
                     Modifier.size(36.dp)
+//                        .sharedBounds(
+//                        rememberSharedContentState(key = "icon"),
+//                        animatedVisibilityScope = animatedVisibilityScope
+//                    )
                 )
             }
-        }
+        }}
     }
-}
+//}
 
 @Preview(showBackground = true)
 @Composable
 fun MinConPre() {
-    MinControlImp(
-        true ,
-        "acccccccccccvcvvvvvvvvvvvccccccccbdo" ,
-        {}
-    )
+//    MinControlImp(
+//        true ,
+//        "acccccccccccvcvvvvvvvvvvvccccccccbdo" ,
+//        {}
+//    )
 }

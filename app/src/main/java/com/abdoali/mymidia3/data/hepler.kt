@@ -3,6 +3,7 @@ package com.abdoali.mymidia3.data
 import java.util.concurrent.TimeUnit
 
 fun formatDuration(duration: Long): String {
+if (duration<0) return "00:00"
     return if (duration < 3600000) {
         val minutes: Long =
             TimeUnit.MINUTES.convert(duration , TimeUnit.MILLISECONDS)

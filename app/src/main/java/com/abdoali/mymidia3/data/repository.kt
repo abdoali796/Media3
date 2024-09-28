@@ -16,6 +16,8 @@ import com.abdoali.mymidia3.data.database.favorite.item.ItemID
 import com.abdoali.mymidia3.data.database.favorite.item.ItemUrlDatabase
 import com.abdoali.mymidia3.data.database.favorite.surah.SurahDatabase
 import com.abdoali.mymidia3.data.database.favorite.surah.SurahID
+import com.abdoali.mymidia3.data.database.log.played.PlayedLog
+import com.abdoali.mymidia3.data.database.log.played.PlayedLogDatabase
 import com.abdoali.mymidia3.data.downloed.DownloadFile
 import com.abdoali.playservice.MediaServiceHandler
 import com.abdoali.playservice.MediaStateAbdo
@@ -24,6 +26,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import java.text.SimpleDateFormat
+import java.util.Date
 import javax.inject.Inject
 
 interface Repository {
@@ -35,7 +39,6 @@ interface Repository {
     val sura: StateFlow<List<String>>
     val isLoading: StateFlow<Float>
     val currentMediaItemIndex: StateFlow<Int>
-
     val artistsList: StateFlow<List<Reciter>>
     val list: StateFlow<List<QuranItem>>
     val localList: StateFlow<List<QuranItem>>
@@ -43,6 +46,7 @@ interface Repository {
     val progressString: StateFlow<String>
     val processLong: StateFlow<Long>
     val title: StateFlow<String>
+    val titleEdite: StateFlow<String>
     val artist: StateFlow<String>
     val duration: StateFlow<Long>
     val uri: StateFlow<Uri?>
@@ -50,6 +54,7 @@ interface Repository {
     val favArtist: StateFlow<List<Reciter>>
     val favSurah: StateFlow<List<String>>
     val favItem: StateFlow<List<QuranItem>>
+    val log: StateFlow<List<QuranItem>>
 
     fun onUIEvent(uiEvent: UIEvent)
     suspend fun prepareData()
@@ -71,7 +76,10 @@ interface Repository {
     suspend fun getFavArtist()
     suspend fun getFavSurah()
     suspend fun getFAVItem()
+    suspend fun getLogItem()
     suspend fun getQuranWords(): ReadAndTiming?
+
+    suspend fun log()
 }
 
 class RepositoryImp @Inject constructor(
@@ -80,6 +88,7 @@ class RepositoryImp @Inject constructor(
     private val artistDatabase: ArtistDatabase,
     private val surahDatabase: SurahDatabase,
     private val itemUrlDatabase: ItemUrlDatabase,
+    private val playedLogDatabase: PlayedLogDatabase,
     private val downloadFile: DownloadFile,
     private val quranWords: QuranWords,
 ) : Repository {
@@ -121,6 +130,9 @@ class RepositoryImp @Inject constructor(
     private val _favItem = MutableStateFlow<List<QuranItem>>(emptyList())
     override val favItem: StateFlow<List<QuranItem>>
         get() = _favItem
+    private val _log = MutableStateFlow<List<QuranItem>>(emptyList())
+    override val log: StateFlow<List<QuranItem>>
+        get() = _log
     private var _progress = MutableStateFlow(0f)
     override val progress: StateFlow<Float>
         get() = _progress
@@ -134,6 +146,9 @@ class RepositoryImp @Inject constructor(
     private var _title = MutableStateFlow("")
     override val title: StateFlow<String>
         get() = _title
+    private var _titleEdite = MutableStateFlow("")
+    override val titleEdite: StateFlow<String>
+        get() = title
     private var _artist = MutableStateFlow("")
     override val artist: StateFlow<String>
         get() = _artist
@@ -203,6 +218,15 @@ class RepositoryImp @Inject constructor(
 
     override suspend fun prepareData() {
         mediaServiceHandler.updateData()
+        try {
+
+
+            MySharedPreferences.item?.let { PlayerEvent.SeekToIndex(it) }
+                ?.let { mediaServiceHandler.onPlayerEvent(it) }
+        }catch (e:Exception){
+            Log.i("ee","${e.message}")
+        }
+
 
     }
 
@@ -216,14 +240,13 @@ class RepositoryImp @Inject constructor(
                 MediaStateAbdo.Idle -> _buffering.emit(false)
                 is MediaStateAbdo.Ready -> {
                     _buffering.emit(false)
-                    _title.emit(state.metadata.title.toString())
-                    _artist.emit(state.metadata.artist.toString())
+
+                    _title.emit(if (state.metadata.title.toString() == "null") editTitle() else state.metadata.title.toString())
+                    _artist.emit(if (state.metadata.artist.toString() == "null") editArtist() else state.metadata.artist.toString())
 //                        _shuffle.emit(state.shuffleModeEnabled)
                     _url.emit(state.metadata.artworkUri)
                     _duration.emit(state.duration)
-
-
-                }
+                                    }
 
                 is MediaStateAbdo.Loading -> {
                     _isLoading.emit(state.isLoading)
@@ -246,6 +269,17 @@ class RepositoryImp @Inject constructor(
             delay(400L)
         }
 
+    }
+
+    private fun editTitle(): String {
+        val quranItem = list.value.find { currentMediaItemIndex.value == it.index }
+
+        return quranItem?.surah ?: "-----"
+    }
+
+    private fun editArtist(): String {
+        val quranItem = list.value.find { currentMediaItemIndex.value == it.index }
+        return quranItem?.artist ?: "-----"
     }
 
     override suspend fun addArtistFav(id: Int) {
@@ -331,12 +365,35 @@ class RepositoryImp @Inject constructor(
         }
     }
 
+    override suspend fun getLogItem() {
+        playedLogDatabase.playedLogDao().getLog().collect { string ->
+            val uri = string.map { it.url.toUri() }
+            val item = uri.mapNotNull { uri1 ->
+                list.value.find { quranItem: QuranItem -> quranItem.uri == uri1 }
+            }
+            _log.update { item.reversed() }
+        }
+    }
+
     override suspend fun getQuranWords(): ReadAndTiming? {
         val currentItem = list.value.find { currentMediaItemIndex.value == it.index }
 //     val timing= currentItem?.let { quranWords.getTiming(it.surah ,currentItem.id.toInt()) }
 //       Log.i("timingAya",currentItem.toString())
 //        Log.i("timingAya","fl"+timing.toString())
         return currentItem?.surah?.let { quranWords.getWordsAndTiming(it, currentItem.id.toInt()) }
+
+    }
+
+    override suspend fun log() {
+        val currentItem = list.value.find { currentMediaItemIndex.value == it.index }
+        Log.i("playedLog", "${currentItem?.moshaf}")
+        val sdf = SimpleDateFormat("dd/M/yyyy hh:mm:ss")
+        val currentDate = sdf.format(Date())
+
+        playedLogDatabase.playedLogDao()
+            .insertLog(PlayedLog(time = currentDate, url = currentItem?.uri.toString()))
+        val log = playedLogDatabase.playedLogDao().getLog()
+        Log.i("playedLog", "$log")
 
     }
 

@@ -52,46 +52,61 @@ fun MinListTitle(
         ) {
             Text(text = title, style = MaterialTheme.typography.headlineLarge)
             if (!titleReciter.isNullOrEmpty()) {
-with(sharedTransitionScope){
-                if (titleReciter.size < 5) {
-                    titleReciter.forEach { reciter ->
-                        Text(
-                            reciter = reciter, animatedContentScope = animationSpec,modifier = modifier.clickable {
-                                actionNav(
-                                    reciter.name, reciter.id
-                                )
-                            }
-                        )
+                with(sharedTransitionScope) {
+                    if (titleReciter.size < 5) {
+                        titleReciter.forEach { reciter ->
+                            Text(
+                                reciter = reciter,
+                                animatedContentScope = animationSpec,
+                                modifier = modifier.clickable {
+                                    actionNav(
+                                        reciter.name, reciter.id
+                                    )
+                                }
+                            )
+                        }
+                    } else {
+
+                        for (i in 0..4) {
+                            Text(
+                                reciter = titleReciter[i], animatedContentScope = animationSpec,
+                                modifier = modifier.clickable {
+                                    actionNav(
+                                        titleReciter[i].name, titleReciter[i].id
+                                    )
+                                },
+                            )
+                        }
+
                     }
-                } else {
 
-                    for (i in 0..4) {
-                        Text(
-                            reciter = titleReciter[i], animatedContentScope = animationSpec,modifier = modifier.clickable {
-                                actionNav(
-                                    titleReciter[i].name, titleReciter[i].id
+                    Column(
+                        horizontalAlignment = Alignment.End, modifier = modifier.fillMaxWidth()
+                    ) {
+                        Button(
+                            onClick = actionShowAll,
+                            shape = CardDefaults.shape,
+                            elevation = ButtonDefaults.buttonElevation(defaultElevation = 5.dp),
+                            modifier = Modifier.sharedBounds(
+                                rememberSharedContentState(key = title + "A"),
+                                animatedVisibilityScope = animationSpec
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.show_all, title),
+                                modifier = Modifier.sharedElement(
+                                    rememberSharedContentState(key = title),
+                                    animatedVisibilityScope = animationSpec
                                 )
-                            },
-                        )
+                            )
+                        }
+
                     }
-
                 }
-            }}
-            Column(
-                horizontalAlignment = Alignment.End, modifier = modifier.fillMaxWidth()
-            ) {
-                Button(
-                    onClick = actionShowAll,
-                    shape = CardDefaults.shape,
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 5.dp)
-                ) {
-                    Text(text = stringResource(R.string.show_all, title))
-                }
-
             }
         }
-    }
 
+    }
 }
 
 @Composable
@@ -177,7 +192,9 @@ fun MinListTitle(
                     .padding(1.dp)
             ) {
 
-                Text(text = title, style = MaterialTheme.typography.headlineLarge)
+                Text(
+                    text = title, style = MaterialTheme.typography.headlineLarge,
+                )
                 if (titleSurh.size < 5) {
                     titleSurh.forEach { surah ->
                         TextSurah(
@@ -191,7 +208,7 @@ fun MinListTitle(
                         TextSurah(
                             surah = titleSurh[i],
                             animatedContentScope = animationSpec,
-                          modifier =   modifier.clickable { actionNav(titleSurh[i], -1) },
+                            modifier = modifier.clickable { actionNav(titleSurh[i], -1) },
                         )
                     }
                 }
@@ -202,9 +219,19 @@ fun MinListTitle(
                     Button(
                         onClick = actionShowAll,
                         shape = CardDefaults.shape,
-                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 5.dp)
+                        elevation = ButtonDefaults.buttonElevation(defaultElevation = 5.dp),
+                        modifier = Modifier.sharedBounds(
+                            rememberSharedContentState(key = title + "A"),
+                            animatedVisibilityScope = animationSpec
+                        )
                     ) {
-                        Text(text = stringResource(R.string.show_all, title))
+                        Text(
+                            text = stringResource(R.string.show_all, title),
+                            modifier = Modifier.sharedElement(
+                                rememberSharedContentState(key = title),
+                                animatedVisibilityScope = animationSpec
+                            )
+                        )
                     }
 
                 }
@@ -227,6 +254,7 @@ fun SharedTransitionScope.Text(
         ), style = MaterialTheme.typography.titleLarge
     )
 }
+
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.TextSurah(
@@ -236,7 +264,7 @@ fun SharedTransitionScope.TextSurah(
 ) {
     Text(
         text = surah, modifier.sharedElement(
-            rememberSharedContentState(key = "title${surah}"+"null"),
+            rememberSharedContentState(key = "title${surah}" + "null"),
             animatedVisibilityScope = animatedContentScope
         ), style = MaterialTheme.typography.titleLarge
     )

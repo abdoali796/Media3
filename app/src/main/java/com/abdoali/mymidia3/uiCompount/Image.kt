@@ -27,12 +27,13 @@ import com.bumptech.glide.integration.compose.R
 
 @Composable
 fun ImageAudoi(
-    uri: Uri? ,
-    buffer: Boolean ,
-    isLocal: Boolean ,
-    artist: String = "غير محدد" ,
-    title: String = "غير محدد" ,
-    modifier: Modifier = Modifier
+
+    uri: Uri?,
+    buffer: Boolean,
+    isLocal: Boolean,
+    modifier: Modifier = Modifier,
+    artist: String = "غير محدد",
+    title: String = "غير محدد",
 ) {
     val context = LocalContext.current
     var bitmap by remember {
@@ -45,8 +46,8 @@ fun ImageAudoi(
             bitmap = uri?.let {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     context.applicationContext.contentResolver.loadThumbnail(
-                        it ,
-                        Size(100 , 100) ,
+                        it,
+                        Size(100, 100),
                         null
                     )
                 } else {
@@ -56,7 +57,7 @@ fun ImageAudoi(
             }
                 ?: com.abdoali.mymidia3.R.drawable.quran
         } catch (e: Exception) {
-            Log.i("bitmap" , e.toString())
+            Log.i("bitmap", e.toString())
 
         }
 
@@ -69,27 +70,27 @@ fun ImageAudoi(
                 modifier.size(200.dp)
             )
         }
-        if( ! buffer) {
+        if (!buffer) {
 
             AsyncImage(
-                model = bitmap ,
-                contentDescription = null ,
+                model = bitmap,
+                contentDescription = null,
                 modifier = modifier
 
                     .clip(MaterialTheme.shapes.medium)
 
-                    .size(200.dp) ,
+                    .size(200.dp),
                 placeholder = painterResource(
                     id = R.drawable.abc_btn_radio_to_on_mtrl_000
-                ) ,
+                ),
                 error = painterResource(
                     id = com.abdoali.playservice.R.drawable.plass_foreground
-                ) , contentScale = ContentScale.FillBounds
+                ), contentScale = ContentScale.FillBounds
 
             )
         }
     }
-    Text(text = title , style = MaterialTheme.typography.headlineSmall)
-    Text(text = artist , style = MaterialTheme.typography.titleSmall)
+    Text(text = title, style = MaterialTheme.typography.headlineSmall , modifier = modifier)
+    Text(text = artist, style = MaterialTheme.typography.titleSmall)
 
 }

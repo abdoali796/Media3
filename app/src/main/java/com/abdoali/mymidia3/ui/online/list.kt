@@ -61,7 +61,8 @@ fun List(
             itFav = itFav
 
         )
-    } else {
+    }
+     else {
         ListMp(
             title = key?.get(0),
             quranItem = quranItem,

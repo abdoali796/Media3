@@ -12,7 +12,7 @@ buildscript {
 
     extra.apply {
         
-        set("media3Version", "1.3.1")
+        set("media3Version", "1.4.0")
     }
 }
 plugins {

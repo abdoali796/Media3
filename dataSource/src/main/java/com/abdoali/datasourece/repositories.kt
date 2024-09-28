@@ -1,6 +1,7 @@
 package com.abdoali.datasourece
 
 import android.util.Log
+import androidx.annotation.Keep
 import com.abdoali.datasourece.api.ApiQuran
 import com.abdoali.datasourece.api.Reciter
 import javax.inject.Inject
@@ -12,7 +13,7 @@ interface DataSources {
     suspend fun gitContent(): List<QuranItem>
 }
 
-
+@Keep
 class DataSourcesImp @Inject constructor(
     private val contentResolverHelper: ContentResolverHelper,
     private val apiQuran: ApiQuran

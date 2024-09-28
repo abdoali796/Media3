@@ -3,8 +3,7 @@ package com.abdoali.playservice.service.notifcation
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent.FLAG_MUTABLE
-import android.app.PendingIntent.FLAG_NO_CREATE
+import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
@@ -55,8 +54,8 @@ class NotificationManager @Inject constructor(
                 NotificationAdapter(
 //                    context = context,
                     pendingIntent =  TaskStackBuilder.create(context).run {
-                        addNextIntent(Intent(context, Class.forName("com.abdoali.mymidia3.MainActivity")))
-                        getPendingIntent(0, FLAG_NO_CREATE or FLAG_MUTABLE)
+                        addNextIntentWithParentStack(Intent(context, Class.forName("com.abdoali.mymidia3.MainActivity")))
+                        getPendingIntent(33,  PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE)
                     }
                 )
             )
@@ -87,7 +86,9 @@ class NotificationManager @Inject constructor(
         val notification = Notification.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setCategory(Notification.CATEGORY_SERVICE)
             .setActions(
+
             )
+
             .build()
 
         mediaSessionService.startForeground(NOTIFICATION_ID, notification)

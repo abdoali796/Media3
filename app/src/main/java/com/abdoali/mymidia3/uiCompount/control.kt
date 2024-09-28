@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowForwardIos
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.ArrowBackIos
-import androidx.compose.material.icons.outlined.ArrowForwardIos
 import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material.icons.outlined.RepeatOn
 import androidx.compose.material.icons.outlined.Shuffle
@@ -90,7 +90,7 @@ private fun ControlImp(
 
             }
             IconButton(onClick = { onUiEvent(UIEvent.Forward) }) {
-                Icon(Icons.Outlined.ArrowForwardIos , contentDescription = null)
+                Icon(Icons.AutoMirrored.Outlined.ArrowForwardIos, contentDescription = null)
             }
             IconButton(onClick = { onUiEvent(UIEvent.PlayNext) }) {
                 Icon(Icons.Outlined.SkipNext , contentDescription = null)

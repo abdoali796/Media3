@@ -1,4 +1,3 @@
-
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -10,7 +9,7 @@ plugins {
 android {
     namespace = "com.abdoali.playservice"
     compileSdk = 34
-
+//    lintOptions.disable("Instantiatable")
     defaultConfig {
 //        applicationId = "com.abdoali.playservice"
 //        minSdk = 26

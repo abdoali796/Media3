@@ -1,11 +1,12 @@
 package com.abdoali.datasourece.api
 
 import android.util.Log
+import androidx.annotation.Keep
 import org.json.JSONObject
 import java.util.Locale
 import javax.inject.Inject
 
-
+@Keep
 class ApiQuran @Inject constructor(private val apiQuran: ApiService) {
 
 //    suspend fun getNewMp3quran(): List<Quran> {

@@ -9,11 +9,12 @@ import android.database.Cursor
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import androidx.annotation.Keep
 import androidx.annotation.WorkerThread
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-
+@Keep
 class ContentResolverHelper @Inject constructor(@ApplicationContext val context: Context) {
 
     private var mcursor: Cursor? = null

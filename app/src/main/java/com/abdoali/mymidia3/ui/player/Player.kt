@@ -1,11 +1,11 @@
 package com.abdoali.mymidia3.ui.player
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowColumn
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,7 +33,7 @@ import com.abdoali.mymidia3.uiCompount.Control
 import com.abdoali.mymidia3.uiCompount.ImageAudoi
 import com.abdoali.mymidia3.uiCompount.ReadUi
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun PlayUi(
 //    title: String ,
@@ -46,6 +46,7 @@ fun PlayUi(
 //    uri: Uri? ,
 //    isLocal: Boolean,
 //    onUIEvent: (UIEvent) -> Unit ,
+
 
     modifier: Modifier = Modifier,
 ) {
@@ -84,92 +85,105 @@ fun PlayUi(
 //
 //    }
 
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp)
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier
+                .fillMaxSize()
+                .padding(8.dp)
 
-    ) {
-        Box {
-
-
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize()
-            ) {
-
-
-                if (!showWords || isLocal) {
-                    ImageAudoi(
-                        uri = uri, buffer, title = title, artist = artists, isLocal = true
-                    )
-                }
-                AnimatedVisibility(showWords) {
-                    read?.let { ReadUi(list = it.verses, currAyaTiming ,title = title, artist = artists,) }
-
-                }
-
+        ) {
+            Box {
 
 
                 Column(
-                    modifier = modifier.fillMaxWidth()
-
+                    verticalArrangement = Arrangement.SpaceBetween,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    AnimatedVisibility(visible = !isLocal) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = modifier.fillMaxWidth()
 
-                        ) {
-                            Button(onClick = { vm.showWords() }) {
-                                if (showWords) Text(text = "اخفى الايات ") else Text(text = "اظهر الايات")
-                            }
-                            Row(
-                                horizontalArrangement = Arrangement.SpaceBetween,
+
+                    if (!showWords || isLocal) {
+                        ImageAudoi(
+                            uri = uri,
+                            buffer,
+                            title = title,
+                            artist = artists,
+                            isLocal = true,
+
+                        )
+                    }
+                    AnimatedVisibility(showWords) {
+                        read?.let {
+                            ReadUi(
+                                list = it.verses,
+                                currAyaTiming,
+                                title = title,
+                                artist = artists,
+                            )
+                        }
+
+                    }
+
+
+
+                    Column(
+                        modifier = modifier.fillMaxWidth()
+
+                    ) {
+                        AnimatedVisibility(visible = !isLocal) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = modifier.fillMaxWidth()
 
                             ) {
+                                Button(onClick = { vm.showWords() }) {
+                                    if (showWords) Text(text = "اخفى الايات ") else Text(text = "اظهر الايات")
+                                }
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = modifier.fillMaxWidth()
+
+                                ) {
 
 
-                                Icon(if (itFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                    contentDescription = null,
-                                    modifier = modifier.clickable { vm.addFav() })
+                                    Icon(if (itFav) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                        contentDescription = null,
+                                        modifier = modifier.clickable { vm.addFav() })
 
-                                Icon(Icons.Default.FileDownload,
-                                    contentDescription = null,
-                                    Modifier.clickable {
-                                        vm.download()
-                                    })
+                                    Icon(Icons.Default.FileDownload,
+                                        contentDescription = null,
+                                        Modifier.clickable {
+                                            vm.download()
+                                        })
+                                }
                             }
-                        }
 
+
+                        }
+                        Bar(
+                            process = process,
+                            processString = processString,
+                            durationString = formatDuration(duration),
+                            onUIEvent = vm::onUIEven
+                        )
+
+                        Control(
+                            isPlay = isPlaying,
+                            shuffle = shuffle,
+                            onUiEvent = vm::onUIEven,
+                            repeatOn = repeatOn,
+                            modifier = Modifier
+
+                        )
+                        Spacer(modifier = modifier.height(20.dp))
 
                     }
-                    Bar(
-                        process = process,
-                        processString = processString,
-                        durationString = formatDuration(duration),
-                        onUIEvent = vm::onUIEven
-                    )
-
-                    Control(
-                        isPlay = isPlaying,
-                        shuffle = shuffle,
-                        onUiEvent = vm::onUIEven,
-                        repeatOn = repeatOn,
-                        modifier = Modifier.padding(bottom = 20.dp, top = 20.dp)
-                    )
-                    Spacer(modifier = modifier.height(20.dp))
 
                 }
-
             }
         }
     }
-}
 
 //@Composable
 //fun BlurImage(

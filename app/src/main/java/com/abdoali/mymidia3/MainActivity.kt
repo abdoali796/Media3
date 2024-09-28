@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -12,16 +13,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.rememberNavController
 import com.abdoali.mymidia3.data.MySharedPreferences
-import com.abdoali.mymidia3.ui.mainUi
-import com.abdoali.mymidia3.ui.search.search
 import com.abdoali.mymidia3.ui.settings.SettingVM
-import com.abdoali.mymidia3.ui.settings.setting
-import com.abdoali.mymidia3.ui.splashscreen.SPLASH
-import com.abdoali.mymidia3.ui.splashscreen.splash
 import com.abdoali.mymidia3.ui.theme.Mymidia3Theme
+import com.abdoali.mymidia3.uiCompount.MainNavHost
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
@@ -29,7 +24,7 @@ import java.util.Locale
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @OptIn(ExperimentalPermissionsApi::class)
+    @OptIn(ExperimentalPermissionsApi::class, ExperimentalSharedTransitionApi::class)
     @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +46,6 @@ class MainActivity : AppCompatActivity() {
                     settingVM.updateData()
                 }
 
-                val mainNavController = rememberNavController()
-                val subNavController = rememberNavController()
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
@@ -61,30 +54,11 @@ class MainActivity : AppCompatActivity() {
                     })
 
 //                    AnimatedVisibility(visible = !isLoading) {
+MainNavHost(settingVM = settingVM, isLoading = isLoading)
 
-
-                    NavHost(
-                        navController = mainNavController, startDestination = SPLASH
-                    ) {
-
-                        mainUi(
-                            mainNavController = mainNavController,
-                            subNavController = subNavController
-                        )
-                        search(
-                            subNavController = subNavController,
-                            mainNavController = mainNavController
-                        )
-                        setting(settingVM)
-                        splash(mainNavController, isLoading)
-
-                    }
-
-//                    }
-                }
             }
 
-        }
+        }}
 
 
     }

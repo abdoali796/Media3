@@ -26,6 +26,7 @@ class VMList @Inject constructor(
     val favItems: StateFlow<List<QuranItem>>
         get() = repository.favItem
 
+
     private val _list: StateFlow<List<QuranItem>>
         get() = repository.list
     private val _fiterList = MutableStateFlow<List<QuranItem>>(emptyList())
@@ -35,11 +36,17 @@ class VMList @Inject constructor(
     val itFav: StateFlow<Boolean>
         get() = _itFav
 
+    private val _destroyed = MutableStateFlow(false)
+    val destroyed: StateFlow<Boolean>
+        get() = _destroyed
+
     init {
 
         filter()
         itFov()
+
     }
+
 
     fun getKey(): List<String>? = getTitle(savedStateHandle)?.split(",")
     fun getID(): Int? = getID(savedStateHandle)
@@ -107,6 +114,11 @@ class VMList @Inject constructor(
         }
 
         itFov()
+    }
+
+
+    fun setDestroy(b: Boolean) {
+        _destroyed.update { b }
     }
 
 

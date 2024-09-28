@@ -27,4 +27,8 @@
     <string name="inactive">غير فعال</string>
     <string name="language">اللغة</string>
     <string name="theme">اللون</string>
+    <string name="log">log</string>
+    <string name="favorite_reciter">قراء المفضلين</string>
+    <string name="favorite_surah">سور مفضلة</string>
+    <string name="favorite_item">قائمتي</string>
 </resources>
